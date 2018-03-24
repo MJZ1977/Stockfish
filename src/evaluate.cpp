@@ -900,6 +900,16 @@ Value Eval::evaluate(const Position& pos) {
   return Evaluation<NO_TRACE>(pos).value();
 }
 
+/// MJ : ajouté pour connaitre la phase de jeu dans search.cpp
+Phase Eval::game_phase(const Position& pos)
+{
+    assert(!pos.checkers());
+
+       // Probe the material hash table
+    Material::Entry* me = Material::probe(pos);
+   
+   return me->game_phase();
+}
 
 /// trace() is like evaluate(), but instead of returning a value, it returns
 /// a string (suitable for outputting to stdout) that contains the detailed

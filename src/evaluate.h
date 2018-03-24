@@ -37,6 +37,8 @@ extern std::atomic<Score> Contempt;
 std::string trace(const Position& pos);
 
 Value evaluate(const Position& pos);
+
+Phase game_phase(const Position& pos);	//MJ : pour renvoyer game_phase
 }
 
 #endif // #ifndef EVALUATE_H_INCLUDED

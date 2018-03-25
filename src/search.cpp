@@ -288,7 +288,8 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
- 
+  int minimal_depth = std::min(int(2.5*pow(Time.optimum(),0.25)), 30) + (100 - Gm_ph) / 20;	//MJ : prof minimal
+  
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
      (ss-i)->contHistory = this->contHistory[NO_PIECE][0].get(); // Use as sentinel
@@ -461,7 +462,8 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581 )
+                  || (Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+				  && completedDepth > minimal_depth))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

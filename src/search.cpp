@@ -288,8 +288,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int minimal_depth = 18 + std::min(Time.optimum() / 3000, 15) + (100 - Gm_ph) / 20;	//MJ : prof minimale
-
+ 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
      (ss-i)->contHistory = this->contHistory[NO_PIECE][0].get(); // Use as sentinel

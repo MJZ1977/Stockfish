@@ -288,7 +288,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int minimal_depth = std::min(int(2.5*pow(Time.optimum(),0.25)), 30) + (100 - Gm_ph) / 20;	//MJ : prof minimal
+  int maximal_depth = 6 + std::min(int(5*pow(Time.optimum(),0.25)*(1+(100-Gm_ph)/50)), 45);	//MJ : prof minimal
   
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -343,10 +343,9 @@ void Thread::search() {
           selDepth = 0;
 
           // Reset aspiration window starting size
-          if (rootDepth >= 9 * ONE_PLY)  //MJ
+          if (rootDepth >= 5 * ONE_PLY)  //MJ
           {
-              delta = Value(18 + 10 * std::max(12 - rootDepth / ONE_PLY, 0) + (100 - Gm_ph) / 10
-			    + Time.optimum() / 500);        //MJ : 18
+              delta = Value(18);
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
 
@@ -426,6 +425,7 @@ void Thread::search() {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
       }
+	  else maximal_depth += -1;
 
       // Have we found a "mate in x"?
       if (   Limits.mate
@@ -462,8 +462,8 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || (Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
-				  && completedDepth > minimal_depth))
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+				  || completedDepth > maximal_depth)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

@@ -344,7 +344,7 @@ void Thread::search() {
           // Reset aspiration window starting size
           if (rootDepth >= 9 * ONE_PLY)  //MJ
           {
-              delta = Value(8 + 10 * std::max(12 - rootDepth / ONE_PLY, 0) + (100 - Gm_ph) / 5
+              delta = Value(18 + 10 * std::max(12 - rootDepth / ONE_PLY, 0) + (100 - Gm_ph) / 10
 			    + Time.optimum() / 500);        //MJ : 18
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);

@@ -88,7 +88,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+80*depth));
+    return std::max(min,std::min(max,min+60*depth));
   }
 
   // Skill structure is used to implement strength limit
@@ -293,7 +293,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 6 + std::min(int(5*pow(Time.optimum(),0.25)*(1+(100-Gm_ph)/50)), 45);	//MJ : prof minimal
+  int maximal_depth = 6 + std::min(int(4*pow(Time.optimum(),0.25)*(1+(100-Gm_ph)/50)), 45);	//MJ : prof minimal
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -469,8 +469,8 @@ void Thread::search() {
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
-				  || (completedDepth > 9
-				  && rootMoves[0].score > rootMoves[1].score + stop_strat(40,300,maximal_depth-completedDepth/ONE_PLY)
+				  || (completedDepth > (maximal_depth/2)
+				  && rootMoves[0].score > rootMoves[1].score + stop_strat(20,320,maximal_depth-completedDepth/ONE_PLY)
 				  && rootMoves[0].score < rootMoves[1].score + 10000))
               {
                   // If we are allowed to ponder do not stop the search now but
@@ -590,7 +590,7 @@ namespace {
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
-        && tte->depth() >= depth
+        && tte->depth() > depth	//MJ : ajout +2 pour éviter le cutoff erroné, test
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -1208,7 +1208,7 @@ moves_loop: // When in check, search starts from here
 
     if (  !PvNode
         && ttHit
-        && tte->depth() >= ttDepth
+        && tte->depth() > ttDepth	//MJ
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() &  BOUND_LOWER)
                             : (tte->bound() &  BOUND_UPPER)))

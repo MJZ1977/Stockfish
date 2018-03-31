@@ -86,11 +86,6 @@ namespace {
     return d > 17 ? 0 : d * d + 2 * d - 2;
   }
 
-  // History and stats update bonus, based on depth
-  int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+60*depth));
-  }
-
   // Skill structure is used to implement strength limit
   struct Skill {
     explicit Skill(int l) : level(l) {}
@@ -293,7 +288,6 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 6 + std::min(int(4*pow(Time.optimum(),0.25)*(1+(100-Gm_ph)/50)), 45);	//MJ : prof minimal
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -348,10 +342,10 @@ void Thread::search() {
           selDepth = 0;
 
           // Reset aspiration window starting size
-          if (rootDepth >= 5 * ONE_PLY)  //MJ
+          if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[PVIdx].previousScore;
-              delta = Value(18);
+              delta = Value(18+int(Gm_ph/10));
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -431,7 +425,6 @@ void Thread::search() {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
       }
-	  else maximal_depth += -1;
 
       // Have we found a "mate in x"?
       if (   Limits.mate
@@ -468,10 +461,7 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
-				  || (completedDepth > (maximal_depth/2)
-				  && rootMoves[0].score > rootMoves[1].score + stop_strat(20,320,maximal_depth-completedDepth/ONE_PLY)
-				  && rootMoves[0].score < rootMoves[1].score + 10000))
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

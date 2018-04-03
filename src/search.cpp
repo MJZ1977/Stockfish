@@ -341,7 +341,7 @@ void Thread::search() {
           mainThread->bestMoveChanges *= 0.517, mainThread->failedLow = false;
 
       // Update of deriv_score
-      if (rootDepth > 5 * ONE_PLY
+      if (rootDepth > 6 * ONE_PLY
         && rootMoves[0].score > -VALUE_INFINITE
         && rootMoves[0].previousScore > -VALUE_INFINITE)
           deriv_score = (deriv_score + rootMoves[0].score-rootMoves[0].previousScore)/2;

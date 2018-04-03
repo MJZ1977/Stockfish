@@ -341,7 +341,9 @@ void Thread::search() {
           mainThread->bestMoveChanges *= 0.517, mainThread->failedLow = false;
 
       // Update of deriv_score
-      if (rootMoves[0].score > -VALUE_INFINITE && rootMoves[0].previousScore > -VALUE_INFINITE)
+      if (rootDepth > 5 * ONE_PLY
+        && rootMoves[0].score > -VALUE_INFINITE
+        && rootMoves[0].previousScore > -VALUE_INFINITE)
           deriv_score = (deriv_score + rootMoves[0].score-rootMoves[0].previousScore)/2;
 
       // Save the last iteration's scores before first PV line is searched and
@@ -530,7 +532,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
- 
+
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();

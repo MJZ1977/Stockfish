@@ -297,6 +297,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
+  Value deriv_score = Value(0);
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -339,6 +340,12 @@ void Thread::search() {
       if (mainThread)
           mainThread->bestMoveChanges *= 0.517, mainThread->failedLow = false;
 
+      // Update of deriv_score
+      if (rootDepth > 5 * ONE_PLY
+        && rootMoves[0].score > -VALUE_INFINITE
+        && rootMoves[0].previousScore > -VALUE_INFINITE)
+          deriv_score = (deriv_score + rootMoves[0].score-rootMoves[0].previousScore)/2;
+
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
@@ -355,8 +362,8 @@ void Thread::search() {
           {
               Value previousScore = rootMoves[PVIdx].previousScore;
               delta = Value(18);
-              alpha = std::max(previousScore - delta,-VALUE_INFINITE);
-              beta  = std::min(previousScore + delta, VALUE_INFINITE);
+              alpha = std::max(previousScore + deriv_score/2 - delta,-VALUE_INFINITE);
+              beta  = std::min(previousScore + deriv_score/2 + delta, VALUE_INFINITE);
 
               ct =  Options["Contempt"] * PawnValueEg / 100; // From centipawns
 

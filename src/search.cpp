@@ -476,7 +476,6 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth > (maximal_depth/2)
                     && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(30,240,maximal_depth-completedDepth)

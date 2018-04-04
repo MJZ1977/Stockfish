@@ -96,6 +96,11 @@ namespace {
     return d > 17 ? 0 : d * d + 2 * d - 2;
   }
 
+  //Stop strategy based on depth
+  int stop_strat(int min, int max, int depth) {
+    return std::max(min,std::min(max,min+60*depth));
+  }
+
   // Skill structure is used to implement strength limit
   struct Skill {
     explicit Skill(int l) : level(l) {}
@@ -297,6 +302,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
+  int maximal_depth = 6 + std::min(int(3*pow(Time.optimum(),0.25)), 45);
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -471,6 +477,10 @@ void Thread::search() {
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+                  || (completedDepth > (maximal_depth/2)
+                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(30,240,maximal_depth-completedDepth)
+                    && rootMoves[1].previousScore > -VALUE_INFINITE))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

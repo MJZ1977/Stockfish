@@ -348,7 +348,8 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
-          rm.previousScore = rm.score;
+          if(rm.score > -VALUE_INFINITE)
+            rm.previousScore = rm.score;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (PVIdx = 0; PVIdx < multiPV && !Threads.stop; ++PVIdx)
@@ -360,7 +361,7 @@ void Thread::search() {
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[PVIdx].previousScore;
-              delta = Value(stop_strat(100,480,maximal_depth-rootDepth));
+              delta = Value(18);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -478,8 +479,8 @@ void Thread::search() {
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth > (maximal_depth/2)
-                    && (rootMoves[0].score > rootMoves[1].previousScore + stop_strat(100,480,maximal_depth-completedDepth)
-                    || rootMoves[1].previousScore == -VALUE_INFINITE)))
+                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(100,480,maximal_depth-completedDepth)
+                    && rootMoves[1].previousScore == -VALUE_INFINITE))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

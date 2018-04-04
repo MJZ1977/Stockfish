@@ -360,7 +360,7 @@ void Thread::search() {
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[PVIdx].previousScore;
-              delta = Value(18);
+              delta = Value(stop_strat(100,480,maximal_depth-rootDepth));
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -478,8 +478,8 @@ void Thread::search() {
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth > (maximal_depth/2)
-                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(100,480,maximal_depth-completedDepth)
-                    && rootMoves[1].previousScore > -VALUE_INFINITE))
+                    && (rootMoves[0].score > rootMoves[1].previousScore + stop_strat(100,480,maximal_depth-completedDepth)
+                    || rootMoves[1].previousScore == -VALUE_INFINITE)))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

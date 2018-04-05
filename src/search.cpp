@@ -303,7 +303,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 6 + std::min(int(0.45*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/10)), MAX_PLY);
+  int maximal_depth = 6 + std::min(int(0.35*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/10)), MAX_PLY);
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -480,7 +480,8 @@ void Thread::search() {
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth > (maximal_depth/2)
-                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(400,400,maximal_depth-completedDepth)
+                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(30,360,maximal_depth-completedDepth)
+					&& rootMoves[1].selDepth > rootMoves[0].selDepth - 8
                     && rootMoves[1].previousScore > -VALUE_INFINITE))
               {
                   // If we are allowed to ponder do not stop the search now but

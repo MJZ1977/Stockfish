@@ -302,7 +302,8 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
-  int maximal_depth = 6 + std::min(int(3*pow(Time.optimum(),0.25)), 45);
+  int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
+  int maximal_depth = 6 + std::min(int(0.40*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/10)), MAX_PLY);
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -348,7 +349,8 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
-          rm.previousScore = rm.score;
+         if (rm.score > -VALUE_INFINITE)
+            rm.previousScore = rm.score;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (PVIdx = 0; PVIdx < multiPV && !Threads.stop; ++PVIdx)
@@ -478,7 +480,7 @@ void Thread::search() {
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth > (maximal_depth/2)
-                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(100,480,maximal_depth-completedDepth)
+                    && rootMoves[0].score > rootMoves[1].previousScore + stop_strat(20,320,maximal_depth-completedDepth)
                     && rootMoves[1].previousScore > -VALUE_INFINITE))
               {
                   // If we are allowed to ponder do not stop the search now but

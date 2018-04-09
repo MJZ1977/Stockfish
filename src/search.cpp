@@ -303,8 +303,8 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 3 + std::min(int(0.2*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/10)), MAX_PLY);
-  //int pvBonus = 0;
+  int maximal_depth = 6 + std::min(int(0.4*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/5)), MAX_PLY);
+  int pvBonus = 0;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -353,13 +353,13 @@ void Thread::search() {
           if(rm.score > -VALUE_INFINITE)
             rm.previousScore = rm.score;
 
-      //if (rootDepth < 5 * ONE_PLY && rootMoves.size() > 1)
-      //  pvBonus = 1;
-      //else
-      //  pvBonus = 0;
+      if (rootDepth < 4 * ONE_PLY && rootMoves.size() > 1)
+        pvBonus = 1;
+      else
+        pvBonus = 0;
 
       // MultiPV loop. We perform a full root search for each PV line
-      for (PVIdx = 0; PVIdx < multiPV && !Threads.stop; ++PVIdx)
+      for (PVIdx = 0; PVIdx < multiPV + pvBonus && !Threads.stop; ++PVIdx)
       {
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
@@ -484,11 +484,11 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || (Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
-                  && (completedDepth >= maximal_depth)))
-                    //&& rootMoves[0].score >= rootMoves[1].previousScore + 600//stop_strat(200,600,maximal_depth-completedDepth)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+                  || (completedDepth >= maximal_depth/2
+                  && rootMoves[0].score >= rootMoves[1].previousScore + 400//stop_strat(200,600,maximal_depth-completedDepth)
 					//&& rootMoves[1].selDepth >= 6
-                    //&& rootMoves[1].previousScore > -VALUE_INFINITE))
+                  && rootMoves[1].previousScore > -VALUE_INFINITE))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

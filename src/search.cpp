@@ -98,7 +98,7 @@ namespace {
 
   //Stop strategy based on depth
   int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+25*depth));
+    return std::max(min,std::min(max,min+35*depth));
   }
 
   // Skill structure is used to implement strength limit

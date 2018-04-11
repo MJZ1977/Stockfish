@@ -97,9 +97,9 @@ namespace {
   }
 
   //Stop strategy based on depth
-  //int stop_strat(int min, int max, int depth) {
-  //  return std::max(min,std::min(max,min+40*depth));
-  //}
+  int stop_strat(int min, int max, int depth) {
+    return std::max(min,std::min(max,min+25*depth));
+  }
 
   // Skill structure is used to implement strength limit
   struct Skill {
@@ -303,7 +303,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 6 + std::min(int(0.4*pow(Time.optimum(),0.25)*(10+(100-Gm_ph)/5)), MAX_PLY);
+  int maximal_depth = 6 + std::min(int(3.8*pow(Time.optimum(),0.25)), MAX_PLY);
   int pvBonus = 0;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
@@ -353,7 +353,7 @@ void Thread::search() {
           if(rm.score > -VALUE_INFINITE)
             rm.previousScore = rm.score;
 
-      if (rootDepth < 4 * ONE_PLY && rootMoves.size() > 1)
+      if (rootDepth < 3 * ONE_PLY && rootMoves.size() > 1)
         pvBonus = 1;
       else
         pvBonus = 0;
@@ -486,7 +486,8 @@ void Thread::search() {
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth >= maximal_depth/2
-                  && rootMoves[0].score >= rootMoves[1].previousScore + 400//stop_strat(200,600,maximal_depth-completedDepth)
+                  && Gm_ph >=5
+                  && rootMoves[0].score >= rootMoves[1].previousScore + stop_strat(20,400,maximal_depth-completedDepth)
 					//&& rootMoves[1].selDepth >= 6
                   && rootMoves[1].previousScore > -VALUE_INFINITE))
               {

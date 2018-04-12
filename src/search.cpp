@@ -98,7 +98,7 @@ namespace {
 
   //Stop strategy based on depth
   int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+35*depth));
+    return std::max(min,std::min(max,min+40*depth));
   }
 
   // Skill structure is used to implement strength limit
@@ -303,7 +303,7 @@ void Thread::search() {
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
   int Gm_ph = int(100 * Eval::game_phase(rootPos)/PHASE_MIDGAME);		//MJ : 100 = MG, 0=EG
-  int maximal_depth = 6 + std::min(int(3.8*pow(Time.optimum(),0.25)), MAX_PLY);
+  int maximal_depth = 6 + std::min(int(4.2*pow(Time.optimum(),0.25)), MAX_PLY);
   int pvBonus = 0;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
@@ -353,7 +353,7 @@ void Thread::search() {
           if(rm.score > -VALUE_INFINITE)
             rm.previousScore = rm.score;
 
-      if (rootDepth < 8 * ONE_PLY && rootMoves.size() > 1)
+      if (rootDepth < 9 * ONE_PLY && rootMoves.size() > 1)
         pvBonus = 1;
       else
         pvBonus = 0;

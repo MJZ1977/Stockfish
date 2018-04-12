@@ -487,7 +487,7 @@ void Thread::search() {
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth >= maximal_depth/2
                   && Gm_ph >=5
-                  && rootMoves[0].score >= rootMoves[1].previousScore + stop_strat(20,400,maximal_depth-completedDepth)
+                  && rootMoves[0].score >= rootMoves[1].previousScore + stop_strat(50,400,maximal_depth-completedDepth)
 					//&& rootMoves[1].selDepth >= 6
                   && rootMoves[1].previousScore > -VALUE_INFINITE))
               {

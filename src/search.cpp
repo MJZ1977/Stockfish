@@ -98,7 +98,7 @@ namespace {
 
   //Stop strategy based on depth
   int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+40*depth));
+    return std::max(min,std::min(max,min+35*depth));
   }
 
   // Skill structure is used to implement strength limit
@@ -353,7 +353,7 @@ void Thread::search() {
           if(rm.score > -VALUE_INFINITE)
             rm.previousScore = rm.score;
 
-      if (rootDepth < 10 * ONE_PLY && rootMoves.size() > 1)
+      if (rootDepth < 8 * ONE_PLY && rootMoves.size() > 1)
         pvBonus = 1;
       else
         pvBonus = 0;

@@ -98,7 +98,7 @@ namespace {
 
   //Stop strategy based on depth
   int stop_strat(int min, int max, int depth) {
-    return std::max(min,std::min(max,min+45*depth));
+    return std::max(min,std::min(max,min+40*depth));
   }
 
   // Skill structure is used to implement strength limit
@@ -487,7 +487,7 @@ void Thread::search() {
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
                   || (completedDepth >= maximal_depth/2
                   && Gm_ph >=5
-                  && rootMoves[0].score >= rootMoves[1].previousScore + stop_strat(50,400,maximal_depth-completedDepth)
+                  && rootMoves[0].score >= rootMoves[1].previousScore + stop_strat(20,400,maximal_depth-completedDepth)
 					//&& rootMoves[1].selDepth >= 6
                   && rootMoves[1].previousScore > -VALUE_INFINITE))
               {

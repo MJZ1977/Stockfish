@@ -345,7 +345,7 @@ void Thread::search() {
 	    if (rm.score > -VALUE_INFINITE)
           rm.previousScore = rm.score;
 
-	  if (rootDepth < 10 * ONE_PLY && rootMoves.size() > 1)
+	  if (rootDepth < 6 * ONE_PLY && rootMoves.size() > 1)
 	    pvBonus = 1;
 	  else
 	    pvBonus = 0;
@@ -465,7 +465,7 @@ void Thread::search() {
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0 
-			    + std::min(pow((rootMoves[0].score - rootMoves[1].previousScore),2)/30000,8.2);
+			    + std::min(pow((rootMoves[0].score - rootMoves[1].previousScore),2)/25000,12.4);
 
               // Use part of the gained time from a previous stable move for the current move
 

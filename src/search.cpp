@@ -293,10 +293,10 @@ void Thread::search() {
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
   Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
+  int pvBonus = 0;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -342,10 +342,16 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
+	    if (rm.score > -VALUE_INFINITE)
           rm.previousScore = rm.score;
 
+	  if (rootDepth < 10 * ONE_PLY && rootMoves.size() > 1)
+	    pvBonus = 1;
+	  else
+	    pvBonus = 0;
+		  
       // MultiPV loop. We perform a full root search for each PV line
-      for (PVIdx = 0; PVIdx < multiPV && !Threads.stop; ++PVIdx)
+      for (PVIdx = 0; PVIdx < multiPV + pvBonus && !Threads.stop; ++PVIdx)
       {
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
@@ -432,7 +438,6 @@ void Thread::search() {
 
       if (rootMoves[0].pv[0] != lastBestMove) {
          lastBestMove = rootMoves[0].pv[0];
-         lastBestMoveDepth = rootDepth;
       }
 
       // Have we found a "mate in x"?
@@ -459,18 +464,14 @@ void Thread::search() {
               int improvingFactor = std::max(246, std::min(832, 306 + 119 * F[0] - 6 * F[1]));
 
               // If the bestMove is stable over several iterations, reduce time accordingly
-              timeReduction = 1.0;
-              for (int i : {3, 4, 5})
-                  if (lastBestMoveDepth * i < completedDepth)
-                     timeReduction *= 1.25;
+              timeReduction = 1.0 
+			    + std::min(pow((rootMoves[0].score - rootMoves[1].previousScore),2)/30000,8.2);
 
               // Use part of the gained time from a previous stable move for the current move
-              double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
-              bestMoveInstability *= std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * improvingFactor / 581 / timeReduction)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -485,7 +486,6 @@ void Thread::search() {
   if (!mainThread)
       return;
 
-  mainThread->previousTimeReduction = timeReduction;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

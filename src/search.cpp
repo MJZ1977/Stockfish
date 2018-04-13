@@ -345,7 +345,7 @@ void Thread::search() {
 	    if (rm.score > -VALUE_INFINITE)
           rm.previousScore = rm.score;
 
-	  if (rootDepth < 5 * ONE_PLY && rootMoves.size() > 1)
+	  if (rootDepth < 6 * ONE_PLY && rootMoves.size() > 1)
 	    pvBonus = 1;
 	  else
 	    pvBonus = 0;

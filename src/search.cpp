@@ -464,7 +464,7 @@ void Thread::search() {
               int improvingFactor = std::max(246, std::min(832, 306 + 119 * F[0] - 6 * F[1]));
 
               // If the bestMove is stable over several iterations, reduce time accordingly
-              timeReduction = 0.95 
+              timeReduction = 0.90 
                  + std::min(pow((rootMoves[0].score - rootMoves[1].previousScore)/175,0.8),6.4);
 
               // Use part of the gained time from a previous stable move for the current move

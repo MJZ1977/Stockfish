@@ -176,8 +176,8 @@ void Search::init() {
 
   for (int d = 0; d < 32; ++d)
   {
-      FutilityMoveCounts[0][d] = int(2.4 + 0.64 * pow(d, 1.78));
-      FutilityMoveCounts[1][d] = int(5.0 + 0.80 * pow(d, 2.00));
+      FutilityMoveCounts[0][d] = int(2.0 + 0.15 * pow(d, 2.0));
+      FutilityMoveCounts[1][d] = int(3.0 + 0.20 * pow(d, 2.0));
   }
 }
 
@@ -524,7 +524,7 @@ namespace {
     bool ttHit, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, relDepth;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -842,6 +842,7 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
+
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
@@ -854,8 +855,12 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
-      moveCountPruning =   depth < 32 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+      relDepth = depth / ONE_PLY ;
+      if (relDepth + ss->ply > 0)
+        relDepth = int(32*relDepth/(relDepth + ss->ply));
+
+      moveCountPruning =   relDepth < 32
+                        && moveCount >= FutilityMoveCounts[improving][relDepth];
 
       // Step 13. Extensions (~70 Elo)
 

@@ -176,8 +176,8 @@ void Search::init() {
 
   for (int d = 0; d < 32; ++d)
   {
-      FutilityMoveCounts[0][d] = int(2.0 + 0.15 * pow(d, 2.0));
-      FutilityMoveCounts[1][d] = int(3.0 + 0.20 * pow(d, 2.0));
+      FutilityMoveCounts[0][d] = int(2.0 + 0.24 * pow(d, 1.78));
+      FutilityMoveCounts[1][d] = int(4.0 + 0.28 * pow(d, 2.00));
   }
 }
 

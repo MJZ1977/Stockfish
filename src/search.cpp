@@ -786,7 +786,7 @@ namespace {
     {
         assert(is_ok((ss-1)->currentMove));
 
-        Value rbeta = std::min(beta + 278 - 48 * improving - 10 * std::min(depth/ONE_PLY, 15), VALUE_INFINITE);
+        Value rbeta = std::min(beta + 300 - 48 * improving - 10 * std::min(depth/ONE_PLY, 15), VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 

@@ -909,6 +909,17 @@ Value Eval::evaluate(const Position& pos) {
 }
 
 
+/// game_phase() : added to return simply the game phase of a position
+Phase Eval::game_phase(const Position& pos)
+{
+    assert(!pos.checkers());
+
+    // Probe the material hash table
+    Material::Entry* me = Material::probe(pos);
+
+   return me->game_phase();
+}
+
 /// trace() is like evaluate(), but instead of returning a value, it returns
 /// a string (suitable for outputting to stdout) that contains the detailed
 /// descriptions and values of each evaluation term. Useful for debugging.

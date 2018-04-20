@@ -543,6 +543,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    int posPhase = int(Eval::game_phase(pos));	//midgame 128, endgame 0
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -786,7 +787,7 @@ namespace {
     {
         assert(is_ok((ss-1)->currentMove));
 
-        Value rbeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
+        Value rbeta = std::min(beta + 216 + posPhase/4 - 48 * improving, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 

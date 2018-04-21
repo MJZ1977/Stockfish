@@ -731,7 +731,7 @@ namespace {
     // Step 8. Futility pruning: child node (skipped when in check, ~30 Elo)
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - Value((130 + posPhase/2 - 50 * improving) * depth / ONE_PLY) >= beta
+        &&  eval - Value((136 + posPhase/2 - 50 * improving) * depth / ONE_PLY) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

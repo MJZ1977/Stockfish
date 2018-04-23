@@ -916,7 +916,7 @@ moves_loop: // When in check, search starts from here
       {
           if (   !captureOrPromotion
               && !givesCheck
-              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000)))
+              && (!pos.advanced_pawn_push(move) || posPhase > 0))
           {
               // Move count based pruning (~30 Elo)
               if (moveCountPruning)
@@ -937,7 +937,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~2 Elo)
               if (   lmrDepth < 7
                   && !inCheck
-                  && ss->staticEval + 256 + 200 * lmrDepth <= alpha)
+                  && ss->staticEval + posPhase*2 + 55 * (4+lmrDepth) <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)

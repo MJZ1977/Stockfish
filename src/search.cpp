@@ -543,6 +543,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    //int posPhase = int(Eval::game_phase(pos));	//midgame 128, endgame 0
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -743,7 +744,8 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta) / PawnValueMg, 3)) * ONE_PLY;
+        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta)*3 / PawnValueMg, 10)/2) * ONE_PLY;
+        R = std::min(R,depth);
 
         ss->currentMove = MOVE_NULL;
         ss->contHistory = thisThread->contHistory[NO_PIECE][0].get();

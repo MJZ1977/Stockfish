@@ -744,7 +744,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta)*3 / PawnValueMg, 10)/2) * ONE_PLY;
+        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta) / PawnValueMg, 6)) * ONE_PLY;
         R = std::min(R,depth);
 
         ss->currentMove = MOVE_NULL;

@@ -487,13 +487,13 @@ namespace {
     }
 
     // Discovered checks
-    if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them)))
+    if (pos.blockers_for_king(Us) & pos.pieces(Them))
     {
-      if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them,KNIGHT)))
-        score -= make_score(120, 30);
-      else if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them,BISHOP,ROOK)))
-        score -= make_score(100, 25);
-	}
+      if (pos.blockers_for_king(Us) & pos.pieces(Them,KNIGHT))
+        score -= make_score(200, 50);
+      else if (pos.blockers_for_king(Us) & pos.pieces(Them,BISHOP,ROOK))
+        score -= make_score(160, 40);
+   }
 
     Bitboard kf = KingFlank[file_of(ksq)];
 

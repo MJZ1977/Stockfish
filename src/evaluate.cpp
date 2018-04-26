@@ -473,8 +473,6 @@ namespace {
                      + 102 * kingAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pinned | unsafeChecks)
-                     + 600 * popcount(pos.blockers_for_king(Us) & pos.pieces(Them,KNIGHT))
-                     + 400 * popcount(pos.blockers_for_king(Us) & pos.pieces(Them,BISHOP,ROOK))
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;
@@ -487,6 +485,15 @@ namespace {
             score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
         }
     }
+
+    // Discovered checks
+    if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them)))
+    {
+      if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them,KNIGHT)))
+        score -= make_score(160, 40);
+      else if (popcount(pos.blockers_for_king(Us) & pos.pieces(Them,BISHOP,ROOK)))
+        score -= make_score(120, 30);
+	}
 
     Bitboard kf = KingFlank[file_of(ksq)];
 

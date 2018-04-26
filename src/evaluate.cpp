@@ -490,9 +490,9 @@ namespace {
     if (pos.blockers_for_king(Us) & pos.pieces(Them))
     {
       if (pos.blockers_for_king(Us) & pos.pieces(Them,KNIGHT))
-        score -= make_score(200, 50);
+        score -= make_score(240, 60);
       else if (pos.blockers_for_king(Us) & pos.pieces(Them,BISHOP,ROOK))
-        score -= make_score(160, 40);
+        score -= make_score(200, 50);
    }
 
     Bitboard kf = KingFlank[file_of(ksq)];

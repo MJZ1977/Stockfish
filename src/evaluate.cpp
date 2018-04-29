@@ -164,6 +164,7 @@ namespace {
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  8, 12);
   constexpr Score CloseEnemies       = S(  7,  0);
+  constexpr Score CloseKnight        = S(  9,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 52, 30);
@@ -180,7 +181,6 @@ namespace {
   constexpr Score ThreatBySafePawn   = S(175,168);
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
-  constexpr Score WeakRook           = S( 25, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
 #undef S
@@ -348,6 +348,9 @@ namespace {
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
 
+			if (Pt == KNIGHT)
+				score += CloseKnight * (3-distance(s, pos.square<KING>(Them)));
+				 
             if (Pt == BISHOP)
             {
                 // Penalty according to number of pawns on the same color square as the bishop
@@ -390,17 +393,6 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
-            // Penalty if any relative pin or discovered attack against the rook
-            Bitboard rookPinners;
- 			if (pos.pieces(Us) & pos.attackers_to(s)) // protected rook
-                {
-				if (pos.slider_blockers(pos.pieces(Them, BISHOP), s, rookPinners))
-                   score -= WeakRook;
-				}
-		    else  //unprotected rook
-			    if (pos.slider_blockers((pos.pieces(Them, BISHOP, ROOK) | pos.pieces(Them, QUEEN)), s, rookPinners))
-                   score -= WeakRook;
-
         }
 
         if (Pt == QUEEN)

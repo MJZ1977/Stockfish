@@ -349,7 +349,7 @@ namespace {
                 score += MinorBehindPawn;
 
 			if (Pt == KNIGHT)
-				score += CloseKnight * (4-distance(s, pos.square<KING>(Them)));
+				score += CloseKnight * (5-distance(s, pos.square<KING>(Them)));
 
             if (Pt == BISHOP)
             {

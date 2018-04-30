@@ -162,9 +162,8 @@ namespace {
   constexpr Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
 
   // Assorted bonuses and penalties
-  constexpr Score BishopPawns        = S(  8, 12);
+  constexpr Score BishopPawns        = S(  2,  4);
   constexpr Score CloseEnemies       = S(  7,  0);
-  constexpr Score CloseKnight        = S(  6,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 52, 30);
@@ -348,13 +347,12 @@ namespace {
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
 
-			if (Pt == KNIGHT)
-				score -= CloseKnight * distance(s, pos.square<KING>(Them));
-
             if (Pt == BISHOP)
             {
                 // Penalty according to number of pawns on the same color square as the bishop
-                score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
+                constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+                score -= BishopPawns * (pe->pawns_on_same_color_squares(Us, s)
+                  * (1+popcount(pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces())))));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

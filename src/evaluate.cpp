@@ -349,8 +349,8 @@ namespace {
                 score += MinorBehindPawn;
 
 			if (Pt == KNIGHT)
-				score += CloseKnight * (3-distance(s, pos.square<KING>(Them)));
-				 
+				score += CloseKnight * (4-distance(s, pos.square<KING>(Them)));
+
             if (Pt == BISHOP)
             {
                 // Penalty according to number of pawns on the same color square as the bishop

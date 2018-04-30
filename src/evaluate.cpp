@@ -164,7 +164,7 @@ namespace {
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  8, 12);
   constexpr Score CloseEnemies       = S(  7,  0);
-  constexpr Score CloseKnight        = S(  6,  0);
+  constexpr Score CloseKnight        = S(  5,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 52, 30);
@@ -349,7 +349,7 @@ namespace {
                 score += MinorBehindPawn;
 
 			if (Pt == KNIGHT)
-				score += CloseKnight * (5-distance(s, pos.square<KING>(Them)));
+				score += CloseKnight * (4-distance(s, pos.square<KING>(Them)));
 
             if (Pt == BISHOP)
             {

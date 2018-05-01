@@ -668,6 +668,12 @@ namespace {
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
+            // If opponent King can't catch up the pawn, it is almost a queen
+			if (pos.non_pawn_material(Them) == 0)
+			  if (r > relative_rank(Us,pos.square<KING>(Them))+1
+			      || r+distance(pos.square<KING>(Them), s)-1 > RANK_8)
+			         bonus += make_score(0,1500);
+				
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))
             {

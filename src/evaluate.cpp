@@ -156,7 +156,7 @@ namespace {
   };
 
   // PassedDanger[Rank] contains a term to weight the passed score
-  constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 2, 7, 12, 19 };
+  constexpr int PassedDanger[RANK_NB] = { 0, 1, 1, 2, 7, 12, 19 };
 
   // KingProtector[PieceType-2] contains a penalty according to distance from king
   constexpr Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
@@ -669,11 +669,11 @@ namespace {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
             // If opponent King can't catch up the pawn, it is almost a queen
-			if (pos.non_pawn_material(Them) == 0)
-			  if (r > relative_rank(Us,pos.square<KING>(Them))+1
-			      || r+distance(pos.square<KING>(Them), s)-1 > RANK_8)
-			         bonus += make_score(0,1500);
-				
+			//if (pos.non_pawn_material(Them) <= BishopValueEg)
+			//  if (r > relative_rank(Us,pos.square<KING>(Them))+1
+			//      || r+distance(pos.square<KING>(Them), s)-1 > RANK_8)
+			//         bonus += make_score(0,distance(pos.square<KING>(Them), s)*10);
+
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))
             {

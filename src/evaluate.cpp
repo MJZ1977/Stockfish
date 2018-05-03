@@ -655,6 +655,13 @@ namespace {
         int w = PassedDanger[r];
 
         Score bonus = PassedRank[r];
+		
+		if (pos.non_pawn_material(Them) == 0)
+		{
+		     int passed_danger = 3*(r + king_proximity(Them, s + Up)) - king_proximity(Us, s + Up);
+			 bonus = make_score(0, passed_danger * passed_danger);
+			 w = 0;
+		}
 
         if (w)
         {

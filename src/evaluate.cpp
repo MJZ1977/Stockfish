@@ -656,12 +656,10 @@ namespace {
 
         Score bonus = PassedRank[r];
 		
-		if (pos.non_pawn_material(Them) == 0)
-		{
-		     int passed_danger = 3*(r + king_proximity(Them, s + Up)) - king_proximity(Us, s + Up);
-			 bonus = make_score(0, passed_danger * passed_danger);
-			 w = 0;
-		}
+		if ((pos.non_pawn_material(Them) <= BishopValueMg
+		  || pos.non_pawn_material(Us) == QueenValueMg)
+		  && pos.count<PAWN>(Us) > 1)
+			 w += 1;
 
         if (w)
         {

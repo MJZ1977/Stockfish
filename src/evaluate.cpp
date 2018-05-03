@@ -654,13 +654,23 @@ namespace {
         int r = relative_rank(Us, s);
         int w = PassedDanger[r];
 
-		if (pos.non_pawn_material(Them) <= BishopValueMg
-		  || pos.non_pawn_material(Us) == QueenValueMg)
-		  w += 1;
-
         Score bonus = PassedRank[r];
 
-        if (w)
+		if (pos.non_pawn_material(Them) == 0)
+          {
+			  int passed_danger = 2*(r + king_proximity(Them, s + Up)) - king_proximity(Us, s + Up);
+			  bonus = make_score(0, passed_danger * passed_danger);
+		  }
+
+		else if (((pos.non_pawn_material(Them) <= BishopValueMg
+		  && pos.non_pawn_material(Us) <= BishopValueMg)
+		  || pos.non_pawn_material(Us) == QueenValueMg)
+		  && pos.count<PAWN>(Us) > 1)
+          {
+			  int passed_danger = 3*r + king_proximity(Them, s + Up) - king_proximity(Us, s + Up);
+			  bonus = make_score(0, passed_danger * passed_danger);
+		  }
+        else if (w)
         {
             Square blockSq = s + Up;
 
@@ -705,7 +715,6 @@ namespace {
             else if (pos.pieces(Us) & blockSq)
                 bonus += make_score(w + r * 2, w + r * 2);
         } // w != 0
-
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed, or have a pawn in front of them.
         if (   !pos.pawn_passed(Us, s + Up)

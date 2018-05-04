@@ -659,7 +659,7 @@ namespace {
 		if (((pos.non_pawn_material(Them) <= BishopValueMg && pos.non_pawn_material(Us) <= BishopValueMg)
 		  || pos.non_pawn_material(Us) == QueenValueMg)
 		  && pos.count<PAWN>(Us) > 1)
-			 w += 1;
+			 w = 1 + 7 * w / 8;
 
         if (w)
         {

@@ -506,7 +506,7 @@ namespace {
     // King tropism, to anticipate slow motion attacks on our king
     score -= CloseEnemies * (popcount(b1) + popcount(b2));
 
-	// Bonus for defending Bishop or Knight
+	// Bonus for pieces defending the king
 	b1 = kf & Camp;
 	score += DefenderBonus * (popcount(attackedBy[Us][BISHOP] & b1)
 	                        + popcount(attackedBy[Us][KNIGHT] & b1)

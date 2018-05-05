@@ -166,7 +166,7 @@ namespace {
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score DefenderBonus      = S(  6,  1);
+  constexpr Score DefenderBonus      = S(  3,  0);
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
@@ -507,7 +507,11 @@ namespace {
     score -= CloseEnemies * (popcount(b1) + popcount(b2));
 
 	// Bonus for defending Bishop or Knight
-	score += DefenderBonus * (popcount((attackedBy[Us][BISHOP] | attackedBy[Us][KNIGHT])  & kf & Camp) - 2);
+	b1 = kf & Camp;
+	score += DefenderBonus * (popcount(attackedBy[Us][BISHOP] & b1)
+	                        + popcount(attackedBy[Us][KNIGHT] & b1)
+	                        + popcount(attackedBy[Us][PAWN] & b1)
+	                        + popcount(attackedBy[Us][ROOK] & b1));
 	
     if (T)
         Trace::add(KING, Us, score);

@@ -72,6 +72,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory contHistory;
   Score contempt;
+  Value LazyThreshold = Value(1500);
 };
 
 

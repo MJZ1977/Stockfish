@@ -296,7 +296,8 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
-
+  LazyThreshold = Value(1500);
+  
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
      (ss-i)->contHistory = this->contHistory[NO_PIECE][0].get(); // Use as sentinel
@@ -377,6 +378,7 @@ void Thread::search() {
               delta = Value(18);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
+			  LazyThreshold = Value (std::max(abs(beta),abs(alpha))+1200);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
@@ -550,6 +552,9 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+	//thisThread->LazyThreshold = Value (std::max(abs(beta),abs(alpha))
+	  // + (PvNode ? 1200 : 1000));
+	  // - std::min((depth / ONE_PLY),5) * 50);
 
     // Check for the available remaining time
     if (thisThread == Threads.main())

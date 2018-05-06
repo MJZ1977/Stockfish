@@ -421,7 +421,7 @@ namespace {
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     const Square ksq = pos.square<KING>(Us);
-    Bitboard weak, b, b1, b2, safe, unsafeChecks, pinned;
+    Bitboard weak, b, b0, b1, b2, safe, unsafeChecks, pinned;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
@@ -500,14 +500,16 @@ namespace {
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank but not defended by our pawns.
-    b1 = attackedBy[Them][ALL_PIECES] & kf & Camp;
+    b0 = kf & Camp;
+	b1 = attackedBy[Them][ALL_PIECES] & b0;
     b2 = b1 & attackedBy2[Them] & ~attackedBy[Us][PAWN];
 
     // King tropism, to anticipate slow motion attacks on our king
     score -= CloseEnemies * (popcount(b1) + popcount(b2));
 
 	// Bonus for defending Bishop or Knight
-	score += DefenderBonus * (popcount((attackedBy[Us][BISHOP] | attackedBy[Us][KNIGHT])  & kf & Camp) - 2);
+	score += DefenderBonus * (popcount(attackedBy[Us][BISHOP] & b0)
+	                       + popcount(attackedBy[Us][KNIGHT] & b0));
 	
     if (T)
         Trace::add(KING, Us, score);

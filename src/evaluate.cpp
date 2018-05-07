@@ -163,7 +163,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  5);
-  constexpr Score BishopPair         = S(  4,  4);
+  constexpr Score BishopPair         = S(  0,  4);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -360,10 +360,10 @@ namespace {
 
                 // Bonus for bishop pair if they control 2 adjacent diagonals ans position is open
 				if (pos.count<BISHOP>(Us) >=2)
-				    score += BishopPair * 
-					  (popcount(attackedBy[Us][BISHOP] & 
-					    (shift<Down>(attackedBy[Us][BISHOP]) | shift<WEST>(attackedBy[Us][BISHOP]))) - 3);
-				
+				    score += BishopPair *
+					  (popcount(attackedBy[Us][BISHOP] &
+					    (shift<Down>(attackedBy[Us][BISHOP]) | shift<WEST>(attackedBy[Us][BISHOP]))) - 4);
+
 				// Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongDiagonalBishop;

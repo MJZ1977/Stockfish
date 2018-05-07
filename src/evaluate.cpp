@@ -196,6 +196,7 @@ namespace {
 
   private:
     template<Color Us> void initialize();
+    template<Color Us, PieceType Pt> void initPieces();
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
@@ -219,6 +220,8 @@ namespace {
     // possibly via x-ray or by one pawn and one piece. Diagonal x-ray through
     // pawn or squares attacked by 2 pawns are not explicitly added.
     Bitboard attackedBy2[COLOR_NB];
+
+    Bitboard squareAttacks[SQUARE_NB];
 
     // kingRing[color] are the squares adjacent to the king, plus (only for a
     // king on its first rank) the squares two ranks in front. For instance,
@@ -286,7 +289,43 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+
+	 // Fill the attack bitboards
+	initPieces<Us, KNIGHT>();
+	initPieces<Us, BISHOP>();
+	initPieces<Us,   ROOK>();
+	initPieces<Us,  QUEEN>();
+
   }
+
+   // Evaluation::initPieces() fill the attack bitboards
+   template<Tracing T> template<Color Us, PieceType Pt>
+   void Evaluation<T>::initPieces() {
+
+     const Square* pl = pos.squares<Pt>(Us);
+
+     Bitboard b;
+     Square s;
+
+     attackedBy[Us][Pt] = 0;
+
+     while ((s = *pl++) != SQ_NONE)
+     {
+         // Find attacked squares, including x-ray attacks for bishops and rooks
+         b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
+           : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
+                          : pos.attacks_from<Pt>(s);
+
+         if (pos.blockers_for_king(Us) & s)
+             b &= LineBB[pos.square<KING>(Us)][s];
+
+         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
+         attackedBy[Us][Pt] |= b;
+         attackedBy[Us][ALL_PIECES] |= b;
+
+         squareAttacks[s] = b;
+     }
+   }
 
 
   // Evaluation::pieces() scores pieces of a given color and type
@@ -307,17 +346,9 @@ namespace {
 
     while ((s = *pl++) != SQ_NONE)
     {
-        // Find attacked squares, including x-ray attacks for bishops and rooks
-        b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
-          : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
-                         : pos.attacks_from<Pt>(s);
-
-        if (pos.blockers_for_king(Us) & s)
-            b &= LineBB[pos.square<KING>(Us)][s];
-
-        attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
-        attackedBy[Us][Pt] |= b;
-        attackedBy[Us][ALL_PIECES] |= b;
+        // Retrieve the precalculated attacked squares,
+        // including x-ray attacks for bishops and rooks.
+        b = squareAttacks[s];
 
         if (b & kingRing[Them])
         {
@@ -327,19 +358,19 @@ namespace {
         }
 
         mobilitybb = mobilityArea[Us];
-        if (Pt == QUEEN)
-        {
-           mobilitybb &= ~(pos.attacks_from<ROOK>(s) | pos.attacks_from<KNIGHT>(s)
-             | pos.attacks_from<BISHOP>(s));
-           mobilitybb &= ~(pos.attacks_from<QUEEN>(s) & ~attackedBy[Us][ALL_PIECES]);
-           mobilitybb |= pos.pieces(Them,QUEEN);
-	    }
-        if (Pt == ROOK)
-        {
-           mobilitybb &= ~(pos.attacks_from<KNIGHT>(s) | pos.attacks_from<BISHOP>(s));
-           mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)) & ~attackedBy[Us][ALL_PIECES]);
-           mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
-	    }
+        //if (Pt == QUEEN)
+        //{
+        //   mobilitybb &= ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT]
+        //     | attackedBy[Them][BISHOP] | attackedBy[Them][PAWN]);
+        //   mobilitybb &= ~(attackedBy[Them][QUEEN] & ~attackedBy[Us][ALL_PIECES]);
+        //   mobilitybb |= pos.pieces(Them,QUEEN);
+	    //}
+        //if (Pt == ROOK)
+        //{
+        //   mobilitybb &= ~(pos.attacks_from<KNIGHT>(s) | pos.attacks_from<BISHOP>(s));
+        //   mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)) & ~attackedBy[Us][ALL_PIECES]);
+        //   mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
+	    //}
         //if (Pt == KNIGHT || Pt == BISHOP)
         //{
         //   mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)

@@ -342,8 +342,6 @@ namespace {
     Square s;
     Score score = SCORE_ZERO;
 
-    attackedBy[Us][Pt] = 0;
-
     while ((s = *pl++) != SQ_NONE)
     {
         // Retrieve the precalculated attacked squares,
@@ -358,26 +356,26 @@ namespace {
         }
 
         mobilitybb = mobilityArea[Us];
-        //if (Pt == QUEEN)
-        //{
-        //   mobilitybb &= ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT]
-        //     | attackedBy[Them][BISHOP] | attackedBy[Them][PAWN]);
-        //   mobilitybb &= ~(attackedBy[Them][QUEEN] & ~attackedBy[Us][ALL_PIECES]);
-        //   mobilitybb |= pos.pieces(Them,QUEEN);
-	    //}
-        //if (Pt == ROOK)
-        //{
-        //   mobilitybb &= ~(pos.attacks_from<KNIGHT>(s) | pos.attacks_from<BISHOP>(s));
-        //   mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)) & ~attackedBy[Us][ALL_PIECES]);
-        //   mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
-	    //}
-        //if (Pt == KNIGHT || Pt == BISHOP)
-        //{
-        //   mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)
-        //     | pos.attacks_from<BISHOP>(s) | pos.attacks_from<KNIGHT>(s))
-        //     & ~attackedBy[Us][ALL_PIECES]);
-        //   mobilitybb |= pos.pieces(Them) & ~pos.pieces(Them,PAWN);
-	    //}
+        if (Pt == QUEEN)
+        {
+           mobilitybb &= ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT]
+             | attackedBy[Them][BISHOP] | attackedBy[Them][PAWN]);
+           mobilitybb &= ~(attackedBy[Them][QUEEN] & ~attackedBy[Us][ALL_PIECES]);
+           mobilitybb |= pos.pieces(Them,QUEEN);
+	    }
+        if (Pt == ROOK)
+        {
+           mobilitybb &= ~(attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT]);
+           mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]) & ~attackedBy[Us][ALL_PIECES]);
+           mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
+	    }
+        if (Pt == KNIGHT || Pt == BISHOP)
+        {
+           mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]
+             | attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT])
+             & ~attackedBy[Us][ALL_PIECES]);
+           mobilitybb |= pos.pieces(Them) & ~pos.pieces(Them,PAWN);
+	    }
 
         mobilitybb &= b;
         int mob = popcount(mobilitybb);

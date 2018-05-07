@@ -299,7 +299,7 @@ namespace {
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b, bb , mobilitybb;
     Square s;
     Score score = SCORE_ZERO;
 
@@ -326,7 +326,30 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
+        mobilitybb = mobilityArea[Us];
+        if (Pt == QUEEN)
+        {
+           mobilitybb &= ~(pos.attacks_from<ROOK>(s) | pos.attacks_from<KNIGHT>(s)
+             | pos.attacks_from<BISHOP>(s));
+           mobilitybb &= ~(pos.attacks_from<QUEEN>(s) & ~attackedBy[Us][ALL_PIECES]);
+           mobilitybb |= pos.pieces(Them,QUEEN);
+	    }
+        if (Pt == ROOK)
+        {
+           mobilitybb &= ~(pos.attacks_from<KNIGHT>(s) | pos.attacks_from<BISHOP>(s));
+           mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)) & ~attackedBy[Us][ALL_PIECES]);
+           mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
+	    }
+        //if (Pt == KNIGHT || Pt == BISHOP)
+        //{
+        //   mobilitybb &= ~((pos.attacks_from<QUEEN>(s) | pos.attacks_from<ROOK>(s)
+        //     | pos.attacks_from<BISHOP>(s) | pos.attacks_from<KNIGHT>(s))
+        //     & ~attackedBy[Us][ALL_PIECES]);
+        //   mobilitybb |= pos.pieces(Them) & ~pos.pieces(Them,PAWN);
+	    //}
+
+        mobilitybb &= b;
+        int mob = popcount(mobilitybb);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

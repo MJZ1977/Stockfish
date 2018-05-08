@@ -77,6 +77,7 @@ namespace {
   constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
   constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
   constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
+  constexpr Bitboard LargeCenter = CenterFiles & (Rank3BB | Rank4BB | Rank5BB | Rank6BB);
 
   constexpr Bitboard KingFlank[FILE_NB] = {
     QueenSide,   QueenSide, QueenSide,
@@ -170,6 +171,7 @@ namespace {
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);
+//  constexpr Score StrongBishop       = S( 20,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
@@ -353,13 +355,22 @@ namespace {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+				Bitboard SameColorBB = ((s & DarkSquares) ? ~DarkSquares : DarkSquares);
 
-                score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
-                                     * (1 + popcount(blocked & CenterFiles));
+                //score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
+                score -= BishopPawns * (pe->pawns_on_same_color_squares(Us, s)
+				                     - popcount(pos.pieces(Us,PAWN) & ~SameColorBB)/2)
+                                     * (1 + popcount(blocked & LargeCenter));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongDiagonalBishop;
+					
+			    // Bonus for Bishop if opponent squares of same color are weak
+				//if (!opposite_colors(s, ~pos.square<BISHOP>(Them)) || pos.count<BISHOP>(Them) == 0)
+				//if (!(SameColorBB & pos.pieces(Them,BISHOP)))
+				//	score += StrongBishop * (1 - popcount(pos.pieces(PAWN) & LargeCenter & SameColorBB)
+				//	                           + popcount(pos.pieces(PAWN) & LargeCenter & ~SameColorBB));
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

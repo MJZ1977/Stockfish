@@ -197,6 +197,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
+	template<Color Us, PieceType Pt> void initPieces();
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
@@ -220,6 +221,8 @@ namespace {
     // pawn or squares attacked by 2 pawns are not explicitly added.
     Bitboard attackedBy2[COLOR_NB];
 
+	Bitboard squareAttacks[SQUARE_NB];
+	
     // kingRing[color] are the squares adjacent to the king, plus (only for a
     // king on its first rank) the squares two ranks in front. For instance,
     // if black's king is on g8, kingRing[BLACK] is f8, h8, f7, g7, h7, f6, g6
@@ -286,8 +289,42 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+		
+     // Fill the attack bitboards
+    initPieces<Us, KNIGHT>();
+    initPieces<Us, BISHOP>();
+    initPieces<Us,   ROOK>();
+    initPieces<Us,  QUEEN>();
   }
 
+    // Evaluation::initPieces() fill the attack bitboards
+    template<Tracing T> template<Color Us, PieceType Pt>
+    void Evaluation<T>::initPieces() {
+  
+      const Square* pl = pos.squares<Pt>(Us);
+  
+      Bitboard b;
+      Square s;
+  
+      attackedBy[Us][Pt] = 0;
+  
+      while ((s = *pl++) != SQ_NONE)
+      {
+          // Find attacked squares, including x-ray attacks for bishops and rooks
+          b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
+            : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
+                           : pos.attacks_from<Pt>(s);
+  
+          if (pos.blockers_for_king(Us) & s)
+              b &= LineBB[pos.square<KING>(Us)][s];
+  
+          attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
+          attackedBy[Us][Pt] |= b;
+          attackedBy[Us][ALL_PIECES] |= b;
+  
+          squareAttacks[s] = b;
+      }
+    }
 
   // Evaluation::pieces() scores pieces of a given color and type
   template<Tracing T> template<Color Us, PieceType Pt>
@@ -303,21 +340,11 @@ namespace {
     Square s;
     Score score = SCORE_ZERO;
 
-    attackedBy[Us][Pt] = 0;
-
     while ((s = *pl++) != SQ_NONE)
     {
-        // Find attacked squares, including x-ray attacks for bishops and rooks
-        b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
-          : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
-                         : pos.attacks_from<Pt>(s);
-
-        if (pos.blockers_for_king(Us) & s)
-            b &= LineBB[pos.square<KING>(Us)][s];
-
-        attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
-        attackedBy[Us][Pt] |= b;
-        attackedBy[Us][ALL_PIECES] |= b;
+        // Retrieve the precalculated attacked squares,
+        // including x-ray attacks for bishops and rooks.
+        b = squareAttacks[s];
 
         if (b & kingRing[Them])
         {

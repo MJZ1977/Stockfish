@@ -338,7 +338,7 @@ namespace {
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb , mobilitybb;
+    Bitboard b, bb; // , mobilitybb;
     Square s;
     Score score = SCORE_ZERO;
 
@@ -355,31 +355,31 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        mobilitybb = mobilityArea[Us];
-        if (Pt == QUEEN)
-        {
-           mobilitybb &= ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT]
-             | attackedBy[Them][BISHOP] | attackedBy[Them][PAWN]);
-           mobilitybb &= ~(attackedBy[Them][QUEEN] & ~attackedBy[Us][ALL_PIECES]);
-           mobilitybb |= pos.pieces(Them,QUEEN);
-	    }
-        if (Pt == ROOK)
-        {
-           mobilitybb &= ~(attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT]);
-           mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]) & ~attackedBy[Us][ALL_PIECES]);
-           mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
-	    }
-        if (Pt == KNIGHT || Pt == BISHOP)
-        {
-           mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]
-             | attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT])
-             & ~attackedBy[Us][ALL_PIECES]);
-           mobilitybb |= pos.pieces(Them) & ~pos.pieces(Them,PAWN);
-	    }
+        //mobilitybb = mobilityArea[Us];
+        //if (Pt == QUEEN)
+        //{
+        //   mobilitybb &= ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT]
+         //    | attackedBy[Them][BISHOP]);
+           //mobilitybb &= ~(attackedBy[Them][QUEEN] & ~attackedBy2[Us]);
+           //mobilitybb |= pos.pieces(Them,QUEEN);
+	    //}
+        //if (Pt == ROOK)
+        //{
+        //   mobilitybb &= ~(attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT]);
+           //mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]) & ~attackedBy2[Us]);
+           //mobilitybb |= pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK);
+	   // }
+        //if (Pt == KNIGHT || Pt == BISHOP)
+        //{
+        //   mobilitybb &= ~((attackedBy[Them][QUEEN] | attackedBy[Them][ROOK]
+        //     | attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT])
+        //     & ~attackedBy2[Us]);
+        //   mobilitybb |= pos.pieces(Them) & ~pos.pieces(Them,PAWN);
+	    //}
 
-        mobilitybb &= b;
-        int mob = popcount(mobilitybb);
-
+        //mobilitybb &= b;
+        int mob = popcount(mobilityArea[Us] & b);
+		
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         // Penalty if the piece is far from the king

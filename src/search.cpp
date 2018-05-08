@@ -726,6 +726,22 @@ namespace {
         if (depth < 2 * ONE_PLY || v <= ralpha)
             return v;
     }
+	
+	if (ss->ply > std::max(7, depth/ONE_PLY/2) && !PvNode && !improving)
+	{
+	    Value maxscore = std::max(ss->staticEval,(ss-2)->staticEval);
+		maxscore = std::max(maxscore,(ss-4)->staticEval);
+		maxscore = std::max(maxscore,(ss-6)->staticEval);
+		//maxscore = std::max(maxscore,(ss-8)->staticEval);
+		//maxscore = std::max(maxscore,(ss-10)->staticEval);
+		Value ralpha = alpha - Value(500);
+		if (maxscore < ralpha)
+		{
+		  Value v = qsearch<NonPV>(pos, ss, maxscore, maxscore+1);
+		  if (v < ralpha)
+		    return v;
+		}
+	}
 
     // Step 8. Futility pruning: child node (skipped when in check, ~30 Elo)
     if (   !rootNode

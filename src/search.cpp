@@ -720,25 +720,28 @@ namespace {
         if (depth < 2 * ONE_PLY || v <= ralpha)
             return v;
     }
-	
-	if (ss->ply > std::max(7, depth/ONE_PLY/2) && !PvNode && !improving)
-	{
-	    Value maxscore = std::max(ss->staticEval,(ss-2)->staticEval);
-		maxscore = std::max(maxscore,(ss-4)->staticEval);
-		maxscore = std::max(maxscore,(ss-6)->staticEval);
-		//maxscore = std::max(maxscore,(ss-8)->staticEval);
-		//maxscore = std::max(maxscore,(ss-10)->staticEval);
-		Value ralpha = alpha - Value(500);
-		if (maxscore < ralpha)
-		{
-		  Value v = qsearch<NonPV>(pos, ss, maxscore, maxscore+1);
-		  if (v < ralpha)
-		    return v;
-		}
-	}
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
+
+	// if non PV and much below alpha for multiple plies, we can almost safely forward prune all the branchs
+	if (ss->ply > std::max(9, depth/ONE_PLY/2) && !PvNode && !improving)
+	{
+	    Value maxscore = std::max((ss-4)->staticEval,(ss-2)->staticEval);
+		maxscore = std::max(maxscore,(ss-6)->staticEval);
+	    maxscore = std::max(maxscore,(ss-8)->staticEval);
+		Value ralpha = alpha - Value(500);
+		if (maxscore <= ralpha)
+		{
+		  Value v = qsearch<NonPV>(pos, ss, ralpha, ralpha+1);
+		  if (v <= ralpha)
+		    {
+				tte->save(posKey, value_to_tt(v, ss->ply), BOUND_UPPER, depth, MOVE_NONE,
+				                  ss->staticEval, TT.generation());
+		    	return v;
+		    }
+		}
+	}
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !rootNode

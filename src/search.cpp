@@ -725,11 +725,11 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
 	// if non PV and much below alpha for multiple plies, we can almost safely forward prune all the branchs
-	if (ss->ply > 7 && !PvNode && !improving)
+	if (ss->ply > 6 && !PvNode && !improving)
 	{
 	    Value maxscore = std::max((ss-2)->staticEval,(ss-4)->staticEval - Value(50));
 		maxscore = std::max(maxscore,(ss-6)->staticEval - Value(100));
-		Value ralpha = alpha - Value(500 + 60*depth/ONE_PLY);
+		Value ralpha = alpha - Value(700 + 60*depth/ONE_PLY);
 		if (maxscore <= ralpha)
 		{
 		  Value v = qsearch<NonPV>(pos, ss, ralpha, ralpha+1);
@@ -737,7 +737,7 @@ namespace {
 		    {
 				tte->save(posKey, value_to_tt(v, ss->ply), BOUND_UPPER, depth, MOVE_NONE,
 				                  ss->staticEval, TT.generation());
-		    	return v;
+				return v;
 		    }
 		}
 	}

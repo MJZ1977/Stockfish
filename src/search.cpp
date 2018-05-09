@@ -725,7 +725,7 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
 	// if non PV and much below alpha for multiple plies, we can almost safely forward prune all the branchs
-	if (ss->ply > std::max(9, depth/ONE_PLY/2) && !PvNode && !improving)
+	if (ss->ply > std::max(9, depth/ONE_PLY) && !PvNode && !improving)
 	{
 	    Value maxscore = std::max((ss-4)->staticEval,(ss-2)->staticEval);
 		maxscore = std::max(maxscore,(ss-6)->staticEval);

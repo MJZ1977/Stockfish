@@ -730,7 +730,7 @@ namespace {
 	    Value maxscore = std::max((ss-4)->staticEval,(ss-2)->staticEval);
 		maxscore = std::max(maxscore,(ss-6)->staticEval);
 	    maxscore = std::max(maxscore,(ss-8)->staticEval);
-		Value ralpha = alpha - Value(450);
+		Value ralpha = alpha - Value(550);
 		if (maxscore <= ralpha)
 		{
 		  Value v = qsearch<NonPV>(pos, ss, ralpha, ralpha+1);

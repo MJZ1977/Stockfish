@@ -41,8 +41,8 @@ namespace {
   Score Connected[2][2][3][RANK_NB];
 
   // Doubled pawn penalty
-  constexpr Score Doubled = S( 8, 20);
-  constexpr Score Doubled_Isolated = S(10, 50);
+  constexpr Score Doubled = S(13, 40);
+  constexpr Score Doubled_Isolated = S( 5, 20);
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -76,7 +76,7 @@ namespace {
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
-    Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
+    Bitboard b, neighbours, stoppers, doubled, supported, phalanx, doubled2;
     Bitboard lever, leverPush;
     Square s;
     bool opposed, backward;
@@ -108,7 +108,8 @@ namespace {
         stoppers   = theirPawns & passed_pawn_mask(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
-        doubled    = ourPawns   & forward_file_bb(Us, s);
+        doubled    = ourPawns   & (s - Up);
+        doubled2   = ourPawns   & forward_file_bb(Us, s);
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         supported  = neighbours & rank_bb(s - Up);
@@ -147,10 +148,10 @@ namespace {
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
 
-        if (doubled)
+        if (doubled && !supported)
             score -= Doubled;
 
-		if (doubled && !neighbours)
+		if (doubled2 && !neighbours)
             score -= Doubled_Isolated;
     }
 

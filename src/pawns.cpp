@@ -108,8 +108,7 @@ namespace {
         stoppers   = theirPawns & passed_pawn_mask(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
-        doubled    = ourPawns   & (s - Up);
-        doubled2   = ourPawns   & forward_file_bb(Us, s);
+        doubled    = ourPawns   & forward_file_bb(Them, s - Up);
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         supported  = neighbours & rank_bb(s - Up);
@@ -151,7 +150,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
 
-		if (doubled2 && !neighbours)
+		if (doubled && !neighbours)
             score -= Doubled_Isolated;
     }
 

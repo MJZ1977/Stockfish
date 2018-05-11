@@ -32,7 +32,7 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Isolated pawn penalty
-  constexpr Score Isolated = S(13, 16);
+  constexpr Score Isolated = S(10, 10);
 
   // Backward pawn penalty
   constexpr Score Backward = S(17, 11);

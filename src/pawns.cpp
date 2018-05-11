@@ -76,7 +76,7 @@ namespace {
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
-    Bitboard b, neighbours, stoppers, doubled, supported, phalanx, doubled2;
+    Bitboard b, neighbours, stoppers, doubled, supported, phalanx, doubled2, stop_span;
     Bitboard lever, leverPush;
     Square s;
     bool opposed, backward;
@@ -106,10 +106,11 @@ namespace {
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
         stoppers   = theirPawns & passed_pawn_mask(Us, s);
+		stop_span  = theirPawns & pawn_attack_span(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
         doubled    = ourPawns   & (s - Up);
-        doubled2   = ourPawns   & forward_file_bb(Us, s);
+        doubled2   = ourPawns   & forward_file_bb(Them, s);
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         supported  = neighbours & rank_bb(s - Up);
@@ -151,7 +152,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
 
-		if (doubled2 && !neighbours)
+		if (doubled2 && !neighbours && !stop_span)
             score -= Doubled_Isolated;
     }
 

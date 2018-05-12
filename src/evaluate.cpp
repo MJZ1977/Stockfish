@@ -336,7 +336,7 @@ namespace {
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b, bb, excludeBB;
     Square s;
     Score score = SCORE_ZERO;
 
@@ -353,7 +353,19 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
+		excludeBB = attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us];
+		if (Pt == QUEEN)
+		{
+		    excludeBB &= attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT] | attackedBy[Them][ROOK];
+			excludeBB &= ~pos.pieces(Them,QUEEN);
+		}
+		if (Pt == ROOK)
+		{
+		    excludeBB &= attackedBy[Them][BISHOP] | attackedBy[Them][KNIGHT];
+			excludeBB &= ~(pos.pieces(Them,QUEEN) | pos.pieces(Them,ROOK));
+		}
+		
+        int mob = popcount(b & mobilityArea[Us] & ~excludeBB);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

@@ -35,7 +35,7 @@ namespace {
   constexpr Score Isolated = S(13, 16);
 
   // Backward pawn penalty
-  constexpr Score Backward[RANK_NB] = {S(34, 22),S(26, 17),S(17, 11),S(9, 6),S(5, 3),S(0, 0),S( 0, 0)};
+  constexpr Score Backward[RANK_NB] = {S(34, 22),S(29, 19),S(20, 13),S(12, 8),S(7, 5),S(0, 0),S( 0, 0)};
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];

@@ -808,9 +808,9 @@ namespace {
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
                 {
 				if (pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1)
-				  sf = 36;
+				  sf = 41;
 				else
-				  sf = 21;
+				  sf = 26;
 				}
 
             // Endgame with opposite-colored bishops, but also other pieces. Still

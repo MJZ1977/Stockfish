@@ -816,7 +816,7 @@ namespace {
             // Endgame with opposite-colored bishops, but non symetric material. Still
             // a bit drawish, but not as drawish as with symetric material.
             else
-                sf = 52;
+                sf = 48;
         }
         else
             sf = std::min(40 + 7 * pos.count<PAWN>(strongSide), sf);

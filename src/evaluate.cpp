@@ -808,7 +808,7 @@ namespace {
 				  && pos.count<QUEEN>(strongSide) == 0)
                 {
 				if (pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1)
-				  sf = 40;
+				  sf = 32;
 				else
 				  sf = 21;
 				}

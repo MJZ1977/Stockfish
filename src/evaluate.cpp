@@ -803,9 +803,9 @@ namespace {
     {
         if (pos.opposite_bishops())
         {
-            // Endgame with opposite-colored bishops and no other pieces is almost a draw
-            if (   pos.non_pawn_material(WHITE) == BishopValueMg
-                && pos.non_pawn_material(BLACK) == BishopValueMg)
+            // Endgame with opposite-colored bishops and symetric material are drawish if no queen
+            if (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
+				  && pos.count<QUEEN>(strongSide) == 0)
                 {
 				if (pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1)
 				  sf = 36;
@@ -813,10 +813,10 @@ namespace {
 				  sf = 21;
 				}
 
-            // Endgame with opposite-colored bishops, but also other pieces. Still
-            // a bit drawish, but not as drawish as with only the two bishops.
+            // Endgame with opposite-colored bishops, but non symetric material. Still
+            // a bit drawish, but not as drawish as with symetric material.
             else
-                sf = 46;
+                sf = 52;
         }
         else
             sf = std::min(40 + 7 * pos.count<PAWN>(strongSide), sf);

@@ -810,8 +810,10 @@ namespace {
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            else
+            else if (pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK))
                 sf = 46;
+            else
+                sf = 52;
         }
         else
             sf = std::min(40 + 7 * pos.count<PAWN>(strongSide), sf);

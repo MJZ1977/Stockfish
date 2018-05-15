@@ -810,13 +810,13 @@ namespace {
 				if (pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1)
 				  sf = 32;
 				else
-				  sf = 21;
+				  sf = 24;
 				}
 
             // Endgame with opposite-colored bishops, but non symetric material. Still
             // a bit drawish, but not as drawish as with symetric material.
             else
-                sf = 48;
+                sf = 52;
         }
         else
             sf = std::min(40 + 7 * pos.count<PAWN>(strongSide), sf);

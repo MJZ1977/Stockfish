@@ -179,6 +179,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
   constexpr Score TrappedRook        = S( 92,  0);
+  constexpr Score TrappedBishop      = S( 250, 250);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
@@ -336,9 +337,14 @@ namespace {
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b, bb, stronglyProtected;
     Square s;
     Score score = SCORE_ZERO;
+
+    // Squares strongly protected by the enemy, either because they defend the
+    // square with a pawn, or because they defend the square twice and we don't.
+    stronglyProtected =  attackedBy[Them][PAWN]
+                       | (attackedBy2[Them] & ~attackedBy2[Us]);
 
     while ((s = *pl++) != SQ_NONE)
     {
@@ -380,6 +386,9 @@ namespace {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+				Bitboard safeSq = b & ~pos.pieces(Us);
+				safeSq &= ~(stronglyProtected ^ (pos.pieces(Them) ^ pos.pieces(Them, PAWN)));
+				int mob2 = popcount(safeSq);
 
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
                                      * (1 + popcount(blocked & CenterFiles));
@@ -387,6 +396,10 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongDiagonalBishop;
+					
+				// Penality for trapped bishop
+				//if (mob2 <= 1)
+					score -= TrappedBishop*(0-mob2);
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

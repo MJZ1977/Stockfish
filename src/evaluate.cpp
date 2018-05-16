@@ -179,6 +179,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
   constexpr Score TrappedRook        = S( 92,  0);
+  constexpr Score TrappedBishop      = S( 20, 10);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
@@ -520,7 +521,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats, NotSafe;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -617,6 +618,20 @@ namespace {
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
 
+	// Trapped bishop penality
+	const Square* pl = pos.squares<BISHOP>(Us);
+	Square s;
+	NotSafe =  attackedBy[Them][PAWN] | attackedBy2[Them] | (attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us]);
+    while ((s = *pl++) != SQ_NONE)
+	{
+		b = attacks_bb<BISHOP>(s, pos.pieces());   //NO XRAY
+		
+		Bitboard safeSq = b & ~pos.pieces(Us,PAWN);
+		safeSq &= ~(NotSafe ^ nonPawnEnemies);
+		if (!safeSq)
+			score -= TrappedBishop;
+	}
+	
     if (T)
         Trace::add(THREAT, Us, score);
 

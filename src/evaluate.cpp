@@ -179,7 +179,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
   constexpr Score TrappedRook        = S( 92,  0);
-  constexpr Score TrappedBishop      = S( 40, 20);
+  constexpr Score TrappedBishop      = S( 20, 20);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
@@ -223,7 +223,7 @@ namespace {
     Bitboard attackedBy2[COLOR_NB];
 
 	Bitboard squareAttacks[SQUARE_NB];
-	
+
     // kingRing[color] are the squares adjacent to the king, plus (only for a
     // king on its first rank) the squares two ranks in front. For instance,
     // if black's king is on g8, kingRing[BLACK] is f8, h8, f7, g7, h7, f6, g6
@@ -290,7 +290,7 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
-		
+
      // Fill the attack bitboards
     initPieces<Us, KNIGHT>();
     initPieces<Us, BISHOP>();
@@ -301,28 +301,28 @@ namespace {
     // Evaluation::initPieces() fill the attack bitboards
     template<Tracing T> template<Color Us, PieceType Pt>
     void Evaluation<T>::initPieces() {
-  
+
       const Square* pl = pos.squares<Pt>(Us);
-  
+
       Bitboard b;
       Square s;
-  
+
       attackedBy[Us][Pt] = 0;
-  
+
       while ((s = *pl++) != SQ_NONE)
       {
           // Find attacked squares, including x-ray attacks for bishops and rooks
           b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
             : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
                            : pos.attacks_from<Pt>(s);
-  
+
           if (pos.blockers_for_king(Us) & s)
               b &= LineBB[pos.square<KING>(Us)][s];
-  
+
           attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
           attackedBy[Us][Pt] |= b;
           attackedBy[Us][ALL_PIECES] |= b;
-  
+
           squareAttacks[s] = b;
       }
     }
@@ -385,7 +385,6 @@ namespace {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
-				//int mob2 = popcount(safeSq);
 
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
                                      * (1 + popcount(blocked & CenterFiles));
@@ -393,9 +392,9 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongDiagonalBishop;
-					
-				// Penality for trapped bishop
-				Bitboard safeSq = b & ~pos.pieces(Us);
+
+				// Penality for trapped bishop blocked by our pawns
+				Bitboard safeSq = b & ~pos.pieces(Us,PAWN);
 				safeSq &= ~(NotSafe ^ (pos.pieces(Them) ^ pos.pieces(Them, PAWN)));
 				if (!safeSq)
 					score -= TrappedBishop;

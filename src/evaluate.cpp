@@ -658,7 +658,10 @@ namespace {
 		if (((pos.non_pawn_material(Them) <= BishopValueMg && pos.non_pawn_material(Us) <= BishopValueMg)
 		  || pos.non_pawn_material(Us) == QueenValueMg)
 		  && pos.count<PAWN>(Us) > 1)
-			 w += 1;
+			 w = std::min(w+2,10);
+
+		if (attackedBy[Us][PAWN] & forward_file_bb(Us, s - Up))
+		     w += 1;
 
         if (w)
         {

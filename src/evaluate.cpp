@@ -545,8 +545,8 @@ namespace {
         {
             Square s = pop_lsb(&b);
             score += ThreatByMinor[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
-                score += ThreatByRank * (int)relative_rank(Them, s) / (weak & s ? 1 : 2);
+            if (type_of(pos.piece_on(s)) != PAWN && (weak & s))
+                score += ThreatByRank * (int)relative_rank(Them, s);
         }
 
         b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
@@ -554,8 +554,8 @@ namespace {
         {
             Square s = pop_lsb(&b);
             score += ThreatByRook[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
-                score += ThreatByRank * (int)relative_rank(Them, s) / (weak & s ? 1 : 2);
+            if (type_of(pos.piece_on(s)) != PAWN && (weak & s))
+                score += ThreatByRank * (int)relative_rank(Them, s);
         }
 
         b = weak & attackedBy[Us][KING];

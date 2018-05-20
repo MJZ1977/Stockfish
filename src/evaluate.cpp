@@ -181,6 +181,7 @@ namespace {
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
+  constexpr Score EnemyWeakness      = S(  8,  0);
 
 #undef S
 
@@ -519,6 +520,9 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+	constexpr Bitboard EnemyCamp = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                           : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
+
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
@@ -617,6 +621,12 @@ namespace {
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
 
+	// Safe squares in enemy camp
+	b = EnemyCamp & ~attackedBy[Them][ALL_PIECES];
+	b &= (pos.pieces(Us) | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP] | attackedBy[Us][ROOK] | attackedBy[Us][QUEEN]);
+	
+	score += EnemyWeakness * popcount(b);
+	
     if (T)
         Trace::add(THREAT, Us, score);
 

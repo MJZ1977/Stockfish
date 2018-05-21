@@ -654,7 +654,7 @@ namespace {
         int w = PassedDanger[r];
 
 		if (pos.count<ROOK>(Them) == 0)
-		    w += 1;
+		    w += 2;
 
         Score bonus = PassedRank[r];
 

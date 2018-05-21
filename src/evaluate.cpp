@@ -181,7 +181,7 @@ namespace {
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
-  constexpr Score EnemyWeakness      = S( 24,  0);
+  constexpr Score EnemyWeakness      = S( 16,  0);
 
 #undef S
 
@@ -623,10 +623,10 @@ namespace {
 
 	// Safe squares in enemy camp
 	b = EnemyCamp & ~attackedBy[Them][ALL_PIECES];
-	b &= (pos.pieces(Us) | attackedBy[Us][KNIGHT] | attackedBy[Us][ROOK] | attackedBy[Us][QUEEN]);
-	
+	b &= attackedBy[Us][QUEEN];
+
 	score += EnemyWeakness * std::min(popcount(b),2);
-	
+
     if (T)
         Trace::add(THREAT, Us, score);
 

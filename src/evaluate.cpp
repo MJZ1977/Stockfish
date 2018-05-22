@@ -181,6 +181,7 @@ namespace {
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
+  constexpr Score StrongFork         = S( 40, 40);
 
 #undef S
 
@@ -617,6 +618,11 @@ namespace {
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
 
+	// Double attacks
+	b = pos.pieces(Them,ROOK) | pos.pieces(Them,QUEEN) | pos.pieces(Them,KING);
+	if (popcount(b & (attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP])) >= 2)
+	   score += StrongFork;
+	
     if (T)
         Trace::add(THREAT, Us, score);
 

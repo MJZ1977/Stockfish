@@ -656,9 +656,9 @@ namespace {
 		if (pos.count<ROOK>(Them) == 0)
 		    w += 1;
 
-		if (pos.opposite_bishops() && r < 7)
-		    w = w / 2;
-		
+		if (pe->passed_pawns(Us) & adjacent_files_bb(file_of(s)))
+		    w += 1;
+			
         Score bonus = PassedRank[r];
 
         if (w)

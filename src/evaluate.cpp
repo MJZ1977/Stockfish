@@ -166,6 +166,7 @@ namespace {
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
+  constexpr Score FarQueen           = S( 10,  0);
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
@@ -616,6 +617,19 @@ namespace {
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
+	
+	// penality if queen is far from king
+	if (pos.count<QUEEN>(Us) > 0)
+	{
+		int min_dist_ksq = 8;
+		b = attackedBy[Us][QUEEN] & ~pos.pieces(Us) & ~attackedBy[Them][ALL_PIECES];
+		while (b)
+		{
+			 Square move_sq = pop_lsb(&b); 
+			 min_dist_ksq = std::min(min_dist_ksq,distance<File>(move_sq,pos.square<KING>(Us)));
+		}
+		score -= FarQueen * min_dist_ksq;
+	}
 
     if (T)
         Trace::add(THREAT, Us, score);

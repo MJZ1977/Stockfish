@@ -617,18 +617,18 @@ namespace {
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
-	
+
 	// penality if queen is far from king
 	if (pos.count<QUEEN>(Us) > 0)
 	{
-		int min_dist_ksq = 8;
+		int min_dist_ksq = 7;
 		b = attackedBy[Us][QUEEN] & ~pos.pieces(Us) & ~attackedBy[Them][ALL_PIECES];
 		while (b)
 		{
-			 Square move_sq = pop_lsb(&b); 
+			 Square move_sq = pop_lsb(&b);
 			 min_dist_ksq = std::min(min_dist_ksq,distance<File>(move_sq,pos.square<KING>(Us)));
 		}
-		score -= FarQueen * min_dist_ksq;
+		score -= FarQueen * (min_dist_ksq - 2);
 	}
 
     if (T)

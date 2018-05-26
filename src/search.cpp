@@ -1070,9 +1070,19 @@ moves_loop: // When in check, search starts from here
       }
 
 	  // Verify that we really have a better move
-	  if (rootNode && value > alpha && !PvNode && depth > 6 * ONE_PLY)
+	  if (rootNode && value > alpha && depth > 6 * ONE_PLY && moveCount > 1)
 	  {
-		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + ONE_PLY, false);
+		  Value value2 = -search<PV>(pos, ss+1, -(alpha+1), -alpha, newDepth + ONE_PLY, false);
+		  if (value2 <= alpha)
+		  {
+			//sync_cout << "info depth " << depth / ONE_PLY
+            //        << " currmove " << UCI::move(move, pos.is_chess960())
+            //        << " value 1 " << value
+            //        << " value 2 " << value2
+            //        << " alpha " << alpha
+            //        << " currmovenumber " << moveCount + thisThread->PVIdx << sync_endl;	     
+			value = value2;
+		  }
 	  }
 	  
       // Step 18. Undo move

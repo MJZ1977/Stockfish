@@ -1069,6 +1069,12 @@ moves_loop: // When in check, search starts from here
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
 
+	  // Verify that we really have a better move
+	  if (rootNode && value > alpha && !PvNode && depth > 6 * ONE_PLY)
+	  {
+		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + ONE_PLY, false);
+	  }
+	  
       // Step 18. Undo move
       pos.undo_move(move);
 

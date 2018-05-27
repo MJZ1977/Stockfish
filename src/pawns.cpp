@@ -76,7 +76,7 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
-    Bitboard lever, leverPush;
+    Bitboard leverPush;
     Square s;
     bool opposed, backward;
     Score score = SCORE_ZERO;

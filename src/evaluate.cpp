@@ -131,7 +131,7 @@ namespace {
 
   // QueenOnFile[semiopen/open] contains bonuses for each queen when there is
   // no (friendly) pawn on the queen file.
-  constexpr Score QueenOnFile[] = { S(5, 2), S(8, 8) };
+  constexpr Score QueenOnFile[] = { S(5, 2), S(12, 12) };
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are

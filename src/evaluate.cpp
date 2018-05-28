@@ -166,8 +166,8 @@ namespace {
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score Hanging            = S( 62, 40);
-  constexpr Score HangingPawn        = S( 32, 15);
+  constexpr Score Hanging            = S( 62, 38);
+  constexpr Score HangingPawn        = S( 42, 24);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);

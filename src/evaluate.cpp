@@ -166,7 +166,8 @@ namespace {
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score Hanging            = S( 52, 30);
+  constexpr Score Hanging            = S( 62, 40);
+  constexpr Score HangingPawn        = S( 32, 15);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);
@@ -562,7 +563,8 @@ namespace {
         if (b)
             score += ThreatByKing[more_than_one(b)];
 
-        score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
+        score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES] & ~pos.pieces(Them,PAWN));
+        score += HangingPawn * popcount(weak & ~attackedBy[Them][ALL_PIECES] & pos.pieces(Them,PAWN));
 
         // Bonus for overload (non-pawn enemies attacked and defended exactly once)
         b =  nonPawnEnemies

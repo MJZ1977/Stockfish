@@ -881,7 +881,7 @@ namespace {
     int game_phase = int(me->game_phase());
     Value KingDanger = std::min(mg_value(kingW),mg_value(kingB));
     if (KingDanger > Value(0))
-      game_phase = std::max(game_phase - int(KingDanger)/8, 0);
+      game_phase = std::max(game_phase - int(KingDanger)/16, 0);
 
     v =  mg_value(score) * game_phase
        + eg_value(score) * (int(PHASE_MIDGAME) - game_phase) * sf / SCALE_FACTOR_NORMAL;

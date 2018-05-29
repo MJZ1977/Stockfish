@@ -865,8 +865,12 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
+    Score kingW = king<   WHITE>();
+    Score kingB = king<   BLACK>();
+
+    score += kingW - kingB;
+
+    score +=  threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
@@ -874,8 +878,13 @@ namespace {
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
-    v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+    int game_phase = int(me->game_phase());
+    Value KingDanger = std::min(mg_value(kingW),mg_value(kingB));
+    if (KingDanger > Value(0))
+      game_phase = std::max(game_phase - int(KingDanger)/8, 0);
+
+    v =  mg_value(score) * game_phase
+       + eg_value(score) * (int(PHASE_MIDGAME) - game_phase) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
 

@@ -894,7 +894,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-	Value dyn_tempo = Value(12);
+	Value dyn_tempo = Value(6);
 	dyn_tempo += (abs(mg_value(king_W))    + abs(mg_value(king_B)))    / 16;
 	dyn_tempo += (abs(mg_value(threats_W)) + abs(mg_value(threats_B))) / 16;
 

@@ -895,7 +895,7 @@ namespace {
     }
 
 	Value dyn_tempo = Value(8);
-	dyn_tempo += (abs(mg_value(king_W))    + abs(mg_value(king_B)))    / 16;
+	dyn_tempo += (abs(mg_value(king_W) - Value(160)) + abs(mg_value(king_B) - Value(160))) / 16;
 	dyn_tempo += (abs(mg_value(threats_W)) + abs(mg_value(threats_B))) / 16;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view

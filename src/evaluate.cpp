@@ -865,10 +865,10 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-	Score short_term = king<   WHITE>() - king<   BLACK>()
-	                 + threats<WHITE>() - threats<BLACK>();
-	
-    score +=  short_term
+	Score short_term_W = king<   WHITE>() + threats<WHITE>();
+	Score short_term_B = king<   BLACK>() + threats<BLACK>();
+
+    score +=  short_term_W - short_term_B
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
@@ -890,9 +890,9 @@ namespace {
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);
         Trace::add(TOTAL, score);
     }
-	
-	Value dyn_tempo = Value(10) + abs(mg_value(short_term)) / 8;
-	
+
+	Value dyn_tempo = Value(10) + (abs(mg_value(short_term_W)) + abs(mg_value(short_term_B))) / 16;
+
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + dyn_tempo;
   }

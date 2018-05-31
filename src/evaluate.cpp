@@ -895,8 +895,14 @@ namespace {
     }
 
 	Value dyn_tempo = Value(8);
-	dyn_tempo += (abs(mg_value(king_W) - Value(160)) + abs(mg_value(king_B) - Value(160))) / 16;
-	dyn_tempo += (abs(mg_value(threats_W)) + abs(mg_value(threats_B))) / 16;
+	dyn_tempo += abs(mg_value(king_W) * int(me->game_phase())
+	               + eg_value(king_W) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	dyn_tempo += abs(mg_value(king_B) * int(me->game_phase())
+	               + eg_value(king_B) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	dyn_tempo += abs(mg_value(threats_W) * int(me->game_phase())
+	               + eg_value(threats_W) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	dyn_tempo += abs(mg_value(threats_B) * int(me->game_phase())
+	               + eg_value(threats_B) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + dyn_tempo;

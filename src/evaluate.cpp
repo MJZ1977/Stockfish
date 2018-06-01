@@ -896,7 +896,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-	Value dyn_tempo = Value(12);
+	Value dyn_tempo = Value(0);
 	dyn_tempo += abs((mg_value(king_W) - Value(40)) * int(me->game_phase())
 	               + eg_value(king_W) * int(PHASE_MIDGAME - me->game_phase()));
 	dyn_tempo += abs((mg_value(king_B) - Value(40)) * int(me->game_phase())
@@ -910,6 +910,7 @@ namespace {
 	dyn_tempo += abs(mg_value(passed_B) * int(me->game_phase())
 	               + eg_value(passed_B) * int(PHASE_MIDGAME - me->game_phase()));
 	dyn_tempo /= int(PHASE_MIDGAME) * 32;
+	dyn_tempo += Value(12);
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + dyn_tempo;

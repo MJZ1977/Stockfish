@@ -869,10 +869,12 @@ namespace {
 	Score king_B =    king<   BLACK>();
 	Score threats_W = threats<WHITE>();
 	Score threats_B = threats<BLACK>();
+	Score passed_W = passed<WHITE>();
+	Score passed_B = passed<BLACK>();
 
     score +=  king_W - king_B
             + threats_W - threats_B
-            + passed< WHITE>() - passed< BLACK>()
+            + passed_W - passed_B
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
@@ -894,15 +896,20 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-	Value dyn_tempo = Value(8);
+	Value dyn_tempo = Value(12);
 	dyn_tempo += abs((mg_value(king_W) - Value(40)) * int(me->game_phase())
-	               + eg_value(king_W) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	               + eg_value(king_W) * int(PHASE_MIDGAME - me->game_phase()));
 	dyn_tempo += abs((mg_value(king_B) - Value(40)) * int(me->game_phase())
-	               + eg_value(king_B) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	               + eg_value(king_B) * int(PHASE_MIDGAME - me->game_phase()));
 	dyn_tempo += abs(mg_value(threats_W) * int(me->game_phase())
-	               + eg_value(threats_W) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	               + eg_value(threats_W) * int(PHASE_MIDGAME - me->game_phase()));
 	dyn_tempo += abs(mg_value(threats_B) * int(me->game_phase())
-	               + eg_value(threats_B) * int(PHASE_MIDGAME - me->game_phase())) / int(PHASE_MIDGAME) /16;
+	               + eg_value(threats_B) * int(PHASE_MIDGAME - me->game_phase()));
+	dyn_tempo += abs(mg_value(passed_W) * int(me->game_phase())
+	               + eg_value(passed_W) * int(PHASE_MIDGAME - me->game_phase()));
+	dyn_tempo += abs(mg_value(passed_B) * int(me->game_phase())
+	               + eg_value(passed_B) * int(PHASE_MIDGAME - me->game_phase()));
+	dyn_tempo /= int(PHASE_MIDGAME) * 32;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + dyn_tempo;

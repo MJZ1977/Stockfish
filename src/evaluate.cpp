@@ -705,7 +705,13 @@ namespace {
         // pawn push to become passed, or have a pawn in front of them.
         if (   !pos.pawn_passed(Us, s + Up)
             || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
-            bonus = bonus / 2;
+			{
+            bb = adjacent_files_bb(file_of(s)) & pos.pieces(Us,PAWN) & rank_bb(s - Up);	//supporting pawns
+			if (shift<Up>(bb) & ~pos.pieces(Them))
+				bonus = bonus / 2;		//if non blocked
+			else
+				bonus = bonus / 8;		//if blocked
+			}
 
         score += bonus + PassedFile[file_of(s)];
     }

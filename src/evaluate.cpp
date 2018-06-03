@@ -652,7 +652,10 @@ namespace {
 
         int r = relative_rank(Us, s);
         int w = PassedDanger[r];
-
+        
+		if (pos.count<ROOK>(Them) == 0)
+            w += 1;
+			
         Score bonus = PassedRank[r];
 
         if (w)

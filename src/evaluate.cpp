@@ -619,7 +619,7 @@ namespace {
 		while (b)
 			min_dist_qn = std::min(min_dist_qn,distance(s,pop_lsb(&b)));
 
-		if (min_dist_qn >= 2)
+		if (min_dist_qn >= 2 && popcount(pos.pieces(Them)) >=10)
 			score += IsolatedQueen * (min_dist_qn - 1);
     }
 

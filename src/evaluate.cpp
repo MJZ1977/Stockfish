@@ -614,7 +614,7 @@ namespace {
         score += SliderOnQueen * popcount(b & safeThreats & attackedBy2[Us]);
 
 		// Isolated Queen
-		b = pos.pieces(Them) ^ s;
+		b = nonPawnEnemies ^ s;
 		int min_dist_qn = 7;
 		while (b)
 			min_dist_qn = std::min(min_dist_qn,distance<Rank>(s,pop_lsb(&b)));
@@ -626,8 +626,6 @@ namespace {
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
-
-
 
     if (T)
         Trace::add(THREAT, Us, score);

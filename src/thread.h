@@ -73,6 +73,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory contHistory;
   Score contempt;
+  //bool weakSecond;		//second PV is weak
 };
 
 

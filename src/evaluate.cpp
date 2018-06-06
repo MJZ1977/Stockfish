@@ -618,8 +618,8 @@ namespace {
 		Bitboard SafeSq = attackedBy[Them][QUEEN] & ~pos.pieces(Them);
 		SafeSq &=  ~(attackedBy[Us][ALL_PIECES] & ~pos.pieces(Us,QUEEN));
 		 
-		if (popcount(QueenRing & pos.pieces(Us)) >= 3)
-			score += IsolatedQueen * std::max(3-popcount(SafeSq),0);
+		if (popcount(QueenRing & pos.pieces(Us)) >= 2)
+			score += IsolatedQueen * std::max(4-popcount(SafeSq),0);
     }
 
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected

@@ -168,7 +168,7 @@ namespace {
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
-  constexpr Score IsolatedQueen      = S( 18,  0);
+  constexpr Score IsolatedQueen      = S( 10,  0);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
@@ -614,12 +614,13 @@ namespace {
         score += SliderOnQueen * popcount(b & safeThreats & attackedBy2[Us]);
 
 		// Isolated Queen
-		Bitboard QueenRing = attacks_bb(KING,s,Bitboard(0));
-		Bitboard SafeSq = attackedBy[Them][QUEEN] & ~pos.pieces(Them);
-		SafeSq &=  ~(attackedBy[Us][ALL_PIECES] & ~pos.pieces(Us,QUEEN));
+		b = pos.pieces(Them) ^ s;
+		int min_dist_qn = 7;
+		while (b)
+			min_dist_qn = std::min(min_dist_qn,distance(s,pop_lsb(&b)));
 
-		if (popcount(QueenRing & pos.pieces(Us)) >= 3)
-			score += IsolatedQueen * std::max(4-popcount(SafeSq),0);
+		if (min_dist_qn >= 2)
+			score += IsolatedQueen * (min_dist_qn - 1);
     }
 
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected

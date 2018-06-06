@@ -290,12 +290,13 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, secondValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
+  bool weak_second = false;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -486,9 +487,21 @@ void Thread::search() {
               double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
               bestMoveInstability *= std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
+              // Check second best move
+             if (rootDepth >= 12 * ONE_PLY)
+             {
+                 Value ralpha = std::max(bestValue - Value(200), -VALUE_MATE);
+                 ss->excludedMove = lastBestMove;
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth, false);
+                 ss->excludedMove = MOVE_NONE;
+                 if (secondValue <= ralpha)
+                    weak_second = true;
+			 }
+
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+                  || weak_second)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -522,7 +535,7 @@ namespace {
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
 
-    // Check if we have an upcoming move which draws by repetition, or 
+    // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
         && alpha < VALUE_DRAW
@@ -1164,7 +1177,7 @@ moves_loop: // When in check, search starts from here
     {
         // Quiet best move: update move sorting heuristics
         if (!pos.capture_or_promotion(bestMove))
-            update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount, 
+            update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount,
 							   stat_bonus(depth + (bestValue > beta + PawnValueMg ? ONE_PLY : DEPTH_ZERO)));
         else
             update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + ONE_PLY));

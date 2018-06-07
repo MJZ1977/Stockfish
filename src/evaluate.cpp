@@ -302,6 +302,10 @@ namespace {
     Bitboard b, bb;
     Square s;
     Score score = SCORE_ZERO;
+	int max_mob = 50;
+	
+	if (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
+	   max_mob = 8;
 
     attackedBy[Us][Pt] = 0;
 
@@ -326,7 +330,7 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
+        int mob = std::min(popcount(b & mobilityArea[Us]), max_mob);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

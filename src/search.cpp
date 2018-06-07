@@ -493,7 +493,7 @@ void Thread::search() {
              {
                  Value ralpha = std::max(bestValue - Value(180), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
-                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth - 2*ONE_PLY, false);
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth - 2*ONE_PLY, true);
                  ss->excludedMove = MOVE_NONE;
                  if (secondValue <= ralpha)
                     weak_second = true;

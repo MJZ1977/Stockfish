@@ -843,7 +843,9 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance();
 
-	Value cntpt = mg_value(pos.this_thread()->contempt);		// to be improved if test pass
+	Value cntpt = 	mg_value(pos.this_thread()->contempt) * int(me->game_phase())
+       + eg_value(pos.this_thread()->contempt) * int(PHASE_MIDGAME - me->game_phase()); 
+    cntpt /= int(PHASE_MIDGAME);
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);

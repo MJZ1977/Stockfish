@@ -883,7 +883,7 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 
-    v += cntpt * sf * sf / SCALE_FACTOR_NORMAL / SCALE_FACTOR_NORMAL;
+    v += cntpt * (3 * sf / SCALE_FACTOR_NORMAL - 2);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

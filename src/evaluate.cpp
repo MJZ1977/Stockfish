@@ -174,7 +174,7 @@ namespace {
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score RookOnPawn         = S(  8, 24);
-  constexpr Score RookBhdBlocked     = S(  5,  0);
+  constexpr Score RookBhdBlocked     = S(  0,  4);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
@@ -385,16 +385,12 @@ namespace {
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
 
 			// Penalty for rook behind pawn
-			Bitboard myPawn = pos.pieces(Us, PAWN) & forward_file_bb(Us,s);
+			Bitboard BlockedPawn = pos.pieces(Us, PAWN) & forward_file_bb(Us,s) 
+			   & shift<Down>(pos.pieces(Them));
 			
-			if (myPawn)
-			{
-				Bitboard blocker = pos.pieces(Them) & 
-				  forward_file_bb(Us, (Us == WHITE ? lsb(myPawn) : msb(myPawn)));
-				if (blocker)
-				    score -= RookBhdBlocked * 
-				        (5 - (int)relative_rank(Us, (Us == WHITE ? lsb(blocker) : msb(blocker))));
-			}
+			if (BlockedPawn)
+				score -= RookBhdBlocked * 
+				    std::max(5 - (int)relative_rank(Us, (Us == WHITE ? lsb(BlockedPawn) : msb(BlockedPawn))),0);
 
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))

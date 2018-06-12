@@ -174,6 +174,7 @@ namespace {
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score RookOnPawn         = S(  8, 24);
+  constexpr Score RookBhdBlocked     = S(  5,  0);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
@@ -386,6 +387,17 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
+			
+			// Penalty for rook behind pawn
+			Bitboard myPawn = pos.pieces(Us, PAWN) & forward_file_bb(Us,s);
+			
+			if (myPawn)
+			{
+				Square pawnSQ = pop_lsb(&myPawn);
+				Bitboard blocker = pos.pieces(Them) & forward_file_bb(Us,pawnSQ);
+				if (blocker)
+				    score -= RookBhdBlocked * (6 - (int)relative_rank(Us, pop_lsb(&blocker)));
+			}
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

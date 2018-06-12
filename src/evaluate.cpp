@@ -389,9 +389,11 @@ namespace {
 			
 			if (myPawn)
 			{
-				Bitboard blocker = pos.pieces(Them) & forward_file_bb(Us, lsb(myPawn));
+				Bitboard blocker = pos.pieces(Them) & 
+				  forward_file_bb(Us, (Us == WHITE ? lsb(myPawn) : msb(myPawn)));
 				if (blocker)
-				    score -= RookBhdBlocked * (5 - (int)relative_rank(Us, lsb(blocker)));
+				    score -= RookBhdBlocked * 
+				        (5 - (int)relative_rank(Us, (Us == WHITE ? lsb(blocker) : msb(blocker))));
 			}
 
             // Bonus for rook on an open or semi-open file

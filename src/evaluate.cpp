@@ -392,7 +392,7 @@ namespace {
 				Square pawnSQ = pop_lsb(&myPawn);
 				Bitboard blocker = pos.pieces(Them) & forward_file_bb(Us,pawnSQ);
 				if (blocker)
-				    score -= RookBhdBlocked * (6 - (int)relative_rank(Us, pop_lsb(&blocker)));
+				    score -= RookBhdBlocked * (5 - (int)relative_rank(Us, pop_lsb(&blocker)));
 			}
 
             // Bonus for rook on an open or semi-open file

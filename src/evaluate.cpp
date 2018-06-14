@@ -178,6 +178,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
+  constexpr Score PawnPushCenter     = S(  8,  0);
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
@@ -519,6 +520,9 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  OpponentCamp = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
+	                                           :  Rank2BB | Rank3BB | Rank4BB);
+
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
@@ -589,6 +593,9 @@ namespace {
     // Keep only the squares which are not completely unsafe
     b &= ~attackedBy[Them][PAWN]
         & (attackedBy[Us][ALL_PIECES] | ~attackedBy[Them][ALL_PIECES]);
+
+    // Bonus for safe pawn push in opponent center camp
+    score += PawnPushCenter * popcount(b & OpponentCamp & CenterFiles);
 
     // Bonus for safe pawn threats on the next move
     b =   pawn_attacks_bb<Us>(b)

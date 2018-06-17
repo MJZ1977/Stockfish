@@ -974,6 +974,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+	  int currentMoveNbr = pos.this_thread()->nodes;
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
@@ -1021,6 +1022,12 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
                              - 4000;
+     // if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+     //     sync_cout << " stat score " << ss->statScore
+     //               << " t1 " << thisThread->mainHistory[us][from_to(move)]
+      //              << " t2 " << (*contHist[0])[movedPiece][to_sq(move)]
+     //               << " t3 " << (*contHist[1])[movedPiece][to_sq(move)]
+      //              << " t4 " << (*contHist[3])[movedPiece][to_sq(move)]  << sync_endl;
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= 0 && (ss-1)->statScore < 0)
@@ -1059,6 +1066,8 @@ moves_loop: // When in check, search starts from here
 
       // Step 18. Undo move
       pos.undo_move(move);
+      //if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      //    sync_cout << " total nodes " << pos.this_thread()->nodes - currentMoveNbr  << sync_endl; 
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
@@ -1128,6 +1137,16 @@ moves_loop: // When in check, search starts from here
 
           else if (!captureOrPromotion && quietCount < 64)
               quietsSearched[quietCount++] = move;
+			  
+		// if not best move : score with number of searched moves
+		if (depth > 4 * ONE_PLY)
+		{
+			if (!pos.capture_or_promotion(move) && abs(thisThread->mainHistory[us][from_to(move)]) < 1000)
+				update_quiet_stats(pos, ss, move, quietsSearched, quietCount,
+                               (int)log(pos.this_thread()->nodes - currentMoveNbr)*10);
+			else if (abs(thisThread->captureHistory[pos.moved_piece(move)][to_sq(move)][type_of(pos.piece_on(to_sq(move)))]) < 1000)
+				update_capture_stats(pos, move, capturesSearched, captureCount, (int)log(pos.this_thread()->nodes - currentMoveNbr)*10);
+		}
       }
     }
 
@@ -1167,7 +1186,7 @@ moves_loop: // When in check, search starts from here
              && !pos.captured_piece()
              && is_ok((ss-1)->currentMove))
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
-
+	
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 

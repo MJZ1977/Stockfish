@@ -342,6 +342,7 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
+        if (rm.score > -VALUE_INFINITE)
           rm.previousScore = rm.score;
 
       size_t pvFirst = 0;
@@ -1077,6 +1078,9 @@ moves_loop: // When in check, search starts from here
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
           {
+              if (rm.previousScore > -VALUE_INFINITE)
+                 rm.progress = (rm.progress + value - rm.previousScore) / 2;
+              value = value + rm.progress / 2;
               rm.score = value;
               rm.selDepth = thisThread->selDepth;
               rm.pv.resize(1);
@@ -1591,6 +1595,7 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " depth "    << d / ONE_PLY
          << " seldepth " << rootMoves[i].selDepth
          << " multipv "  << i + 1
+         << " progress "    << UCI::value(rootMoves[i].progress)
          << " score "    << UCI::value(v);
 
       if (!tb && i == pvIdx)

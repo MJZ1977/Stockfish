@@ -480,7 +480,7 @@ void Thread::search() {
 
               // Check second best move
               weak_second = false;
-              if (rootDepth >= 8 * ONE_PLY)
+              if (completedDepth >= 12 * ONE_PLY)
               {
                  Value ralpha = std::max(bestValue - Value(200), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;

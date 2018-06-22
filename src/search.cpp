@@ -526,8 +526,7 @@ namespace {
     }
 
 	// If no progress for several plies : draw for stronger side
-	if ( alpha > VALUE_DRAW
-	     && pos.rule50_count() >= 16
+	if ( pos.rule50_count() >= 26
 	     && ss->ply >=14)
 	   {
 	     Value eval_diff = Value(0);

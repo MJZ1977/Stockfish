@@ -527,15 +527,15 @@ namespace {
 
 	// If no progress for several plies : draw for stronger side
 	if ( alpha > VALUE_DRAW
-	     && pos.rule50_count() >= 20
-	     && ss->ply >=12)
+	     && pos.rule50_count() >= 16
+	     && ss->ply >=14)
 	   {
 	     Value eval_diff = Value(0);
-	     for (int i : {1, 3, 5, 7, 9})
+	     for (int i : {1, 3, 5, 7, 9, 11})
 			if ((ss-i)->staticEval !=VALUE_NONE && (ss-(2+i))->staticEval !=VALUE_NONE)
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
-	     if (eval_diff <= Value(1000)
-	         && (ss-1)->staticEval >= (ss-11)->staticEval
+	     if (eval_diff <= Value(1500)
+	         && (ss-1)->staticEval >= (ss-13)->staticEval
 	         && (ss-1)->staticEval !=VALUE_NONE)
 	        return VALUE_DRAW;
 	   }

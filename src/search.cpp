@@ -534,7 +534,9 @@ namespace {
 	     for (int i : {1, 3, 5, 7, 9})
 			if ((ss-i)->staticEval !=VALUE_NONE && (ss-(2+i))->staticEval !=VALUE_NONE)
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
-	     if (eval_diff <= Value(1000) && (ss-1)->staticEval >= (ss-11)->staticEval)
+	     if (eval_diff <= Value(1000)
+	         && (ss-1)->staticEval >= (ss-11)->staticEval
+	         && (ss-1)->staticEval !=VALUE_NONE)
 	        return VALUE_DRAW;
 	   }
 

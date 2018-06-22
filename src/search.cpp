@@ -526,7 +526,7 @@ namespace {
     }
 
 	// If no progress for several plies : draw for stronger side
-	if ( pos.rule50_count() >= 26
+	if ( pos.rule50_count() >= 32
 	     && ss->ply >=14)
 	   {
 	     Value eval_diff = Value(0);

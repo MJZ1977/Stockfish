@@ -528,8 +528,8 @@ namespace {
 	// If no progress for several plies : draw for stronger side
 	if ( alpha > VALUE_DRAW
 	     && pos.rule50_count() >= 20
-	     && ss->ply >=10
-	     && (ss-1)->staticEval >= (ss-9)->staticEval)  // no progress for 8 plies
+	     && ss->ply >=12
+	     && (ss-1)->staticEval >= (ss-11)->staticEval)
 	     return VALUE_DRAW;
 
     // Dive into quiescence search when the depth reaches zero

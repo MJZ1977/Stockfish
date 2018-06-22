@@ -529,7 +529,8 @@ namespace {
 	if ( alpha > VALUE_DRAW
 	     && pos.rule50_count() >= 20
 	     && ss->ply >=12
-	     && (ss-1)->staticEval >= (ss-11)->staticEval)
+	     && (ss-1)->staticEval >= (ss-11)->staticEval
+	     && (ss-1)->staticEval <= VALUE_NONE)
 	     return VALUE_DRAW;
 
     // Dive into quiescence search when the depth reaches zero

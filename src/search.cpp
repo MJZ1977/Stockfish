@@ -914,7 +914,7 @@ moves_loop: // When in check, search starts from here
 
       else if (pos.non_pawn_material() == 0
       			&&	abs(ss->staticEval) <= Value(200)
-      			&&  abs(ss->staticEval) >= Value(10)
+      			&&  abs(ss->staticEval) >= Value(30)
       			&&  pos.rule50_count() <= 10
       			&&  PvNode)	//final extension
       	  extension = ONE_PLY;

@@ -913,9 +913,10 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       else if (pos.non_pawn_material() <= 0
-      			&&	abs(ss->staticEval) <= Value(160)
+      			&&  abs(ss->staticEval) <= Value(160)
       			&&  abs(ss->staticEval) >= Value(10)
-      			&&  pos.rule50_count() <= 6)	// Endgame extension
+      			&&  pos.rule50_count() <= 8
+				&&  PvNode)	// Endgame extension
       	  extension = ONE_PLY;
 
       // Calculate new depth for this move

@@ -913,7 +913,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       else if (pos.non_pawn_material() == 0
-      			&&  abs(ss->staticEval) <= Value(150)
+      			&&  abs(ss->staticEval) <= Value(170)
       			&&  abs(ss->staticEval) >= Value(10)
       			&&  pos.rule50_count() <= 10
 				&&  depth >= 4 * ONE_PLY 

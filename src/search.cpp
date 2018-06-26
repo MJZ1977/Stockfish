@@ -916,7 +916,7 @@ moves_loop: // When in check, search starts from here
       			&&  abs(ss->staticEval) <= Value(160)
       			&&  abs(ss->staticEval) >= Value(10)
       			&&  pos.rule50_count() <= 10
-				&&  depth <= 3 * ONE_PLY 
+				&&  depth >= 4 * ONE_PLY 
 				&&  (PvNode || (!PvNode && improving)))	// Endgame extension
       	  extension = ONE_PLY;
 

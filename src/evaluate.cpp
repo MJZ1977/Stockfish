@@ -710,6 +710,18 @@ namespace {
         score += bonus + PassedFile[file_of(s)];
     }
 
+    if (!pe->passed_pawns(Us) && !pe->passed_pawns(Them) && !pos.non_pawn_material())
+    {
+		b = pos.pieces(Us,PAWN);
+    	while (b)
+    	{
+        	Square s = pop_lsb(&b);
+        	Square blockSq = (s + Up) + Up;
+        	score += make_score(0,15*(king_proximity(Them, blockSq)-king_proximity(Us, blockSq)));
+		}
+
+	}
+
     if (T)
         Trace::add(PASSED, Us, score);
 

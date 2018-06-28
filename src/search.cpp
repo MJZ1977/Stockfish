@@ -915,7 +915,7 @@ moves_loop: // When in check, search starts from here
       else if (pos.non_pawn_material() == 0
       			&&  abs(ss->staticEval) <= Value(160)
       			&&  abs(ss->staticEval) >= Value(5)
-      			&&  (ss->staticEval >= alpha - Value(500) && ss->staticEval <= beta + Value(500))
+      			&&  (ss->staticEval >= alpha - Value(400) && ss->staticEval <= beta + Value(400))
       			&&  pos.rule50_count() <= 10
       			&&  depth >= 4 * ONE_PLY
 				&&  (PvNode || improving))	// Endgame extension

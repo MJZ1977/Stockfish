@@ -780,17 +780,19 @@ namespace {
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
                     -136 ;
-	int shuffle = (std::min(std::max(pos.rule50_count() - 10, 0), 8) * mg) / 8;
+	int shuffle = std::min(std::max(pos.rule50_count() - 20, 0), 16);
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v1 = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
-
+	
+	Score Bonus = make_score(-(shuffle * mg) / 16, v1 - (shuffle * (eg+v1)) / 16); 
+	
     if (T)
-        Trace::add(INITIATIVE, make_score( -shuffle, v1));
+        Trace::add(INITIATIVE, Bonus);
 
-    return make_score(-shuffle, v1);
+    return Bonus;
   }
 
 

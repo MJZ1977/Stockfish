@@ -780,7 +780,7 @@ namespace {
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
                     -136 ;
-	int shuffle = (std::min(std::max(pos.rule50_count() - 10, 0), 16) * mg) / 16;
+	int shuffle = (std::min(std::max(pos.rule50_count() - 10, 0), 8) * mg) / 8;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

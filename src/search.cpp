@@ -526,7 +526,7 @@ namespace {
     }
 
 	// If no progress for several plies : blocked position
-	if ( pos.rule50_count() >= 17
+	if ( pos.rule50_count() >= 13
 	     && ss->ply >=16
 		 && pos.count<PAWN>() >= 1
 		 && pos.non_pawn_material()
@@ -538,7 +538,7 @@ namespace {
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
 	     if (eval_diff <= Value(1000))
 		 {
-	        int reduc_factor = std::min(std::max(32 - pos.rule50_count(), 0), 16);
+	        int reduc_factor = std::min(std::max(28 - pos.rule50_count(), 0), 16);
 			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 16
 			   + eg_value(pos.this_thread()->contempt);
 		 }

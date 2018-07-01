@@ -539,9 +539,8 @@ namespace {
 	     if (eval_diff <= Value(1000))
 		 {
 	        int reduc_factor = std::min(std::max(30 - pos.rule50_count(), 0), 16);
-			return ((qsearch<NT>(pos, ss, alpha, beta)-eg_value(pos.this_thread()->contempt))
-			   * reduc_factor) / 16
-			   + eg_value(pos.this_thread()->contempt);
+			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 16
+			   + mg_value(pos.this_thread()->contempt);
 		 }
 	   }
 

@@ -536,7 +536,7 @@ namespace {
 	     for (int i : {1, 3, 5, 7, 9, 11, 13})
 			if ((ss-i)->staticEval !=VALUE_NONE && (ss-(2+i))->staticEval !=VALUE_NONE)
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
-	     if (eval_diff <= Value(1140))
+	     if (eval_diff <= Value(1000))
 		 {
 	        int reduc_factor = std::min(std::max(30 - pos.rule50_count(), 0), 16);
 			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 16

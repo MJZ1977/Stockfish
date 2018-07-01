@@ -538,8 +538,8 @@ namespace {
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
 	     if (eval_diff <= Value(1000))
 		 {
-	        int reduc_factor = std::min(std::max(30 - pos.rule50_count(), 0), 20);
-			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 20
+	        int reduc_factor = std::min(std::max(38 - pos.rule50_count(), 0), 24);
+			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 24
 			   + eg_value(pos.this_thread()->contempt);
 		 }
 	   }

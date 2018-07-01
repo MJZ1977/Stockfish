@@ -527,16 +527,16 @@ namespace {
 
 	// If no progress for several plies : blocked position
 	if ( pos.rule50_count() >= 15
-	     && ss->ply >=16
+	     && ss->ply >=14
 		 && pos.count<PAWN>() >= 1
 		 && pos.non_pawn_material()
 		 && depth < ONE_PLY)
 	   {
 	     Value eval_diff = Value(0);
-	     for (int i : {1, 3, 5, 7, 9, 11, 13})
+	     for (int i : {1, 3, 5, 7, 9, 11})
 			if ((ss-i)->staticEval !=VALUE_NONE && (ss-(2+i))->staticEval !=VALUE_NONE)
 				eval_diff += abs(((ss-i)->staticEval - (ss-(2+i))->staticEval));
-	     if (eval_diff <= Value(1000))
+	     if (eval_diff <= Value(860))
 		 {
 	        int reduc_factor = std::min(std::max(30 - pos.rule50_count(), 0), 16);
 			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 16

@@ -169,6 +169,7 @@ namespace {
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  5, -1);
   constexpr Score KnightOnQueen      = S( 21, 11);
+  constexpr Score KnightOnKing       = S( 10,  0);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 10,  5);
@@ -335,7 +336,11 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+            {    
+				score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+				if (Pt == KNIGHT && (b & attackedBy[Them][KING]))
+				     score += KnightOnKing * popcount(b & attackedBy[Them][KING]);
+			}
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];

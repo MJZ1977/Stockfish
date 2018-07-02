@@ -631,6 +631,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  PRank = (Us == WHITE ? Rank8BB : Rank1BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -654,6 +655,12 @@ namespace {
         int w = PassedDanger[r];
 
         Score bonus = PassedRank[r];
+
+        Square PSquare = lsb(PRank & forward_file_bb(Us, s));
+        if (PSquare && !pos.non_pawn_material(Them))
+          if (distance(pos.square<KING>(Them), PSquare) >
+              distance(s, PSquare) + (pos.side_to_move() == Us? 0 : 1))
+            bonus += make_score(0,200) * (6 - distance(s, PSquare));
 
         if (w)
         {

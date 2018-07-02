@@ -526,6 +526,8 @@ namespace {
     }
 
 	// If no progress for several plies : blocked position
+	int posPhase = int(Eval::game_phase(pos)); //midgame 128, endgame 0
+
 	if ( pos.rule50_count() >= 15
 	     && ss->ply >=16
 		 && pos.count<PAWN>() >= 1
@@ -539,8 +541,11 @@ namespace {
 	     if (eval_diff <= Value(1000))
 		 {
 	        int reduc_factor = std::min(std::max(38 - pos.rule50_count(), 0), 24);
-			return (qsearch<NT>(pos, ss, alpha, beta) * reduc_factor) / 24
-			   + eg_value(pos.this_thread()->contempt);
+	        Value ctpt = eg_value(pos.this_thread()->contempt)
+	                     + posPhase * (mg_value(pos.this_thread()->contempt)
+	                                 - eg_value(pos.this_thread()->contempt)) / 128;
+			return ((qsearch<NT>(pos, ss, alpha, beta)-ctpt) * reduc_factor) / 24
+			   + ctpt;
 		 }
 	   }
 

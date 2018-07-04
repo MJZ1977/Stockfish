@@ -181,7 +181,7 @@ namespace {
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 26);
-  constexpr Score EnemyWeakness      = S( 12,  0);
+  constexpr Score EnemyWeakness      = S(  8,  0);
 
 #undef S
 
@@ -520,8 +520,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
-	constexpr Bitboard EnemyCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
-                                           : Rank1BB | Rank2BB | Rank3BB);
+	constexpr Bitboard EnemyCamp = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                           : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
 
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
@@ -625,7 +625,7 @@ namespace {
 	b = EnemyCamp & ~attackedBy[Them][ALL_PIECES] & ~pos.pieces(Us);
 	b &= attackedBy[Us][QUEEN];
 
-	score += EnemyWeakness * std::min(popcount(b), 3);
+	score += EnemyWeakness * std::min(popcount(b) - 1, 2);
 
     if (T)
         Trace::add(THREAT, Us, score);

@@ -170,6 +170,7 @@ namespace {
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score PawnToPromotion    = S(  0, 80);
+  constexpr Score RookOnPawn         = S(  8, 24);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 31, 75);
   constexpr Score ThreatByPawnPush   = S( 49, 30);

@@ -169,7 +169,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
-  constexpr Score RookOnPawn         = S(  8, 24);
+  constexpr Score PawnToPromotion    = S(  0, 80);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 31, 75);
   constexpr Score ThreatByPawnPush   = S( 49, 30);
@@ -657,7 +657,7 @@ namespace {
         if (PSquare && !pos.non_pawn_material(Them))
           if (distance(pos.square<KING>(Them), PSquare) >
               distance(s, PSquare) + (pos.side_to_move() == Us? 0 : 1))
-            bonus += make_score(0,100) * (6 - distance(s, PSquare));
+            bonus += PawnToPromotion * (6 - distance(s, PSquare));
 
         if (w)
         {

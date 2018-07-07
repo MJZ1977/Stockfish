@@ -331,7 +331,7 @@ void Thread::search() {
       if (idx > 0)
       {
           int i = (idx - 1) % 20;
-          if (((rootDepth / ONE_PLY + rootPos.game_ply() + SkipPhase[i]) / SkipSize[i]) % 2)
+          if (((rootDepth / ONE_PLY + SkipPhase[i]) / SkipSize[i]) % 2)
               continue;  // Retry with an incremented rootDepth
       }
 
@@ -916,7 +916,7 @@ moves_loop: // When in check, search starts from here
      			&&  abs(ss->staticEval) <= Value(160)
      			&&  abs(ss->staticEval) >= Value(5)
      			&&  pos.rule50_count() <= 10
-     			&&  depth >= (ss->ply / 2 + 4) * ONE_PLY
+     			&&  depth >= (ss->ply / 2 + 3) * ONE_PLY
 				&&  (PvNode || improving))	// Endgame extension
      	  extension = ONE_PLY;
 

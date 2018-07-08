@@ -517,7 +517,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
+    Bitboard b, bb, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -610,6 +610,14 @@ namespace {
         score += SliderOnQueen * popcount(b & safeThreats & attackedBy2[Us]);
     }
 
+	// Bonus if enemy queen is blocked
+	b = attackedBy[Them][QUEEN] & ~pos.pieces(Them);
+	bb = attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP] | attackedBy[Us][ROOK];
+	bb |= (attackedBy[Us][KING] & ~attackedBy2[Them]);
+	bb &= ~pos.pieces(Us,QUEEN);
+	if (!(b & ~bb))
+	   score += make_score(0,120);
+	
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);

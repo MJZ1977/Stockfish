@@ -613,6 +613,16 @@ namespace {
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
+	
+	// Non defended pawns : weak in endgame if near opponent king
+	b = pos.pieces(Them, PAWN) & ~attackedBy[Them][PAWN];
+    while (b)
+    {
+        Square s = pop_lsb(&b);
+        if (distance(pos.square<KING>(Them),s) > distance(pos.square<KING>(Us),s) + 1)
+		    score += make_score(0,20);
+    }
+	
 
     if (T)
         Trace::add(THREAT, Us, score);

@@ -615,9 +615,10 @@ namespace {
 	bb = attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP] | attackedBy[Us][ROOK];
 	bb |= (attackedBy[Us][KING] & ~attackedBy2[Them]);
 	bb &= ~pos.pieces(Us,QUEEN);
-	if (!(b & ~bb))
-	   score += make_score(0,120);
-	
+    //No safe Sq for Queen and at least one attacked square in Queen mobility squares
+	if (!(b & ~bb) && (b & bb))
+	   score += make_score(120,0);
+
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);

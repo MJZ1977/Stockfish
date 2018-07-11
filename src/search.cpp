@@ -1050,7 +1050,7 @@ moves_loop: // When in check, search starts from here
       // high (in the latter case search only if value < beta), otherwise let the
       // parent node fail low with value <= alpha and try another move.
       if (PvNode && (moveCount == 1 || (value > alpha && (rootNode || value < beta))
-                     || (rootNode && moveCount <= 2 && value > alpha - Value(5))))
+                     || (rootNode && moveCount <= 2 && value > alpha - Value(2))))
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;

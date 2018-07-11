@@ -517,6 +517,19 @@ void Thread::playout(Move playMove, Stack* ss) {
         qsearch<NonPV>(rootPos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);
         playout(ttMove, ss+1);
     }
+    else
+    {
+		(ss+1)->ply = ss->ply + 1;
+		Depth DD = 1 * ONE_PLY;
+		Value alpha = -VALUE_INFINITE;
+		Value beta = VALUE_INFINITE;
+		::search<PV>(rootPos, ss+1, alpha, beta, DD, false);
+		//tte    = TT.probe(rootPos.key(), ttHit);
+		//ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+		//ttMove     = ttHit ? tte->move() : MOVE_NONE;
+		//if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY)
+		//   playout(ttMove, ss+1);
+	}
     rootPos.undo_move(playMove);
 }
 

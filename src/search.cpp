@@ -509,10 +509,9 @@ void Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
     rootPos.do_move(playMove, st);
-	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960()) << sync_endl;
-	Depth DD = 2 * ONE_PLY;
+	Depth DD = 6 * ONE_PLY;
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
-	if (!ttHit || tte->depth() < DD)
+	if (!ttHit || tte->depth() < DD + ONE_PLY)
 	   {
 		Value alpha = -VALUE_INFINITE;
 		Value beta = VALUE_INFINITE;
@@ -521,6 +520,8 @@ void Thread::playout(Move playMove, Stack* ss) {
 	   }
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
+	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
+	//          << " - Score" << UCI::value(ttValue) << sync_endl;
     if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY){
         (ss+1)->ply = ss->ply + 1;
         //qsearch<NonPV>(rootPos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);

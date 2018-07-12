@@ -413,6 +413,7 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Up  = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
@@ -470,11 +471,16 @@ namespace {
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
 
+        int QueenDistance = 6;
+        if (pos.count<QUEEN>(Us))
+          QueenDistance = distance(pos.square<QUEEN>(Us), ksq + Up);
+
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 64  * kingAttacksCount[Them]
                      + 183 * popcount(kingRing[Us] & weak)
                      + 122 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      - 860 * !pos.count<QUEEN>(Them)
+                     +  20 * pos.count<QUEEN>(Them) * (QueenDistance - 2)
                      -   7 * mg_value(score) / 8
                      +  17 ;
 

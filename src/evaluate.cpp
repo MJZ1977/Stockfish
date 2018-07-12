@@ -480,7 +480,7 @@ namespace {
                      + 183 * popcount(kingRing[Us] & weak)
                      + 122 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      - 860 * !pos.count<QUEEN>(Them)
-                     +  20 * pos.count<QUEEN>(Them) * (QueenDistance - 2)
+                     +  15 * pos.count<QUEEN>(Them) * (QueenDistance - 2)
                      -   7 * mg_value(score) / 8
                      +  17 ;
 

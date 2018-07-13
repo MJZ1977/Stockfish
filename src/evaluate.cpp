@@ -472,8 +472,9 @@ namespace {
         unsafeChecks &= mobilityArea[Them];
 
         int QueenDistance = 6;
-        if (pos.count<QUEEN>(Us))
-          QueenDistance = distance(pos.square<QUEEN>(Us), ksq + Up);
+        if (pos.count<QUEEN>(Us) == 1)
+          QueenDistance = distance(pos.square<QUEEN>(Us),
+		     (relative_rank(Us, ksq) >= RANK_4 ? ksq : ksq + Up));
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 64  * kingAttacksCount[Them]

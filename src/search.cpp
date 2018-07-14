@@ -448,12 +448,12 @@ void Thread::search() {
 	    && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*3/4))    
         {
 		   VPlayout = playout(lastBestMove, ss);
-		   VPlayout = std::min(bestValue + Value(500), std::max(bestValue - Value(500),VPlayout));
-		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/100;
-		   bestValue = rootMoves[0].score;
+		   VPlayout = std::min(bestValue + Value(200), std::max(bestValue - Value(200),VPlayout));
+		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/20;
 		   //sync_cout << "BestValue = " << UCI::value(bestValue)
 	       //          << " - lastEval = " << UCI::value(VPlayout)
 	       //          << " - new = " << UCI::value(rootMoves[0].score)  << sync_endl;
+		   bestValue = rootMoves[0].score;
            std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 		}
 
@@ -527,8 +527,6 @@ Value Thread::playout(Move playMove, Stack* ss) {
 	Depth DD = rootDepth - 6 * ONE_PLY;
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
-	//Value alpha = ttValue - Value(900);
-	//Value beta = ttValue + Value(900);
 	Value lastEval;
 	if (!ttHit || tte->depth() < DD)
 	   {
@@ -536,8 +534,6 @@ Value Thread::playout(Move playMove, Stack* ss) {
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
     Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
-    //ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
-	//ttValue   = qsearch<NonPV>(rootPos, ss+1, alpha, beta, DEPTH_ZERO);
 	lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
 	//          << " - Score" << UCI::value(lastEval) << sync_endl;

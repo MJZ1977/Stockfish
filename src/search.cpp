@@ -515,7 +515,7 @@ void Thread::playout(Move playMove, Stack* ss) {
 	   {
 		Value alpha = -VALUE_INFINITE;
 		Value beta = VALUE_INFINITE;
-	    ::search<NonPV>(rootPos, ss, alpha, beta, DD, false);
+	    ::search<NonPV>(rootPos, ss, alpha, beta, DD, true);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
     //Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

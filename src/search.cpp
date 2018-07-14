@@ -280,7 +280,7 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, alpha, beta, delta, VPlayout;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -445,7 +445,19 @@ void Thread::search() {
       }
 
       if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY)
-        playout(lastBestMove, ss);
+        {
+		   //playout(lastBestMove, ss);
+		//   sync_cout << "BestValue = " << UCI::value(bestValue)
+	    //             << " - lastEval = " << UCI::value(playout(lastBestMove, ss))  << sync_endl;
+		   VPlayout = playout(lastBestMove, ss);
+		   //rootMoves[0].score += VPlayout/100;
+           //std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+		}
+
+	 //if (rootMoves[0].pv[0] != lastBestMove) {
+     //    lastBestMove = rootMoves[0].pv[0];
+     //    lastBestMoveDepth = rootDepth;
+     // } 
 
       // Have we found a "mate in x"?
       if (   Limits.mate
@@ -505,29 +517,34 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
-void Thread::playout(Move playMove, Stack* ss) {
+Value Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
     rootPos.do_move(playMove, st);
-	Depth DD = 6 * ONE_PLY;
+	Depth DD = 8 * ONE_PLY;
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
-	if (!ttHit || tte->depth() < DD + ONE_PLY)
+    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
+	Value lastEval;
+	if (!ttHit || tte->depth() < DD)
 	   {
-		Value alpha = -VALUE_INFINITE;
-		Value beta = VALUE_INFINITE;
-	    ::search<NonPV>(rootPos, ss, alpha, beta, DD, true);
+		Value alpha = ttValue - Value(500);
+		Value beta = ttValue + Value(500);
+	    ::search<NonPV>(rootPos, ss, alpha, beta, DD, false);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
-    //Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
+    ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
+	lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
-	//          << " - Score" << UCI::value(ttValue) << sync_endl;
-    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY){
+	//          << " - Score" << UCI::value(lastEval) << sync_endl;
+    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY 
+	  && abs(ttValue) < Value(8000)){
         (ss+1)->ply = ss->ply + 1;
         //qsearch<NonPV>(rootPos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);
-        playout(ttMove, ss+1);
+        lastEval = playout(ttMove, ss+1);
     }
     rootPos.undo_move(playMove);
+	return lastEval;
 }
 
 namespace {
@@ -624,7 +641,7 @@ namespace {
     // statScore of the previous grandchild. This influences the reduction rules in
     // LMR which are based on the statScore of parent position.
     (ss+2)->statScore = 0;
-
+ 	
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
@@ -635,7 +652,7 @@ namespace {
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
 
-    // At non-PV nodes we check for an early TT cutoff
+   // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
         && tte->depth() >= depth

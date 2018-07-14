@@ -449,7 +449,7 @@ void Thread::search() {
         {
 		   VPlayout = playout(lastBestMove, ss);
 		   VPlayout = std::min(bestValue + Value(500), std::max(bestValue - Value(500),VPlayout));
-		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/5;
+		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/100;
 		   bestValue = rootMoves[0].score;
 		   //sync_cout << "BestValue = " << UCI::value(bestValue)
 	       //          << " - lastEval = " << UCI::value(VPlayout)

@@ -444,7 +444,7 @@ void Thread::search() {
          lastBestMoveDepth = rootDepth;
       }
 
-      if (mainThread && !Threads.stop && Time.elapsed() < Time.optimum() / 2 && rootDepth > 5 * ONE_PLY)
+      if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY)
         playout(lastBestMove, ss);
 
       // Have we found a "mate in x"?
@@ -515,10 +515,10 @@ void Thread::playout(Move playMove, Stack* ss) {
 	   {
 		Value alpha = -VALUE_INFINITE;
 		Value beta = VALUE_INFINITE;
-	    ::search<NonPV>(rootPos, ss+1, alpha, beta, DD, false);
+	    ::search<NonPV>(rootPos, ss, alpha, beta, DD, false);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
-    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+    //Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
 	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
 	//          << " - Score" << UCI::value(ttValue) << sync_endl;

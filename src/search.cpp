@@ -512,6 +512,8 @@ void Thread::search() {
 void Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
+    ss->currentMove = playMove;
+    ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
     (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
 	Depth DD = std::min(rootDepth - 8 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);

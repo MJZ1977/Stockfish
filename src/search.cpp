@@ -102,6 +102,8 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
+  Value playout(Position& pos, Move playMove, Search::Stack*);
+  
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -280,7 +282,7 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta, VPlayout = Value(0);
+  Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -444,24 +446,6 @@ void Thread::search() {
          lastBestMoveDepth = rootDepth;
       }
 
-      if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY
-	    && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*1/2))    
-        {
-		   VPlayout = playout(lastBestMove, ss);
-		   VPlayout = std::min(bestValue + Value(200), std::max(bestValue - Value(200),VPlayout));
-		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/20;
-		   //sync_cout << "BestValue = " << UCI::value(bestValue)
-	       //          << " - lastEval = " << UCI::value(VPlayout)
-	       //          << " - new = " << UCI::value(rootMoves[0].score)  << sync_endl;
-		   bestValue = rootMoves[0].score;
-           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
-		}
-
-	 if (rootMoves[0].pv[0] != lastBestMove) {
-         lastBestMove = rootMoves[0].pv[0];
-         lastBestMoveDepth = rootDepth;
-      } 
-
       // Have we found a "mate in x"?
       if (   Limits.mate
           && bestValue >= VALUE_MATE_IN_MAX_PLY
@@ -518,36 +502,6 @@ void Thread::search() {
   if (skill.enabled())
       std::swap(rootMoves[0], *std::find(rootMoves.begin(), rootMoves.end(),
                 skill.best ? skill.best : skill.pick_best(multiPV)));
-}
-
-Value Thread::playout(Move playMove, Stack* ss) {
-    StateInfo st;
-    bool ttHit;
-    rootPos.do_move(playMove, st);
-	Depth DD = 8 * ONE_PLY;
-    TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
-    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
-	Value lastEval;
-	Value alpha = ttValue - Value(300);
-	Value beta = ttValue + Value(300);
-	if (!ttHit || tte->depth() < DD)
-	   {
-	    ttValue = ::search<NonPV>(rootPos, ss, alpha, beta, DD, false);
-	    tte    = TT.probe(rootPos.key(), ttHit);
-	   }
-    ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
-    Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
-	lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
-	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
-	//          << " - Score" << UCI::value(lastEval) << sync_endl;
-    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < 60 
-	  && abs(ttValue) < Value(8000)){
-        (ss+1)->ply = ss->ply + 1;
-        //qsearch<NonPV>(rootPos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);
-        lastEval = playout(ttMove, ss+1);
-    }
-    rootPos.undo_move(playMove);
-	return lastEval;
 }
 
 namespace {
@@ -1120,6 +1074,17 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+									
+          if (!Threads.stop && depth > 5 * ONE_PLY
+	        && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*1/2))    
+             {
+	           Value VPlayout = playout(pos, move, ss);
+	           VPlayout = std::min(value + Value(200), std::max(value - Value(200),VPlayout));
+	           value += (VPlayout - value)/20;
+	           //sync_cout << "BestValue = " << UCI::value(bestValue)
+	            //          << " - lastEval = " << UCI::value(VPlayout)
+	            //          << " - new = " << UCI::value(rootMoves[0].score)  << sync_endl;
+	          }
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
@@ -1439,6 +1404,41 @@ moves_loop: // When in check, search starts from here
 
     return bestValue;
   }
+
+ // playout : play game for several plies
+ Value playout(Position& pos, Move playMove, Stack* ss) {
+    StateInfo st;
+    bool ttHit;
+    pos.do_move(playMove, st);
+	ss->currentMove = playMove;
+    ss->contHistory = pos.this_thread()->contHistory[pos.moved_piece(playMove)][to_sq(playMove)].get();
+
+	Depth DD = 8 * ONE_PLY;
+    TTEntry* tte    = TT.probe(pos.key(), ttHit);
+    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
+	Value lastEval;
+	//Value alpha = ttValue - Value(300);
+	//Value beta = ttValue + Value(300);
+	if (!ttHit || tte->depth() < DD)
+	   {
+	    ttValue = ::search<NonPV>(pos, ss, ttValue, ttValue-1, DD, true);
+	    tte    = TT.probe(pos.key(), ttHit);
+	   }
+    ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
+    Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
+	lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
+	sync_cout << "PlayMove " << UCI::move(playMove, pos.is_chess960())
+	          << " - Score" << UCI::value(lastEval) 
+			  << " - Ply" << (int)ss->ply << sync_endl;
+    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(pos).size() && ss->ply < 60 
+	  && abs(ttValue) < Value(8000)){
+        (ss+1)->ply = ss->ply + 1;
+        //qsearch<NonPV>(pos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);
+        lastEval = playout(pos, ttMove, ss+1);
+    }
+    pos.undo_move(playMove);
+	return lastEval;
+}
 
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to

@@ -444,7 +444,8 @@ void Thread::search() {
          lastBestMoveDepth = rootDepth;
       }
 
-      if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY)
+      if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY
+	    && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*3/4))
         {
 		   playout(lastBestMove, ss);
 		}

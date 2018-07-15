@@ -445,7 +445,7 @@ void Thread::search() {
       }
 
       if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY
-	    && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*3/4))    
+	    && !(Limits.use_time_management() && Time.elapsed() < Time.optimum()*1/2))    
         {
 		   VPlayout = playout(lastBestMove, ss);
 		   VPlayout = std::min(bestValue + Value(200), std::max(bestValue - Value(200),VPlayout));
@@ -524,20 +524,23 @@ Value Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
     rootPos.do_move(playMove, st);
-	Depth DD = rootDepth - 6 * ONE_PLY;
+	Depth DD = 8 * ONE_PLY;
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
 	Value lastEval;
+	Value alpha = ttValue - Value(300);
+	Value beta = ttValue + Value(300);
 	if (!ttHit || tte->depth() < DD)
 	   {
-	    ttValue = ::search<NonPV>(rootPos, ss, ttValue, ttValue+1, DD, false);
+	    ttValue = ::search<NonPV>(rootPos, ss, alpha, beta, DD, false);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
+    ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : Value(0);
     Move ttMove     = ttHit ? tte->move() : MOVE_NONE;
 	lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
 	//          << " - Score" << UCI::value(lastEval) << sync_endl;
-    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < 40 
+    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < 60 
 	  && abs(ttValue) < Value(8000)){
         (ss+1)->ply = ss->ply + 1;
         //qsearch<NonPV>(rootPos, ss+1, ttValue-1, ttValue, DEPTH_ZERO);
@@ -574,7 +577,7 @@ namespace {
         return qsearch<NT>(pos, ss, alpha, beta);
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
-    assert(PvNode || (alpha == beta - 1));
+   // assert(PvNode || (alpha == beta - 1));
     assert(DEPTH_ZERO < depth && depth < DEPTH_MAX);
     assert(!(PvNode && cutNode));
     assert(depth / ONE_PLY * ONE_PLY == depth);

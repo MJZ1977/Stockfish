@@ -512,13 +512,13 @@ void Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
     bool searchNode = false;
-	ss->currentMove = playMove;
-    ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+	//ss->currentMove = playMove;
+    //ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
     rootPos.do_move(playMove, st);
 	Depth DD = std::min(rootDepth - 8 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
-	if (!ttHit || tte->depth() < DD)
+	if ((!ttHit || tte->depth() < DD) && MoveList<LEGAL>(rootPos).size())
 	   {
 	    ::search<NonPV>(rootPos, ss, ttValue - 1, ttValue, DD, true);
 	    tte    = TT.probe(rootPos.key(), ttHit);

@@ -511,25 +511,25 @@ void Thread::search() {
 void Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
-    bool searchNode = false;
-	//ss->currentMove = playMove;
-    //ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+    //bool searchNode = false;
+	ss->currentMove = playMove;
+    ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+    (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
 	Depth DD = std::min(rootDepth - 8 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
 	if ((!ttHit || tte->depth() < DD) && MoveList<LEGAL>(rootPos).size())
 	   {
-	    ::search<NonPV>(rootPos, ss, ttValue - 1, ttValue, DD, true);
+	    ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, DD, true);
 	    tte    = TT.probe(rootPos.key(), ttHit);
-        searchNode = true;
+        //searchNode = true;
 	   }
     Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
 
     if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2){
         // If searched, no need to increase ply
-        if (!searchNode)
-          (ss+1)->ply = ss->ply + 1;
+        //if (!searchNode)
         playout(ttMove, ss+1);
     }
     rootPos.undo_move(playMove);

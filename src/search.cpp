@@ -506,33 +506,36 @@ void Thread::search() {
 }
 
 // Playout a game, in the hope of meaningfully filling the TT beyond the horizon
-void Thread::playout(Move playMove, Stack* ss) {
+Value Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
-
-    if (     Threads.stop
-        ||  (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*7/8))
-        return;
+    Value lastEval;		//value at the end of the playout
 
     ss->currentMove = playMove;
     ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
     (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
-	Depth newDepth  = std::min(3 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
+	Depth newDepth  = std::min(9 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
+
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
 	   {
-	    ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, true);
+	    ttValue = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
     Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
+    lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 
-    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2)
-        playout(ttMove, ss+1);
+	sync_cout << "PlayMove " << UCI::move(ttMove, rootPos.is_chess960())
+	          << " - Score" << UCI::value(lastEval) << sync_endl;
+
+    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2
+      && !(Threads.stop || (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*7/8)))
+        lastEval = playout(ttMove, ss+1);
 
     rootPos.undo_move(playMove);
-	return;
+	return lastEval;
 }
 
 namespace {

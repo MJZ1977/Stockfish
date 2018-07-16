@@ -511,23 +511,24 @@ Value Thread::playout(Move playMove, Stack* ss) {
     bool ttHit;
     Value lastEval;		//value at the end of the playout
 
-    ss->currentMove = playMove;
-    ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+    //ss->currentMove = playMove;
+    //ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
     (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
-	Depth newDepth  = std::min(9 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
+	Depth newDepth  = std::min(2 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
 
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
 	   {
-	    ttValue = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
+	    //sync_cout << "Search " <<  sync_endl;
+	    ttValue   = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, true);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
     Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
     lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 
-	sync_cout << "PlayMove " << UCI::move(ttMove, rootPos.is_chess960())
+	sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
 	          << " - Score" << UCI::value(lastEval) << sync_endl;
 
     if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2
@@ -722,7 +723,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck)
+    if (inCheck || cutNode)
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
@@ -1137,10 +1138,11 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
+          bestMove = move;
 
           if (value > alpha)
           {
-              bestMove = move;
+              //bestMove = move;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);

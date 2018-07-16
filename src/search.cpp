@@ -511,14 +511,14 @@ void Thread::playout(Move playMove, Stack* ss) {
     bool ttHit;
 
     if (     Threads.stop
-        ||  (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*3/4))
+        ||  (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*7/8))
         return;
 
     ss->currentMove = playMove;
     ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
     (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
-	Depth newDepth  = std::min(2 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
+	Depth newDepth  = std::min(3 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())

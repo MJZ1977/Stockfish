@@ -521,8 +521,7 @@ Value Thread::playout(Move playMove, Stack* ss) {
 
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
 	   {
-	    //sync_cout << "Search " <<  sync_endl;
-	    ttValue   = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, true);
+	    ttValue   = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
 	    tte    = TT.probe(rootPos.key(), ttHit);
 	   }
     Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
@@ -723,7 +722,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck || cutNode)
+    if (inCheck)
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
@@ -1138,11 +1137,10 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
-          bestMove = move;
 
           if (value > alpha)
           {
-              //bestMove = move;
+              bestMove = move;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);

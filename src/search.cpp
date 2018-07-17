@@ -539,7 +539,7 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, bestMove2;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, improving;
@@ -586,7 +586,7 @@ namespace {
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     (ss+1)->ply = ss->ply + 1;
-    ss->currentMove = (ss+1)->excludedMove = bestMove = MOVE_NONE;
+    ss->currentMove = (ss+1)->excludedMove = bestMove = bestMove2 = MOVE_NONE;
     ss->contHistory = thisThread->contHistory[NO_PIECE][0].get();
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
@@ -1102,6 +1102,7 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
+          bestMove2 = move;
 
           if (value > alpha)
           {
@@ -1175,7 +1176,8 @@ moves_loop: // When in check, search starts from here
         tte->save(posKey, value_to_tt(bestValue, ss->ply),
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
-                  depth, bestMove, ss->staticEval);
+                  depth, (bestMove ? bestMove : bestMove2)
+                  , ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

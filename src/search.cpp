@@ -509,6 +509,7 @@ void Thread::search() {
 Value Thread::playout(Move playMove, Stack* ss) {
     StateInfo st;
     bool ttHit;
+	int i=0;
     Value lastEval;		//value at the end of the playout
 
     //ss->currentMove = playMove;
@@ -518,17 +519,29 @@ Value Thread::playout(Move playMove, Stack* ss) {
 	Depth newDepth  = std::min(2 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
-
-	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
+	Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
+	
+	
+	if ((!ttHit || tte->depth() < newDepth - ONE_PLY) && MoveList<LEGAL>(rootPos).size())
+	ttValue += Value(100);
 	   {
-	    ttValue   = ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
-	    tte    = TT.probe(rootPos.key(), ttHit);
+	    while (i < 10)
+		{
+			::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
+			tte    = TT.probe(rootPos.key(), ttHit);
+			ttMove  = ttHit ? tte->move() : MOVE_NONE;
+			if (ttMove)
+			   break;
+			i++;
+			ttValue -= Value(50);
+		}
 	   }
-    Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
+    ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
 
-	sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
-	          << " - Score" << UCI::value(lastEval) << sync_endl;
+	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
+	//          << " - iter " << i
+	//          << " - Score" << UCI::value(lastEval) << sync_endl;
 
     if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2
       && !(Threads.stop || (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*7/8)))

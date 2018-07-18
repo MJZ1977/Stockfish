@@ -526,8 +526,8 @@ void Thread::playout(Move playMove, Stack* ss) {
 	
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
 	   {
-	    ttValue += Value(160);
-		while (i < 5)
+	    ttValue += Value(100);
+		while (i < 3)
 		{
 	       ::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, true);
 	       tte    = TT.probe(rootPos.key(), ttHit);
@@ -535,7 +535,7 @@ void Thread::playout(Move playMove, Stack* ss) {
 		   i++;
 		   if (ttMove)
 			   break;
-		   ttValue -= Value(80);
+		   ttValue -= Value(100);
 		}
 	   }
 

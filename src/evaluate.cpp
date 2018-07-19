@@ -214,6 +214,7 @@ namespace {
     // possibly via x-ray or by one pawn and one piece. Diagonal x-ray through
     // pawn or squares attacked by 2 pawns are not explicitly added.
     Bitboard attackedBy2[COLOR_NB];
+    Bitboard attackedBy3[COLOR_NB];
 
     // kingRing[color] are the squares adjacent to the king, plus (only for a
     // king on its first rank) the squares two ranks in front. For instance,
@@ -262,6 +263,7 @@ namespace {
     attackedBy[Us][PAWN] = pe->pawn_attacks(Us);
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us]            = attackedBy[Us][KING] & attackedBy[Us][PAWN];
+    attackedBy3[Us]            = Bitboard(0);
 
     // Init our king safety tables only if we are going to use them
     if (pos.non_pawn_material(Them) >= RookValueMg + KnightValueMg)
@@ -311,6 +313,7 @@ namespace {
             b &= LineBB[pos.square<KING>(Us)][s];
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
+        attackedBy3[Us] |= attackedBy2[Us] & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
@@ -563,7 +566,7 @@ namespace {
            & attackedBy[Us][ALL_PIECES]
            & attackedBy[Them][ALL_PIECES] & ~attackedBy2[Them];
 		b |= nonPawnEnemies
-		   & attackedBy2[Us] & ~(attackedBy2[Them] & attackedBy[Them][PAWN]);
+		   & attackedBy2[Us] & ~(attackedBy2[Them] & attackedBy[Them][PAWN]) & ~attackedBy3[Them];
         score += Overload * popcount(b);
     }
 

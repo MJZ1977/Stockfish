@@ -280,7 +280,7 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, alpha, beta, delta, VPlayout;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -444,6 +444,25 @@ void Thread::search() {
          lastBestMoveDepth = rootDepth;
       }
 
+		// Playout and correct
+      if (mainThread && !Threads.stop && rootDepth > 5 * ONE_PLY)
+        {
+		   VPlayout = playout(lastBestMove, ss, bestValue);
+		   VPlayout = std::min(bestValue + Value(200), std::max(bestValue - Value(200),VPlayout));
+		   rootMoves[0].score += (VPlayout - rootMoves[0].score)/50;
+		   //sync_cout << "BestValue = " << UCI::value(bestValue)
+	       //          << " - lastEval = " << UCI::value(VPlayout)
+	       //          << " - new = " << UCI::value(rootMoves[0].score)  << sync_endl;
+		   bestValue = rootMoves[0].score;
+           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+		}
+
+	 if (rootMoves[0].pv[0] != lastBestMove) {
+         lastBestMove = rootMoves[0].pv[0];
+         lastBestMoveDepth = rootDepth;
+      }
+
+
       // Have we found a "mate in x"?
       if (   Limits.mate
           && bestValue >= VALUE_MATE_IN_MAX_PLY
@@ -490,8 +509,8 @@ void Thread::search() {
               }
           }
 
-		  if (mainThread && !Threads.stop)
-		  		   playout(lastBestMove, ss);
+		  //if (mainThread && !Threads.stop)
+		  //		   playout(lastBestMove, ss, bestValue);
   }
 
   if (!mainThread)
@@ -506,26 +525,27 @@ void Thread::search() {
 }
 
 // Playout a game, in the hope of meaningfully filling the TT beyond the horizon
-Value Thread::playout(Move playMove, Stack* ss) {
+Value Thread::playout(Move playMove, Stack* ss, Value prevEval) {
     StateInfo st;
     bool ttHit;
 	int i=0;
     Value lastEval;		//value at the end of the playout
 
-    //ss->currentMove = playMove;
-    //ss->contHistory = contHistory[rootPos.moved_piece(playMove)][to_sq(playMove)].get();
+	if (!rootPos.legal(playMove))
+	  return prevEval;
+
     (ss+1)->ply = ss->ply + 1;
     rootPos.do_move(playMove, st);
-	Depth newDepth  = std::min(2 * ONE_PLY + rootDepth / 4, (MAX_PLY - ss->ply) * ONE_PLY);
+	Depth newDepth  = std::min(rootDepth - 2 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
-    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
+    Value ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : (ss->ply%2 == 1? -prevEval : prevEval);
 	Move ttMove  = ttHit ? tte->move() : MOVE_NONE;
-	
-	
-	if ((!ttHit || tte->depth() < newDepth - ONE_PLY) && MoveList<LEGAL>(rootPos).size())
-	ttValue += Value(100);
+
+	if ((!ttHit || tte->depth() < newDepth - ONE_PLY) && MoveList<LEGAL>(rootPos).size()
+	    && ttValue != VALUE_NONE)
+	ttValue += Value(1000);
 	   {
-	    while (i < 10)
+	    while (i < 20)
 		{
 			::search<NonPV>(rootPos, ss+1, ttValue - 1, ttValue, newDepth, false);
 			tte    = TT.probe(rootPos.key(), ttHit);
@@ -533,19 +553,20 @@ Value Thread::playout(Move playMove, Stack* ss) {
 			if (ttMove)
 			   break;
 			i++;
-			ttValue -= Value(50);
+			ttValue -= Value(100);
 		}
 	   }
     ttValue   = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
-    lastEval = (ss->ply%2 == 1? ttValue : -ttValue);
+    lastEval = ttValue ? (ss->ply%2 == 1? ttValue : -ttValue) : prevEval;
 
-	//sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
-	//          << " - iter " << i
-	//          << " - Score" << UCI::value(lastEval) << sync_endl;
+	sync_cout << "PlayMove " << UCI::move(playMove, rootPos.is_chess960())
+	          << " - iter " << i
+	          << " - Score" << UCI::value(lastEval) << sync_endl;
 
-    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 2
+    if(ttHit && ttMove != MOVE_NONE && MoveList<LEGAL>(rootPos).size() && ss->ply < MAX_PLY - 10
+      && rootPos.rule50_count() < 50 && ttValue != VALUE_NONE
       && !(Threads.stop || (Limits.use_time_management() && Time.elapsed() >= Time.optimum()*7/8)))
-        lastEval = playout(ttMove, ss+1);
+        lastEval = playout(ttMove, ss+1, lastEval);
 
     rootPos.undo_move(playMove);
 	return lastEval;

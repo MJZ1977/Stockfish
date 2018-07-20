@@ -263,6 +263,15 @@ namespace {
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us]            = attackedBy[Us][KING] & attackedBy[Us][PAWN];
 
+	b = attackedBy[Us][PAWN] ^ attackedBy2[Us];
+	Square s;
+	while (b)
+	{
+		s = pop_lsb(&b);
+		if (more_than_one(PawnAttacks[Them][s] & pos.pieces(Us, PAWN)))
+		    attackedBy2[Us] |= s;
+	}
+	
     // Init our king safety tables only if we are going to use them
     if (pos.non_pawn_material(Them) >= RookValueMg + KnightValueMg)
     {

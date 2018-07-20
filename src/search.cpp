@@ -526,6 +526,8 @@ Value Thread::playout(Move playMove, Stack* ss) {
 	Depth newDepth  = std::min(rootDepth - 8 * ONE_PLY, (MAX_PLY - ss->ply) * ONE_PLY);
     TTEntry* tte    = TT.probe(rootPos.key(), ttHit);
     playoutValue    = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_ZERO;
+	if (playoutValue == VALUE_NONE)
+	   return playoutValue;
 	if ((!ttHit || tte->depth() < newDepth) && MoveList<LEGAL>(rootPos).size())
 	   {
 	    playoutValue = ::search<NonPV>(rootPos, ss+1, playoutValue - 1, playoutValue, newDepth, true);

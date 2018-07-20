@@ -566,7 +566,8 @@ namespace {
            & attackedBy[Us][ALL_PIECES]
            & attackedBy[Them][ALL_PIECES] & ~attackedBy2[Them];
 		b |= nonPawnEnemies
-		   & attackedBy2[Us] & ~(attackedBy2[Them] & attackedBy[Them][PAWN]) & ~attackedBy3[Them];
+		   & attackedBy2[Us] & attackedBy2[Them] 
+		   & ~attackedBy3[Them];
         score += Overload * popcount(b);
     }
 

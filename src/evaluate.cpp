@@ -333,7 +333,7 @@ namespace {
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
 				if (Pt == KNIGHT)
 				   if (((DarkSquares & s) && !(pos.pieces(Them, BISHOP) & DarkSquares))
-				   || (!(DarkSquares & s) && (pos.pieces(Them, BISHOP) & DarkSquares)))
+				   || ((~DarkSquares & s) && !(pos.pieces(Them, BISHOP) & ~DarkSquares)))
 				     score += make_score(24, 8) * 2;
 			}
 

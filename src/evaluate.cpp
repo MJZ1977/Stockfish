@@ -121,7 +121,7 @@ namespace {
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
   constexpr Score Outpost[][2] = {
-    { S(16, 4), S(24, 8) }, // Knight
+    { S(22, 6), S(36,12) }, // Knight
     { S( 9, 2), S(15, 5) }  // Bishop
   };
 
@@ -334,7 +334,7 @@ namespace {
 				if (Pt == KNIGHT)
 				   if (((DarkSquares & s) && !(pos.pieces(Them, BISHOP) & DarkSquares))
 				   || ((~DarkSquares & s) && !(pos.pieces(Them, BISHOP) & ~DarkSquares)))
-				     score += make_score(24, 8) * 2;
+				     score += make_score(6, 2);
 			}
 
             else if (bb &= b & ~pos.pieces(Us))

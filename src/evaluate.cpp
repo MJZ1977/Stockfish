@@ -334,7 +334,7 @@ namespace {
 				if (Pt == KNIGHT)
 				   if (((DarkSquares & s) && !(pos.pieces(Them, BISHOP) & DarkSquares))
 				   || ((~DarkSquares & s) && !(pos.pieces(Them, BISHOP) & ~DarkSquares)))
-				     score += make_score(6, 2);
+				     score += make_score(10, 2);
 			}
 
             else if (bb &= b & ~pos.pieces(Us))

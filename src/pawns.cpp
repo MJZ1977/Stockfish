@@ -96,7 +96,10 @@ namespace {
         File f = file_of(s);
 
         e->semiopenFiles[Us]   &= ~(1 << f);
-        e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+        if (!(theirPawns & (s + Up)))
+		    e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+		else
+		    e->pawnAttacksSpan[Us] |= PawnAttacks[Us][s];
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);

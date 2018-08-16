@@ -699,10 +699,10 @@ namespace {
             || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
             bonus = bonus / 2;
 
-        if (pos.side_to_move()==Us)
-           bonus = bonus * 17 / 16;
-		else
-		   bonus = bonus * 15 / 16;
+        //if (pos.side_to_move()==Us)
+        //   bonus = bonus * 17 / 16;
+		//else
+		//   bonus = bonus * 15 / 16;
 
         score += bonus + PassedFile[file_of(s)];
     }

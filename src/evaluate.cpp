@@ -700,7 +700,7 @@ namespace {
             bonus = bonus / 2;
 
         if (pos.side_to_move()==Us)
-           bonus = bonus * 9 / 8;
+           bonus = bonus * 17 / 16;
 
         score += bonus + PassedFile[file_of(s)];
     }

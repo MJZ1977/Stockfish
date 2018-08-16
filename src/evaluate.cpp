@@ -701,6 +701,8 @@ namespace {
 
         if (pos.side_to_move()==Us)
            bonus = bonus * 17 / 16;
+		else
+		   bonus = bonus * 15 / 16;
 
         score += bonus + PassedFile[file_of(s)];
     }

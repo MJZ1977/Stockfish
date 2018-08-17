@@ -258,10 +258,18 @@ void MainThread::search() {
 
       // Vote according to score and depth
       for (Thread* th : Threads)
-          votes[th->rootMoves[0].pv[0]] +=  int(th->rootMoves[0].score - minScore)
-                                          - int(th->rootMoves[0].previousScore / 4)
-                                          + int(th->completedDepth);
-
+	  {
+          votes[th->rootMoves[0].pv[0]] =  std::max(votes[th->rootMoves[0].pv[0]],
+                                          int(th->rootMoves[0].score - minScore)
+                                          //- int(th->rootMoves[0].previousScore / 16)
+                                          + int(th->completedDepth));
+	   //sync_cout << " currmove " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
+	   //          << " score " << th->rootMoves[0].score
+	   //          << " prevScore " << th->rootMoves[0].previousScore
+	   //          << " min score " << minScore
+	   //          << " vote " << votes[th->rootMoves[0].pv[0]] << sync_endl;
+	  }
+	  
       // Select best thread
       int bestVote = votes[this->rootMoves[0].pv[0]];
       for (Thread* th : Threads)

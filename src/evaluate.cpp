@@ -481,7 +481,7 @@ namespace {
                      +   4 * tropism
                      - 873 * !pos.count<QUEEN>(Them)
                      -   6 * mg_value(score) / 8
-                     +  42 * (pos.side_to_move()==Us ? -1 : 1)
+                     +  58 * (pos.side_to_move()==Us ? -1 : 1)
                      -   30;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation

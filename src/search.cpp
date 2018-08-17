@@ -246,40 +246,20 @@ void MainThread::search() {
       && !Skill(Options["Skill Level"]).enabled()
       &&  rootMoves[0].pv[0] != MOVE_NONE)
   {
-      std::map<Move, int> votes;
-      Value minScore = this->rootMoves[0].score;
-
-      // Find out minimum score and reset votes for moves which can be voted
-      for (Thread* th: Threads)
-      {
-          minScore = std::min(minScore, th->rootMoves[0].score);
-          votes[th->rootMoves[0].pv[0]] = 0;
-      }
-
-      // Vote according to score and depth
-      for (Thread* th : Threads)
+      int bestVote = -VALUE_INFINITE;
+	  for (Thread* th : Threads)
 	  {
-          votes[th->rootMoves[0].pv[0]] =  std::max(votes[th->rootMoves[0].pv[0]],
-                                          int(th->rootMoves[0].score - minScore)
-                                          //- int(th->rootMoves[0].previousScore / 16)
-                                          + int(th->completedDepth));
-	   //sync_cout << " currmove " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
-	   //          << " score " << th->rootMoves[0].score
-	   //          << " prevScore " << th->rootMoves[0].previousScore
-	   //          << " min score " << minScore
-	   //          << " vote " << votes[th->rootMoves[0].pv[0]] << sync_endl;
+          if (int(th->rootMoves[0].score) + int(th->completedDepth) > bestVote)
+		  {
+		     bestVote = int(th->rootMoves[0].score - th->rootMoves[0].previousScore / 4);
+			 bestThread = th;
+		  }
+ 	   /*sync_cout << " currmove " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
+	             << " score " << th->rootMoves[0].score
+	             << " prevScore " << th->rootMoves[0].previousScore
+	             << " depth " << th->completedDepth
+	             << " BestVote " << bestVote << sync_endl;*/
 	  }
-	  
-      // Select best thread
-      int bestVote = votes[this->rootMoves[0].pv[0]];
-      for (Thread* th : Threads)
-      {
-          if (votes[th->rootMoves[0].pv[0]] > bestVote)
-          {
-              bestVote = votes[th->rootMoves[0].pv[0]];
-              bestThread = th;
-          }
-      }
   }
 
   previousScore = bestThread->rootMoves[0].score;

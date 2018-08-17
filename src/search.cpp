@@ -198,7 +198,6 @@ void MainThread::search() {
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
-  int i = 1;
 
   if (rootMoves.empty())
   {
@@ -211,11 +210,7 @@ void MainThread::search() {
   {
       for (Thread* th : Threads)
           if (th != this)
-          {
-			  th->thIdx = i;
               th->start_searching();
-              i++;
-		  }
 
       Thread::search(); // Let's start searching!
   }
@@ -263,14 +258,9 @@ void MainThread::search() {
 
       // Vote according to score and depth
       for (Thread* th : Threads)
-      {
           votes[th->rootMoves[0].pv[0]] +=  int(th->rootMoves[0].score - minScore)
+                                          - int(th->rootMoves[0].previousScore / 4)
                                           + int(th->completedDepth);
-	 //  sync_cout << "Thread Idx " << th->thIdx
-	 //            << " currmove " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
-	 //            << " score " << th->rootMoves[0].score
-	 //            << " vote " << votes[th->rootMoves[0].pv[0]] << sync_endl;
-	  }
 
       // Select best thread
       int bestVote = votes[this->rootMoves[0].pv[0]];
@@ -392,7 +382,7 @@ void Thread::search() {
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(18 + 4 * this->thIdx);
+              delta = Value(18);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 

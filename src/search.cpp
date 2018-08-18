@@ -342,12 +342,14 @@ void Thread::search() {
       if (idx > 0)
       {
 		  int skipSize = std::min(int(Options["Threads"]) - 1, 4);
-          if ((rootDepth / ONE_PLY - idx) % skipSize > 0)
+		  skipSize = std::max(1, skipSize - rootDepth / ONE_PLY / 8);	// at high depths, mainthread need more help
+          if ((rootDepth / ONE_PLY - idx - 1) % skipSize > 0)
               continue;  // Retry with an incremented rootDepth
       }
 
-     // sync_cout << " thread " << idx
-	 //           << " searching at depth " << rootDepth / ONE_PLY << sync_endl;
+      //sync_cout << " thread " << idx
+	  //          << " time " << Time.elapsed() + 1
+	  //          << " searching at depth " << rootDepth / ONE_PLY << sync_endl;
 
       // Age out PV variability metric
       if (mainThread)

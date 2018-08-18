@@ -342,7 +342,7 @@ void Thread::search() {
       if (idx > 0)
       {
 		  int skipSize = std::min(int(Options["Threads"]) - 1, 4);
-		  skipSize = std::max(1, skipSize - rootDepth / ONE_PLY / 8);	// at high depths, mainthread need more help
+		  skipSize = std::max(1, skipSize - rootDepth / ONE_PLY / 10);	// at high depths, mainthread need more help
           if ((rootDepth / ONE_PLY - idx - 1) % skipSize > 0)
               continue;  // Retry with an incremented rootDepth
       }

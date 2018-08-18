@@ -341,7 +341,7 @@ void Thread::search() {
       // Distribute search depths across the helper threads
       if (idx > 0)
       {
-		  int skipSize = std::min(int(Options["Threads"]),8);
+		  int skipSize = std::min(int(Options["Threads"]) - 1, 4);
           if ((rootDepth / ONE_PLY - idx) % skipSize > 0)
               continue;  // Retry with an incremented rootDepth
       }

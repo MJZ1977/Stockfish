@@ -923,7 +923,7 @@ moves_loop: // When in check, search starts from here
                && !moveCountPruning
                &&  pos.see_ge(move))
           extension = ONE_PLY;
-	  else if (   depth >= 8 * ONE_PLY &&
+	  else if (   depth <= 6 * ONE_PLY &&
 	           (ss-2)->staticEval != VALUE_NONE &&
 	            ss->staticEval != VALUE_NONE &&
 	           (abs(ss->staticEval - (ss-2)->staticEval) >= Value(800)))

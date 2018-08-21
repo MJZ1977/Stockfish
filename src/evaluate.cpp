@@ -140,6 +140,10 @@ namespace {
     S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(36, 38)
   };
 
+  constexpr Score ThreatByPawnPush[PIECE_TYPE_NB] = {
+    S(0, 0), S(0, 0), S(40, 36), S(45, 40), S(45, 40), S(45, 40), S(45, 40)
+  };
+
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
     S(0, 0), S(5, 18), S(12, 23), S(10, 31), S(57, 62), S(163, 167), S(271, 250)
@@ -169,7 +173,7 @@ namespace {
   constexpr Score RookOnPawn         = S( 10, 30);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 23, 76);
-  constexpr Score ThreatByPawnPush   = S( 45, 40);
+  //constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
   constexpr Score TrappedRook        = S( 92,  0);
@@ -584,7 +588,12 @@ namespace {
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & pos.pieces(Them);
-    score += ThreatByPawnPush * popcount(b);
+    //score += ThreatByPawnPush * popcount(b);
+    while (b)
+    {
+        Square s = pop_lsb(&b);
+        score += ThreatByPawnPush[type_of(pos.piece_on(s))];
+	}
 
     // Our safe or protected pawns
     b = pos.pieces(Us, PAWN) & safe;

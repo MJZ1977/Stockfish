@@ -738,7 +738,10 @@ namespace {
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =   (ss->staticEval >= (ss-2)->staticEval
-               || (ss-2)->staticEval == VALUE_NONE) && (ss-1)->statScore <= 4000;
+               || (ss-2)->staticEval == VALUE_NONE) && (ss-1)->statScore <= 12000;
+
+    //if (improving && ss->statScore != 0)
+    //   sync_cout << "imroving, statScore = " << ss->statScore << sync_endl;
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !rootNode

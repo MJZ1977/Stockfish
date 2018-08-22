@@ -967,6 +967,8 @@ moves_loop: // When in check, search starts from here
                   continue;
       }
 
+	  bool sacrifice = !pos.see_ge(move,Value(-500));
+	  
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
 
@@ -1013,14 +1015,6 @@ moves_loop: // When in check, search starts from here
               if (cutNode)
                   r += 2 * ONE_PLY;
 
-              // Decrease reduction for sacrifices
-		      if (!pos.see_ge(move, Value(-400)))
-                  r -= ONE_PLY;
-        /*   if (!pos.see_ge(move, Value(-500)))
-		    sync_cout << "TacticLine " << UCI::pv(pos, depth, alpha, beta)
-		              << " Depth = " << depth / ONE_PLY
-		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl; */
-
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and
               // hence break make_move(). (~5 Elo)
@@ -1046,10 +1040,18 @@ moves_loop: // When in check, search starts from here
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
+		  
+		  Value ralpha = alpha - Value(100) * sacrifice;
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+          value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
 
-          doFullDepthSearch = (value > alpha && d != newDepth);
+          doFullDepthSearch = (value > ralpha && d != newDepth);
+		  
+		  /*if (sacrifice && doFullDepthSearch)
+		  	    sync_cout << "ralpha = " << ralpha 
+		              << " value = " << value
+					  << " Depth = " << depth / ONE_PLY
+		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;

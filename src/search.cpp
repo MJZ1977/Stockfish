@@ -923,11 +923,6 @@ moves_loop: // When in check, search starts from here
                && !moveCountPruning
                &&  pos.see_ge(move))
           extension = ONE_PLY;
-	  else if (   depth >= 8 * ONE_PLY &&
-	           (ss-2)->staticEval != VALUE_NONE &&
-	            ss->staticEval != VALUE_NONE &&
-	           (abs(ss->staticEval - (ss-2)->staticEval) >= Value(600)))
-		  extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -971,6 +966,13 @@ moves_loop: // When in check, search starts from here
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY)))
                   continue;
       }
+
+   /*   if (!pos.see_ge(move, Value(-500)))
+		    sync_cout << "TacticLine " << UCI::pv(pos, depth, alpha, beta)
+		              << " Depth = " << depth / ONE_PLY
+		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl; */
+      if (!pos.see_ge(move, Value(-400)))
+         newDepth = std::max(newDepth - ONE_PLY, DEPTH_ZERO);
 
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));

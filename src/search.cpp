@@ -742,7 +742,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !rootNode
-        &&  depth < (6 + ss->ply / 3) * ONE_PLY
+        &&  depth < (6 + ss->ply / 5) * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;

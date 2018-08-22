@@ -967,13 +967,6 @@ moves_loop: // When in check, search starts from here
                   continue;
       }
 
-   /*   if (!pos.see_ge(move, Value(-500)))
-		    sync_cout << "TacticLine " << UCI::pv(pos, depth, alpha, beta)
-		              << " Depth = " << depth / ONE_PLY
-		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl; */
-      if (!pos.see_ge(move, Value(-400)))
-         newDepth = std::max(newDepth - ONE_PLY, DEPTH_ZERO);
-
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
 
@@ -1019,6 +1012,14 @@ moves_loop: // When in check, search starts from here
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)
                   r += 2 * ONE_PLY;
+
+              // Decrease reduction for sacrifices
+		      if (!pos.see_ge(move, Value(-400)))
+                  r -= ONE_PLY;
+        /*   if (!pos.see_ge(move, Value(-500)))
+		    sync_cout << "TacticLine " << UCI::pv(pos, depth, alpha, beta)
+		              << " Depth = " << depth / ONE_PLY
+		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl; */
 
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and

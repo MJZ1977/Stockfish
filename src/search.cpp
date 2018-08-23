@@ -968,7 +968,7 @@ moves_loop: // When in check, search starts from here
       }
 
 	  bool sacrifice = !pos.see_ge(move,Value(-500));
-	  
+
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
 
@@ -1040,15 +1040,15 @@ moves_loop: // When in check, search starts from here
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
-		  
-		  Value ralpha = alpha - Value(100) * sacrifice;
+
+		  Value ralpha = alpha - Value(10) * sacrifice;
 
           value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
 
           doFullDepthSearch = (value > ralpha && d != newDepth);
-		  
+
 		  /*if (sacrifice && doFullDepthSearch)
-		  	    sync_cout << "ralpha = " << ralpha 
+		  	    sync_cout << "ralpha = " << ralpha
 		              << " value = " << value
 					  << " Depth = " << depth / ONE_PLY
 		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl;*/

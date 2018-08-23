@@ -169,7 +169,7 @@ namespace {
   constexpr Score RookOnPawn         = S( 10, 30);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 23, 76);
-  constexpr Score ThreatByPawnPush   = S( 46, 41);
+  constexpr Score ThreatByPawnPush   = S(  9,  8);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
   constexpr Score TrappedRook        = S( 92,  0);
@@ -584,7 +584,13 @@ namespace {
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
-    score += ThreatByPawnPush * popcount(b);
+    //score += ThreatByPawnPush * popcount(b);
+    while (b)
+	{
+	        Square s = pop_lsb(&b);
+	        score += ThreatByPawnPush *
+	          ((pos.attacks_from(type_of(pos.piece_on(s)),s) & pos.pieces(Them))? 6 : 4);
+	}
 
     // Our safe or protected pawns
     b = pos.pieces(Us, PAWN) & safe;

@@ -889,6 +889,7 @@ moves_loop: // When in check, search starts from here
 
       extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
+	  bool sacrifice = !pos.see_ge(move,Value(-400));
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
@@ -967,7 +968,6 @@ moves_loop: // When in check, search starts from here
                   continue;
       }
 
-	  bool sacrifice = !pos.see_ge(move,Value(-500));
 
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
@@ -993,7 +993,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!(captureOrPromotion || sacrifice) || moveCountPruning))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
@@ -1001,7 +1001,7 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          if (!captureOrPromotion)
+          if (!(captureOrPromotion || sacrifice))
           {
               // Decrease reduction for exact PV nodes (~0 Elo)
               if (pvExact)
@@ -1041,17 +1041,9 @@ moves_loop: // When in check, search starts from here
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
-		  Value ralpha = alpha - Value(10) * sacrifice;
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
-
-          doFullDepthSearch = (value > ralpha && d != newDepth);
-
-		  /*if (sacrifice && doFullDepthSearch)
-		  	    sync_cout << "ralpha = " << ralpha
-		              << " value = " << value
-					  << " Depth = " << depth / ONE_PLY
-		              << " Move " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+          doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;

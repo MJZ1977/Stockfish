@@ -561,6 +561,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    uint64_t nodesAtBegin = Threads.nodes_searched();
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -1170,7 +1171,13 @@ moves_loop: // When in check, search starts from here
     else if (   (depth >= 3 * ONE_PLY || PvNode)
              && !pos.captured_piece()
              && is_ok((ss-1)->currentMove))
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
+        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth)
+          + std::min(1000, int(20*pow(Threads.nodes_searched() - nodesAtBegin, 0.25))));
+
+    /*if (ss->ply == 1 && Time.elapsed() > 3000)
+       sync_cout << " - nodes searched " << Threads.nodes_searched() - nodesAtBegin
+                 << " - Stat bonus = " << stat_bonus(depth)
+                 << " - nodes bonus = " << int(20*pow(Threads.nodes_searched() - nodesAtBegin, 0.25)) << sync_endl;*/
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);

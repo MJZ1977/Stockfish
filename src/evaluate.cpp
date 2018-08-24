@@ -589,7 +589,7 @@ namespace {
 	{
 	        Square s = pop_lsb(&b);
 	        score += ThreatByPawnPush *
-	          ((pos.attacks_from(type_of(pos.piece_on(s)),s) & weak)? 7 : 5);
+	          ((pos.attacks_from(type_of(pos.piece_on(s)),s) & weak)? 6 : 5);
 	}
 
     // Our safe or protected pawns

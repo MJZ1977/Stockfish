@@ -295,13 +295,13 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, secondValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
-  bool failedLow;
+  bool failedLow, weak_second = false;
 
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
@@ -482,11 +482,24 @@ void Thread::search() {
 
               int improvingFactor = std::max(246, std::min(832, 306 + 119 * F[0] - 6 * F[1]));
 
+             // Check second best move
+             weak_second = false;
+             if (rootDepth >= 12 * ONE_PLY)
+             {
+                 Value ralpha = std::max(bestValue - Value(200), -VALUE_MATE);
+                 ss->excludedMove = lastBestMove;
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth - 2*ONE_PLY, false);
+                 ss->excludedMove = MOVE_NONE;
+                 if (secondValue <= ralpha)
+                    weak_second = true;
+             }
+
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;
               for (int i : {3, 4, 5})
                   if (lastBestMoveDepth * i < completedDepth)
                      timeReduction *= 1.25;
+
 
               // Use part of the gained time from a previous stable move for the current move
               double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
@@ -494,7 +507,8 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor 
+                    / (weak_second? 2048 : 512))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

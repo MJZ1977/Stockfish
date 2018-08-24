@@ -484,7 +484,7 @@ void Thread::search() {
 
              // Check second best move
              weak_second = false;
-             if (rootDepth >= 12 * ONE_PLY)
+             if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
              {
                  Value ralpha = std::max(bestValue - Value(200), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
@@ -508,7 +508,7 @@ void Thread::search() {
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor 
-                    / (weak_second? 2048 : 512))
+                    / (weak_second? 1024 : 512))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

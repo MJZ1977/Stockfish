@@ -486,13 +486,18 @@ void Thread::search() {
              weak_second = false;
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
              {
-                 Value ralpha = std::max(bestValue - Value(280), -VALUE_MATE);
+                 Value ralpha = std::max(bestValue - Value(380), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
-                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth, false);
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
                  ss->excludedMove = MOVE_NONE;
-                 if (secondValue <= ralpha)
+                 if (secondValue < ralpha)
                     weak_second = true;
              }
+             //if (weak_second)
+             //  sync_cout << "Weak second - depth =  " << rootDepth / ONE_PLY
+             //       << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
+             //       << " - best value " << bestValue                   
+             //      << " - second value  " << secondValue << sync_endl;
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;
@@ -508,7 +513,7 @@ void Thread::search() {
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor 
-                    / (weak_second? 1600 : 581))
+                    / (weak_second? 2000 : 581))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

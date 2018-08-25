@@ -486,13 +486,18 @@ void Thread::search() {
              weak_second = false;
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
              {
-                 Value ralpha = std::max(bestValue - Value(300), -VALUE_MATE);
+                 Value ralpha = std::max(bestValue - Value(340), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
-                 secondValue = ::search<NonPV>(rootPos, ss, ralpha, ralpha+1, rootDepth - 2*ONE_PLY, false);
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
                  ss->excludedMove = MOVE_NONE;
-                 if (secondValue <= ralpha)
+                 if (secondValue < ralpha)
                     weak_second = true;
              }
+             //if (weak_second)
+             //  sync_cout << "Weak second - depth =  " << rootDepth / ONE_PLY
+             //       << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
+             //       << " - best value " << bestValue                   
+             //      << " - second value  " << secondValue << sync_endl;
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;

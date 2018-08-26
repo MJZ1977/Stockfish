@@ -483,10 +483,17 @@ void Thread::search() {
 
               int improvingFactor = std::max(246, std::min(832, 306 + 119 * F[0] - 6 * F[1]));
 
+
+              // If the bestMove is stable over several iterations, reduce time accordingly
+              timeReduction = 1.0;
+              for (int i : {3, 4, 5})
+                  if (lastBestMoveDepth * i < completedDepth)
+                     timeReduction *= 1.25;
+
              // Check second best move
              weak_second = false;
              //beginTime = Time.elapsed();
-             if (rootDepth >= 14 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
+             if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
                  ralpha = std::max(bestValue - Value(340), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
@@ -502,13 +509,6 @@ void Thread::search() {
                if (weak_second)
                   sync_cout << " - Weak second  " << sync_endl;*/
             }
-
-
-              // If the bestMove is stable over several iterations, reduce time accordingly
-              timeReduction = 1.0;
-              for (int i : {3, 4, 5})
-                  if (lastBestMoveDepth * i < completedDepth)
-                     timeReduction *= 1.25;
 
 
               // Use part of the gained time from a previous stable move for the current move

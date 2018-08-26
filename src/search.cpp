@@ -486,9 +486,9 @@ void Thread::search() {
              // Check second best move
              weak_second = false;
              //beginTime = Time.elapsed();
-             if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%3 == 0)
+             if (rootDepth >= 14 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
              {
-                 ralpha = std::max(bestValue - Value(380), -VALUE_MATE);
+                 ralpha = std::max(bestValue - Value(340), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
                  secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
                  ss->excludedMove = MOVE_NONE;

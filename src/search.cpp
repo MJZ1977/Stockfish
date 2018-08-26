@@ -295,11 +295,12 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, secondValue, alpha, beta, delta;
+  Value bestValue, secondValue, alpha, beta, delta, ralpha;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
+  //int beginTime;
   Color us = rootPos.side_to_move();
   bool failedLow, weak_second = false;
 
@@ -484,20 +485,24 @@ void Thread::search() {
 
              // Check second best move
              weak_second = false;
-             if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0)
+             //beginTime = Time.elapsed();
+             if (rootDepth >= 12 * ONE_PLY)
              {
-                 Value ralpha = std::max(bestValue - Value(380), -VALUE_MATE);
+                 ralpha = std::max(bestValue - Value(380), -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
                  secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
                  ss->excludedMove = MOVE_NONE;
                  if (secondValue < ralpha)
                     weak_second = true;
-             }
-             //if (weak_second)
-             //  sync_cout << "Weak second - depth =  " << rootDepth / ONE_PLY
-             //       << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
-             //       << " - best value " << bestValue                   
-             //      << " - second value  " << secondValue << sync_endl;
+              /* sync_cout << "verify second - depth =  " << rootDepth / ONE_PLY
+                    << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
+                    << " - best value " << bestValue                   
+                   << " - second value  " << secondValue
+                   << " - time elapsed  " << Time.elapsed() - beginTime << sync_endl;
+               if (weak_second)
+                  sync_cout << " - Weak second  " << sync_endl;*/
+            }
+
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;
@@ -513,7 +518,7 @@ void Thread::search() {
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
                   || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor 
-                    / (weak_second? 2000 : 581))
+                    / (weak_second? 3000 : 581))
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

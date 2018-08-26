@@ -297,7 +297,7 @@ void Thread::search() {
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
   Value bestValue, secondValue, alpha, beta, delta, ralpha;
   Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = DEPTH_ZERO;
+  Depth rDepth, lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   //int beginTime;
@@ -496,8 +496,9 @@ void Thread::search() {
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
                  ralpha = std::max(bestValue - Value(340), -VALUE_MATE);
+                 rDepth = (1 + (rootDepth / ONE_PLY)*3/4) * ONE_PLY;
                  ss->excludedMove = lastBestMove;
-                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rDepth, false);
                  ss->excludedMove = MOVE_NONE;
                  if (secondValue < ralpha)
                     weak_second = true;

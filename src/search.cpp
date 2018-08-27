@@ -297,7 +297,7 @@ void Thread::search() {
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
   Value bestValue, secondValue, alpha, beta, delta, ralpha;
   Move  lastBestMove = MOVE_NONE;
-  Depth rDepth, lastBestMoveDepth = DEPTH_ZERO;
+  Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   //int beginTime;
@@ -495,16 +495,17 @@ void Thread::search() {
              //beginTime = Time.elapsed();
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
-                 ralpha = std::max(bestValue - Value(340), -VALUE_MATE);
-                 rDepth = (1 + (rootDepth / ONE_PLY)*3/4) * ONE_PLY;
+                 assert(DEPTH_ZERO < rootDepth);
+                 ralpha = bestValue - Value(140 + 2400 / (rootDepth/ONE_PLY));
+                 ralpha = std::max(ralpha, -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
-                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rDepth, false);
+                 secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
                  ss->excludedMove = MOVE_NONE;
                  if (secondValue < ralpha)
                     weak_second = true;
               /* sync_cout << "verify second - depth =  " << rootDepth / ONE_PLY
                     << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
-                    << " - best value " << bestValue                   
+                    << " - best value " << bestValue
                    << " - second value  " << secondValue
                    << " - time elapsed  " << Time.elapsed() - beginTime << sync_endl;
                if (weak_second)
@@ -518,7 +519,7 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor 
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor
                     / (weak_second? 3000 : 581))
               {
                   // If we are allowed to ponder do not stop the search now but

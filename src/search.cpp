@@ -300,7 +300,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
-  //int beginTime;
+  int beginTime, nodesSearched;
   Color us = rootPos.side_to_move();
   bool failedLow, weak_second = false;
 
@@ -492,7 +492,8 @@ void Thread::search() {
 
              // Check second best move
              weak_second = false;
-             //beginTime = Time.elapsed();
+             beginTime = Time.elapsed();
+             nodesSearched = Threads.nodes_searched();
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
                  assert(DEPTH_ZERO < rootDepth);
@@ -500,16 +501,19 @@ void Thread::search() {
                  ralpha = std::max(ralpha, -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
                  secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
+                 if (Threads.nodes_searched() - nodesSearched < 2)
+                   sync_cout << "MJE - move =  " << UCI::move(ss->excludedMove, rootPos.is_chess960())  << sync_endl;
                  ss->excludedMove = MOVE_NONE;
                  if (secondValue < ralpha)
                     weak_second = true;
-              /* sync_cout << "verify second - depth =  " << rootDepth / ONE_PLY
+               sync_cout << "verify second - depth =  " << rootDepth / ONE_PLY
                     << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
                     << " - best value " << bestValue
                    << " - second value  " << secondValue
+                   << " - nodes searched  " << Threads.nodes_searched() - nodesSearched
                    << " - time elapsed  " << Time.elapsed() - beginTime << sync_endl;
                if (weak_second)
-                  sync_cout << " - Weak second  " << sync_endl;*/
+                  sync_cout << " - Weak second  " << sync_endl;
             }
 
 
@@ -729,7 +733,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck)
+    if (inCheck || excludedMove)
     {
         ss->staticEval = pureStaticEval = eval = VALUE_NONE;
         improving = false;

@@ -300,7 +300,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
-  //int beginTime;
+  //int beginTime, nodesSearched;
   Color us = rootPos.side_to_move();
   bool failedLow, weak_second = false;
 
@@ -493,10 +493,11 @@ void Thread::search() {
              // Check second best move
              weak_second = false;
              //beginTime = Time.elapsed();
+             //nodesSearched = Threads.nodes_searched();
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
                  assert(DEPTH_ZERO < rootDepth);
-                 ralpha = bestValue - Value(140 + 2400 / (rootDepth/ONE_PLY));
+                 ralpha = bestValue - Value(240 + 1200 / (rootDepth/ONE_PLY));
                  ralpha = std::max(ralpha, -VALUE_MATE);
                  ss->excludedMove = lastBestMove;
                  secondValue = ::search<NonPV>(rootPos, ss, ralpha-1, ralpha, rootDepth - 2*ONE_PLY, false);
@@ -507,6 +508,7 @@ void Thread::search() {
                     << " - best move " << UCI::move(lastBestMove, rootPos.is_chess960())
                     << " - best value " << bestValue
                    << " - second value  " << secondValue
+                   << " - nodes searched  " << Threads.nodes_searched() - nodesSearched
                    << " - time elapsed  " << Time.elapsed() - beginTime << sync_endl;
                if (weak_second)
                   sync_cout << " - Weak second  " << sync_endl;*/

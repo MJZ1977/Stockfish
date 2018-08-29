@@ -491,11 +491,11 @@ void Thread::search() {
                      timeReduction *= 1.25;
 
              // Check second best move
-             weak_second = false;
              //beginTime = Time.elapsed();
              //nodesSearched = Threads.nodes_searched();
              if (rootDepth >= 12 * ONE_PLY && (rootDepth / ONE_PLY)%2 == 0 && timeReduction > 1.6)
              {
+                 weak_second = false;
                  assert(DEPTH_ZERO < rootDepth);
                  ralpha = bestValue - Value(240 + 1200 / (rootDepth/ONE_PLY));
                  ralpha = std::max(ralpha, -VALUE_MATE);

@@ -648,10 +648,10 @@ namespace {
         Score bonus = PassedRank[r];
 
         Square PSquare = lsb(PRank & forward_file_bb(Us, s));
-        if (PSquare && !pos.non_pawn_material(Them))
+        if (!pos.non_pawn_material(Them))
           if (distance(pos.square<KING>(Them), PSquare) >
-              distance(s, PSquare) + (pos.side_to_move() == Us? 0 : 1))
-            bonus += make_score(0,100) * (6 - distance(s, PSquare));
+              7 - r + (pos.side_to_move() == Us? 0 : 1))
+            bonus += make_score(0, 100 * (r - 1));
 
         if (w)
         {

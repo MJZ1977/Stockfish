@@ -651,7 +651,7 @@ namespace {
         if (PSquare && !pos.non_pawn_material(Them))
           if (distance(pos.square<KING>(Them), PSquare) >
               distance(s, PSquare) + (pos.side_to_move() == Us? 0 : 1))
-            bonus += make_score(0,200) * (6 - distance(s, PSquare));
+            bonus += make_score(0,100) * (6 - distance(s, PSquare));
 
         if (w)
         {

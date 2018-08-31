@@ -560,7 +560,7 @@ namespace {
     bool ttHit, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, goodMovesCount = 0;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -1047,6 +1047,9 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
+          if (value > alpha)
+            goodMovesCount += 1;
+
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
@@ -1131,6 +1134,8 @@ moves_loop: // When in check, search starts from here
           }
       }
 
+	bestValue += 2 * Value(goodMovesCount);
+
       if (move != bestMove)
       {
           if (captureOrPromotion && captureCount < 32)
@@ -1188,6 +1193,8 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, pureStaticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+    //  if (ss->ply==1 && thisThread == Threads.main() && Time.elapsed() > 3000)
+    //      sync_cout << "good Moves = " << goodMovesCount << sync_endl;
 
     return bestValue;
   }

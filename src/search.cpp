@@ -380,7 +380,7 @@ void Thread::search() {
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(18);
+              delta = Value(18) + Value(std::round(5 * mainThread->bestMoveChanges));
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -447,8 +447,12 @@ void Thread::search() {
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 
           if (    mainThread
-              && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
-              sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+              && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 300))
+              { 
+			     sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+			     //sync_cout << "Best Moves changes = " << mainThread->bestMoveChanges 
+				 //          << " Delta = " << delta << sync_endl;
+						}
       }
 
       if (!Threads.stop)

@@ -614,6 +614,34 @@ namespace {
     // LMR which are based on the statScore of parent position.
     (ss+2)->statScore = 0;
 
+	// Verification of blocked position
+	if ( !PvNode
+	     && pos.rule50_count() >= 15
+		 && pos.count<PAWN>() >= 1
+		 && pos.non_pawn_material() 
+		 && (ss-1)->currentMove != MOVE_NULL
+		 && !ss->excludedMove
+		 && depth >= 8 * ONE_PLY
+		 && beta < VALUE_DRAW)
+	{
+		// First step : look if last move is not a bad move
+		value = qsearch<NT>(pos, ss, alpha, beta);
+		if (value < beta)
+		{
+	         // Second step : let opponent play another move and see if he can improve the position
+	         ss->currentMove = MOVE_NULL;
+             ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
+             
+             pos.do_null_move(st);
+             value = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-6*ONE_PLY, false);
+             pos.undo_null_move();
+	         ss->currentMove = MOVE_NONE;
+			 
+	         if (value <= beta)
+	            return VALUE_DRAW;
+		}
+	}
+	
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.

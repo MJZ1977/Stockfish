@@ -303,6 +303,7 @@ void Thread::search() {
   Color us = rootPos.side_to_move();
   bool failedLow;
 
+
   std::memset(ss-4, 0, 7 * sizeof(Stack));
   for (int i = 4; i > 0; i--)
      (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
@@ -561,6 +562,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    uint64_t nodesSearched = Threads.nodes_searched();
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -886,10 +888,14 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
-      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 300)
+      {
+          sync_cout << " Nodes searched = "  << Threads.nodes_searched() - nodesSearched << sync_endl;
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
-                    << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+                    << " currmovenumber " << moveCount + thisThread->pvIdx;
+      }
+      nodesSearched = Threads.nodes_searched();
       if (PvNode)
           (ss+1)->pv = nullptr;
 

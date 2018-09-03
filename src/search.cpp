@@ -496,7 +496,8 @@ void Thread::search() {
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;
-              for (int i : {3, 4, 5})
+              if (completedDepth >= minDepth)
+                for (int i : {3, 4, 5})
                   if (lastBestMoveDepth * i < completedDepth)
                      timeReduction *= 1.25;
 
@@ -506,8 +507,7 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || (Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
-                  && completedDepth >= minDepth) )
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

@@ -337,6 +337,18 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  // Calculate minimal depth = last TT depth + 1
+    TTEntry* tte;
+    bool ttHit;
+    Depth minDepth = 8 * ONE_PLY;
+    tte = TT.probe(rootPos.key(), ttHit);
+    if (ttHit && tte->depth() > minDepth - ONE_PLY)
+    {
+       minDepth = tte->depth() + ONE_PLY;
+       //sync_cout << "TT Depth = " << tte->depth() / ONE_PLY << sync_endl;
+   }
+
+
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
          && !Threads.stop
@@ -494,7 +506,8 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || (Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581
+                  && completedDepth >= minDepth) )
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

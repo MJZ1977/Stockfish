@@ -623,10 +623,10 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-	if (!(ttHit && tte->depth() >= 10*ONE_PLY) && !excludedMove && (ss-1)->currentMove != MOVE_NULL)
-	   ss->newPos = true;
-	else
+	if ((ttHit && tte->depth() >= 2*ONE_PLY) || excludedMove || (ss-1)->currentMove == MOVE_NULL)
 	   ss->newPos = false;
+	else
+	   ss->newPos = true;
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
@@ -1077,11 +1077,6 @@ moves_loop: // When in check, search starts from here
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
 
-      if (!(ss+1)->newPos && newDepth > 12*ONE_PLY && tte->depth() < newDepth)
-          {
-			  value = VALUE_DRAW;
-		  }
-
       // Step 18. Undo move
       pos.undo_move(move);
 
@@ -1155,6 +1150,15 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+
+      if (!ss->newPos
+        && depth > 24*ONE_PLY
+        && ttHit
+        && tte->depth() + ONE_PLY < depth)
+          {
+			  bestValue = VALUE_DRAW;
+		  }
+
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

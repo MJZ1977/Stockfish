@@ -1155,12 +1155,12 @@ moves_loop: // When in check, search starts from here
     }
 
       if (!ss->newPos
-        && depth > 18 * ONE_PLY
+        && depth > 16 * ONE_PLY
         && ttHit
         && tte->depth() + ONE_PLY < depth
 		&& abs(bestValue - pureStaticEval) < Value(600))
           {
-			  bestValue = VALUE_DRAW;		  
+			  bestValue = bestValue * std::max((24 - depth / ONE_PLY) / 8, 0);		  
 		  }
 
 

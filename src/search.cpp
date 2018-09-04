@@ -627,6 +627,8 @@ namespace {
 	   ss->newPos = false;
 	else
 	   ss->newPos = true;
+	if (pos.rule50_count() <= 3)
+	   ss->newPos = true;
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
@@ -1153,11 +1155,12 @@ moves_loop: // When in check, search starts from here
     }
 
       if (!ss->newPos
-        && depth > 18 * ONE_PLY
+        && depth > 16 * ONE_PLY
         && ttHit
-        && tte->depth() + ONE_PLY < depth)
+        && tte->depth() + ONE_PLY < depth
+		&& abs(bestValue - pureStaticEval) < Value(300))
           {
-			  bestValue = VALUE_DRAW;
+			  bestValue = VALUE_DRAW;		  
 		  }
 
 

@@ -1158,7 +1158,7 @@ moves_loop: // When in check, search starts from here
         && depth > 18 * ONE_PLY
         && ttHit
         && tte->depth() + ONE_PLY < depth
-		&& abs(bestValue - pureStaticEval) < Value(400))
+		&& abs(bestValue - pureStaticEval) < Value(600))
           {
 			  bestValue = VALUE_DRAW;		  
 		  }

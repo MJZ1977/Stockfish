@@ -623,7 +623,10 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-
+	if (!(ttHit && tte->depth() >= 10*ONE_PLY) && !excludedMove && (ss-1)->currentMove != MOVE_NULL)
+	   ss->newPos = true;
+	else
+	   ss->newPos = false;
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
@@ -887,9 +890,15 @@ moves_loop: // When in check, search starts from here
       ss->moveCount = ++moveCount;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      {
+          /*if (ss->newPos)
+             sync_cout << "NEW POSITION" << sync_endl;
+          else
+             sync_cout << "NO NEW POSITION" << sync_endl;*/
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+	  }
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1046,6 +1055,7 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+          ss->newPos |= (ss+1)->newPos;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
@@ -1066,6 +1076,11 @@ moves_loop: // When in check, search starts from here
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
+
+      if (!(ss+1)->newPos && newDepth > 12*ONE_PLY && tte->depth() < newDepth)
+          {
+			  value = VALUE_DRAW;
+		  }
 
       // Step 18. Undo move
       pos.undo_move(move);

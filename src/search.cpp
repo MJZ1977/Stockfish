@@ -1075,6 +1075,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+          ss->newPos |= (ss+1)->newPos;
       }
 
       // Step 18. Undo move
@@ -1152,7 +1153,7 @@ moves_loop: // When in check, search starts from here
     }
 
       if (!ss->newPos
-        && depth > 24*ONE_PLY
+        && depth > 18 * ONE_PLY
         && ttHit
         && tte->depth() + ONE_PLY < depth)
           {

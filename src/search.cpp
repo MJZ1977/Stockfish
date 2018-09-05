@@ -889,19 +889,11 @@ moves_loop: // When in check, search starts from here
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
       {
-          sync_cout << "Searched moves =  " << ss->pawnMoves.size() << sync_endl;
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
 	  }
 
-      for (Move move_iter : (ss+1)->pawnMoves)
-          if (std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move_iter) == ss->pawnMoves.end())
-          {
-             ss->pawnMoves.push_back(move_iter);
-             if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
-                sync_cout << "New move =  " << UCI::move(move_iter, pos.is_chess960()) << sync_endl;
-	    }
 	  (ss+1)->pawnMoves.clear();
 
       if (PvNode)
@@ -1011,12 +1003,12 @@ moves_loop: // When in check, search starts from here
       if ( depth >= 10 * ONE_PLY
 	            && (movedPiece == W_PAWN || movedPiece == B_PAWN))
 	  {
-		  Value rBeta = alpha - Value(200);
-		  value = -search<NonPV>(pos, ss+1, -rBeta, -(rBeta-1), depth/2, true);
+		  Value rBeta = alpha - Value(120);
+		  value = -search<NonPV>(pos, ss+1, -rBeta, -(rBeta-1), depth - 4*ONE_PLY, true);
 		  if (value >= rBeta)
 		  {
-		      rBeta = beta + Value(200);
-		      value = -search<NonPV>(pos, ss+1, -(rBeta+1), -rBeta, depth/2, true);
+		      rBeta = beta + Value(120);
+		      value = -search<NonPV>(pos, ss+1, -(rBeta+1), -rBeta, depth - 4*ONE_PLY, true);
               if (value <= rBeta
                 && std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move) == ss->pawnMoves.end())
                  ss->pawnMoves.push_back(move);
@@ -1097,6 +1089,19 @@ moves_loop: // When in check, search starts from here
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
 
+      // Copy pawn moves from child
+	  if (PvNode)
+	  for (Move move_iter : (ss+1)->pawnMoves)
+          if (std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move_iter) == ss->pawnMoves.end())
+          {
+             ss->pawnMoves.push_back(move_iter);
+             if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
+             {
+				sync_cout << "New move =  " << UCI::move(move_iter, pos.is_chess960()) << sync_endl;
+                sync_cout << "Searched moves =  " << ss->pawnMoves.size() << sync_endl;
+			}
+	    }
+
       // Step 18. Undo move
       pos.undo_move(move);
 
@@ -1174,12 +1179,18 @@ moves_loop: // When in check, search starts from here
       // if all the searched tree doesn't contain any good pawn move ath high depths,
 	  // consider it as blocked situation
 
-	  if (ss->pawnMoves.size() < 2
+	  if (ss->pawnMoves.size() == 0
 	          && moveCount == int(MoveList<LEGAL>(pos).size())
-	          && depth > 42 * ONE_PLY
+	          && depth > 20 * ONE_PLY
 	          && pos.non_pawn_material()
-	          && pos.count<PAWN>() > 4)
-	             bestValue = VALUE_DRAW;
+	          && pos.count<PAWN>() > 4
+			  && PvNode)
+			  {
+                 //sync_cout << "DRAW, depth =  " << depth / ONE_PLY 
+				 //   << " - ply =  " << ss->ply << sync_endl;
+	             
+				 bestValue = VALUE_DRAW;
+			  }
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

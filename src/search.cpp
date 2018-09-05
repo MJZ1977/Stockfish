@@ -561,6 +561,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    ss->pawnMoves.clear();
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -886,10 +887,23 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
-      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
+      {
+          sync_cout << "Searched moves =  " << ss->pawnMoves.size() << sync_endl;
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+	  }
+
+      for (Move move_iter : (ss+1)->pawnMoves)
+          if (std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move_iter) == ss->pawnMoves.end())
+          {
+             ss->pawnMoves.push_back(move_iter);
+             if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
+                sync_cout << "New move =  " << UCI::move(move_iter, pos.is_chess960()) << sync_endl;
+	    }
+	  (ss+1)->pawnMoves.clear();
+
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -992,6 +1006,22 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+
+      // Verify that move is not a blunder and store it
+      if ( depth >= 10 * ONE_PLY
+	            && (movedPiece == W_PAWN || movedPiece == B_PAWN))
+	  {
+		  Value rBeta = alpha - Value(200);
+		  value = -search<NonPV>(pos, ss+1, -rBeta, -(rBeta-1), depth/2, true);
+		  if (value >= rBeta)
+		  {
+		      rBeta = beta + Value(200);
+		      value = -search<NonPV>(pos, ss+1, -(rBeta+1), -rBeta, depth/2, true);
+              if (value <= rBeta
+                && std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move) == ss->pawnMoves.end())
+                 ss->pawnMoves.push_back(move);
+		   }
+	  }
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
@@ -1140,6 +1170,16 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+
+      // if all the searched tree doesn't contain any good pawn move ath high depths,
+	  // consider it as blocked situation
+
+	  if (ss->pawnMoves.size() < 2
+	          && moveCount == int(MoveList<LEGAL>(pos).size())
+	          && depth > 42 * ONE_PLY
+	          && pos.non_pawn_material()
+	          && pos.count<PAWN>() > 4)
+	             bestValue = VALUE_DRAW;
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

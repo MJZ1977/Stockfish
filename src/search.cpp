@@ -1000,15 +1000,15 @@ moves_loop: // When in check, search starts from here
       pos.do_move(move, st, givesCheck);
 
       // Verify that move is not a blunder and store it
-      if ( depth >= 10 * ONE_PLY
+      if ( depth >= 10 * ONE_PLY && PvNode
 	            && (movedPiece == W_PAWN || movedPiece == B_PAWN))
 	  {
 		  Value rBeta = alpha - Value(120);
-		  value = -search<NonPV>(pos, ss+1, -rBeta, -(rBeta-1), depth - 4*ONE_PLY, true);
+		  value = -search<NonPV>(pos, ss+1, -rBeta, -(rBeta-1), depth/2, true);
 		  if (value >= rBeta)
 		  {
 		      rBeta = beta + Value(120);
-		      value = -search<NonPV>(pos, ss+1, -(rBeta+1), -rBeta, depth - 4*ONE_PLY, true);
+		      value = -search<NonPV>(pos, ss+1, -(rBeta+1), -rBeta, depth/2, true);
               if (value <= rBeta
                 && std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move) == ss->pawnMoves.end())
                  ss->pawnMoves.push_back(move);
@@ -1095,11 +1095,11 @@ moves_loop: // When in check, search starts from here
           if (std::find(ss->pawnMoves.begin(),ss->pawnMoves.end(),move_iter) == ss->pawnMoves.end())
           {
              ss->pawnMoves.push_back(move_iter);
-             if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
+             /*if (rootNode && thisThread == Threads.main() && Time.elapsed() > 100)
              {
 				sync_cout << "New move =  " << UCI::move(move_iter, pos.is_chess960()) << sync_endl;
                 sync_cout << "Searched moves =  " << ss->pawnMoves.size() << sync_endl;
-			}
+			}*/
 	    }
 
       // Step 18. Undo move

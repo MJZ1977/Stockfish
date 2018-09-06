@@ -695,7 +695,8 @@ namespace {
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed, or have a pawn in front of them.
         if (   !pos.pawn_passed(Us, s + Up)
-            || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
+            || (pos.pieces(PAWN) & forward_file_bb(Us, s))
+            || ((attackedBy[Them][PAWN] & s) && !(attackedBy[Us][PAWN] & s) && pos.side_to_move() == Them))
             bonus = bonus / 2;
 
         score += bonus + PassedFile[file_of(s)];

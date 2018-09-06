@@ -176,6 +176,9 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
+    // threatsCount[color] is a counter for non linear evaluation of threats
+	int threatsCount[COLOR_NB];
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -236,6 +239,7 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
   };
 
 
@@ -248,6 +252,8 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
+
+    threatsCount[Us] = 0;
 
     // Find our pawns that are blocked or on the first two ranks
     Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
@@ -489,6 +495,7 @@ namespace {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
             kingDanger = std::max(0, kingDanger + mobilityDanger);
             score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+            threatsCount[Them] += kingDanger / 512;
         }
     }
 
@@ -566,6 +573,8 @@ namespace {
             score += ThreatByKing;
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
+        if (weak & ~attackedBy[Them][ALL_PIECES])
+           threatsCount[Us] += 1;
 
         b = weak & nonPawnEnemies & attackedBy[Them][ALL_PIECES];
         score += Overload * popcount(b);
@@ -585,12 +594,16 @@ namespace {
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & pos.pieces(Them);
     score += ThreatByPawnPush * popcount(b);
+    if (b)
+      threatsCount[Us] += 1;
 
     // Our safe or protected pawns
     b = pos.pieces(Us, PAWN) & safe;
 
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
+    if (b)
+      threatsCount[Us] += 2;
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)
@@ -606,7 +619,16 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+        if (b & safe & attackedBy2[Us])
+           threatsCount[Us] += 1;
     }
+
+    // Non linear bonus in function of threats count
+    if (threatsCount[Us] > 2)
+    {
+       int v = (threatsCount[Us] - 2) * (threatsCount[Us] - 2) * 5;
+       score += make_score(v, v/2);
+   }
 
     if (T)
         Trace::add(THREAT, Us, score);
@@ -849,9 +871,9 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
+    score += threats<WHITE>() - threats<BLACK>();
 
     score += initiative(eg_value(score));
 

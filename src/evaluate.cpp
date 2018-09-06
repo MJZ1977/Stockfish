@@ -495,7 +495,7 @@ namespace {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
             kingDanger = std::max(0, kingDanger + mobilityDanger);
             score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
-            threatsCount[Them] += kingDanger / 512;
+            threatsCount[Them] += kingDanger / 1024;
         }
     }
 
@@ -603,7 +603,7 @@ namespace {
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
     if (b)
-      threatsCount[Us] += 2;
+      threatsCount[Us] += 1;
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)
@@ -624,10 +624,10 @@ namespace {
     }
 
     // Non linear bonus in function of threats count
-    if (threatsCount[Us] > 2)
+    if (threatsCount[Us] > 1)
     {
-       int v = (threatsCount[Us] - 2) * (threatsCount[Us] - 2) * 5;
-       score += make_score(v, v/2);
+       int v = (threatsCount[Us] - 1) * (threatsCount[Us] - 1) * 5;
+       score += make_score(-v, -v/2);
    }
 
     if (T)
@@ -944,6 +944,8 @@ std::string Eval::trace(const Position& pos) {
      << " ------------+-------------+-------------+------------\n"
      << "       Total | " << Term(TOTAL);
 
+  ss << "\nTotal threats: " << threatsCount[BLACK] << " -- " << threatsCount[WHITE];
+  
   ss << "\nTotal evaluation: " << to_cp(v) << " (white side)\n";
 
   return ss.str();

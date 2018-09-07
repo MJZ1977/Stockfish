@@ -1047,6 +1047,13 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
+          potentiallyBlocked = (pos.rule50_count() > 21
+                               && pos.non_pawn_material()
+                               && pos.count<PAWN>() >= 1);
+          if (potentiallyBlocked && value > VALUE_DRAW && d >= 20 * ONE_PLY
+              && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
+              value = VALUE_DRAW;
+
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
@@ -1056,12 +1063,6 @@ moves_loop: // When in check, search starts from here
       if (doFullDepthSearch)
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-      potentiallyBlocked = (pos.rule50_count() > 21
-                           && pos.non_pawn_material()
-                           && pos.count<PAWN>() >= 1);
-      if (potentiallyBlocked && value > VALUE_DRAW && depth >= 20 * ONE_PLY
-          && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-          value = VALUE_DRAW;
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the

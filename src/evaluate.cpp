@@ -835,6 +835,14 @@ namespace {
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
+    // Early exit if position is blocked
+    if (pos.rule50_count() > 31
+      && pos.non_pawn_material()
+      && pos.count<PAWN>() >=1
+      && abs(v) < Value(600)
+      && v > VALUE_DRAW)
+       return VALUE_DRAW;
+
     // Main evaluation begins here
 
     initialize<WHITE>();

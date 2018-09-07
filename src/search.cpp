@@ -990,14 +990,20 @@ moves_loop: // When in check, search starts from here
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
+	  potentiallyBlocked = (pos.rule50_count() > 21
+                               && pos.non_pawn_material()
+                               && pos.count<PAWN>() >= 1);
+
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
 
+ 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!captureOrPromotion || moveCountPruning)
+		  && !potentiallyBlocked )
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
@@ -1047,22 +1053,15 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          potentiallyBlocked = (pos.rule50_count() > 21
-                               && pos.non_pawn_material()
-                               && pos.count<PAWN>() >= 1);
-          if (potentiallyBlocked && value > VALUE_DRAW && d >= 24 * ONE_PLY
-              && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-              value = VALUE_DRAW;
-
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
-      if (doFullDepthSearch)
+      if (doFullDepthSearch
+	    && !(potentiallyBlocked && depth >= 24 * ONE_PLY))
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
-
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
@@ -1074,6 +1073,17 @@ moves_loop: // When in check, search starts from here
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
+
+	  if (potentiallyBlocked && depth >= 24 * ONE_PLY)
+	  {
+          // Winning side : only consider non reversible moves as potential gains,
+		  // to be improved : we can even remove search
+		  if (!(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN) && alpha >= VALUE_DRAW)
+              value = VALUE_DRAW;
+		  // Losing side : be careful and play best move, scale down values for all moves
+		  if (beta <= VALUE_DRAW && value <= VALUE_DRAW)
+		      value /= 20;
+	  }
 
       // Step 18. Undo move
       pos.undo_move(move);

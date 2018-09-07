@@ -838,9 +838,9 @@ namespace {
     // Early exit if position is blocked
     if (pos.rule50_count() > 31
       && pos.non_pawn_material()
-      && pos.count<PAWN>() >=1
+      && pos.count<PAWN>() >=1)
       //&& abs(v) < Value(600)
-      && v > VALUE_DRAW)
+      //&& v > VALUE_DRAW)
        return VALUE_DRAW;
 
     // Main evaluation begins here

@@ -1059,7 +1059,7 @@ moves_loop: // When in check, search starts from here
       potentiallyBlocked = (pos.rule50_count() > 21
                            && pos.non_pawn_material()
                            && pos.count<PAWN>() >= 1);
-      if (potentiallyBlocked && value > VALUE_DRAW && depth >= 16 * ONE_PLY
+      if (potentiallyBlocked && value > VALUE_DRAW && depth >= 20 * ONE_PLY
           && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
           value = VALUE_DRAW;
 

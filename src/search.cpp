@@ -989,7 +989,7 @@ moves_loop: // When in check, search starts from here
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
-      potentiallyBlocked = (pos.rule50_count() > 21
+      potentiallyBlocked = (pos.rule50_count() > 16
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
 
@@ -1004,7 +1004,12 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-          // Decrease reduction if opponent's move count is high (~10 Elo)
+		  if (potentiallyBlocked && alpha > VALUE_DRAW 
+		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
+			  r += 2 * ONE_PLY;
+
+
+			 // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
@@ -1055,7 +1060,7 @@ moves_loop: // When in check, search starts from here
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		  {
 		     d = std::min(d, 32 * ONE_PLY);
-			 Value ralpha = alpha + Value(20);
+			 Value ralpha = alpha + Value(10);
 			 value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
 			 if (value <= ralpha)
 			    value = VALUE_DRAW;//value * std::max(40 - d / ONE_PLY, 1) / 16;

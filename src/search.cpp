@@ -1054,7 +1054,7 @@ moves_loop: // When in check, search starts from here
 
 		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (potentiallyBlocked && d >= 24 * ONE_PLY
+          if (potentiallyBlocked && d >= 24 * ONE_PLY && value > VALUE_DRAW
               && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 			  {
                  int reduc = std::max(48 - d / ONE_PLY, 2);

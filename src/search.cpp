@@ -1050,15 +1050,15 @@ moves_loop: // When in check, search starts from here
 		  Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 		  
           if (potentiallyBlocked && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-		     d = std::min(newDepth, 24 * ONE_PLY);
+		     d = std::min(newDepth, 46 * ONE_PLY);
 
 		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (potentiallyBlocked && d >= 16 * ONE_PLY
+          if (potentiallyBlocked && d >= 24 * ONE_PLY
               && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 			  {
                  int reduc = std::max(48 - d / ONE_PLY, 2);
-				 value = value * reduc / 32;
+				 value = value * reduc / 24;
 			  }
 
           doFullDepthSearch = (value > alpha && d != newDepth);

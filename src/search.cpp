@@ -989,6 +989,9 @@ moves_loop: // When in check, search starts from here
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
+      potentiallyBlocked = (pos.rule50_count() > 21
+                            && pos.non_pawn_material()
+                            && pos.count<PAWN>() >= 1);
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
@@ -1043,16 +1046,20 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
           }
 
-          Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
+			 
+		  Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
+		  
+          if (potentiallyBlocked && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
+		     d = std::min(newDepth, 24 * ONE_PLY);
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          potentiallyBlocked = (pos.rule50_count() > 21
-                               && pos.non_pawn_material()
-                               && pos.count<PAWN>() >= 1);
-          if (potentiallyBlocked && value > VALUE_DRAW && d >= 24 * ONE_PLY
+          if (potentiallyBlocked && d >= 16 * ONE_PLY
               && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-              value = VALUE_DRAW;
+			  {
+                 int reduc = std::max(48 - d / ONE_PLY, 2);
+				 value = value * reduc / 32;
+			  }
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

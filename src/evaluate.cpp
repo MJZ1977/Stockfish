@@ -835,14 +835,6 @@ namespace {
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
-    // Early exit if position is blocked
-    if (pos.rule50_count() > 31
-      && pos.non_pawn_material()
-      && pos.count<PAWN>() >=1
-      //&& abs(v) < Value(600)
-      && v > VALUE_DRAW)
-       return VALUE_DRAW;
-
     // Main evaluation begins here
 
     initialize<WHITE>();
@@ -869,6 +861,13 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+
+    // reduce v if position is blocked
+    if (pos.rule50_count() > 31
+      && pos.non_pawn_material()
+      && pos.count<PAWN>() >=1
+      && abs(v) < Value(1000))
+       return pos.side_to_move() == WHITE ? v/5 : -v/5;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

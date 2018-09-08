@@ -1049,17 +1049,19 @@ moves_loop: // When in check, search starts from here
 			 
 		  Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 		  
-          if (potentiallyBlocked && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-		     d = std::min(newDepth, 46 * ONE_PLY);
-
-		  value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
-
-          if (potentiallyBlocked && d >= 24 * ONE_PLY && value > VALUE_DRAW
-              && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-			  {
-                 int reduc = std::max(48 - d / ONE_PLY, 2);
-				 value = value * reduc / 24;
-			  }
+          // If position is potentially blocked : we verify that reversible moves can't lead 
+		  // to a progression, if not it is a draw. Non reversible moves are treated in normal way.
+		  if (potentiallyBlocked && alpha > VALUE_DRAW 
+		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
+		  {
+		     d = std::min(d, 32 * ONE_PLY);
+			 Value ralpha = alpha + Value(20);
+			 value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
+			 if (value <= ralpha)
+			    value = VALUE_DRAW;//value * std::max(40 - d / ONE_PLY, 1) / 16;
+		  }
+		  else
+		     value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

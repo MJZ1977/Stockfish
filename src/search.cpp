@@ -1006,7 +1006,7 @@ moves_loop: // When in check, search starts from here
 
 		  if (potentiallyBlocked && alpha > VALUE_DRAW 
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
-			  r += 2 * ONE_PLY;
+			  r += ONE_PLY;
 
 
 			 // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1670,7 +1670,7 @@ bool RootMove::extract_ponder_from_tt(Position& pos) {
         return false;
 
     pos.do_move(pv[0], st);
-    TTEntry* tte = TT.probe(pos.key(), ttHit);
+    TTEntry* tte = TT.probe(pos.key() + pos.rule50_count()/5, ttHit);
 
     if (ttHit)
     {

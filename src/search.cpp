@@ -989,7 +989,7 @@ moves_loop: // When in check, search starts from here
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
-      potentiallyBlocked = (pos.rule50_count() > 16
+      potentiallyBlocked = (pos.rule50_count() > 6 + depth / ONE_PLY / 2
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
 

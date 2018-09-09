@@ -1060,7 +1060,7 @@ moves_loop: // When in check, search starts from here
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		  {
 		     d = std::min(d, 32 * ONE_PLY);
-			 Value ralpha = alpha + Value(10);
+			 Value ralpha = alpha + Value(2);
 			 value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
 			 if (value <= ralpha)
 			    value = VALUE_DRAW;//value * std::max(40 - d / ONE_PLY, 1) / 16;

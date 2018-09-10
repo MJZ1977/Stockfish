@@ -897,6 +897,9 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
+      potentiallyBlocked = (pos.rule50_count() > 10
+                            && pos.non_pawn_material()
+                            && pos.count<PAWN>() >= 1);
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
@@ -989,9 +992,6 @@ moves_loop: // When in check, search starts from here
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
-      potentiallyBlocked = (pos.rule50_count() > 6 + depth / ONE_PLY / 2
-                            && pos.non_pawn_material()
-                            && pos.count<PAWN>() >= 1);
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
@@ -1004,7 +1004,7 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-		  if (potentiallyBlocked && alpha > VALUE_DRAW 
+		  if (potentiallyBlocked && alpha > VALUE_DRAW
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 			  r += ONE_PLY;
 
@@ -1051,19 +1051,19 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
           }
 
-			 
+
 		  Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
-		  
-          // If position is potentially blocked : we verify that reversible moves can't lead 
+
+          // If position is potentially blocked : we verify that reversible moves can't lead
 		  // to a progression, if not it is a draw. Non reversible moves are treated in normal way.
-		  if (potentiallyBlocked && alpha > VALUE_DRAW 
+		  if (potentiallyBlocked && alpha > VALUE_DRAW
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		  {
-		     d = std::min(d, 32 * ONE_PLY);
-			 Value ralpha = alpha + Value(2);
+		     d = std::min(d, 36 * ONE_PLY);
+			 Value ralpha = alpha + Value(5);
 			 value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
 			 if (value <= ralpha)
-			    value = VALUE_DRAW;//value * std::max(40 - d / ONE_PLY, 1) / 16;
+			    value = VALUE_DRAW;
 		  }
 		  else
 		     value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);

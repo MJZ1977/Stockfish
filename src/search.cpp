@@ -897,7 +897,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
-      potentiallyBlocked = (pos.rule50_count() > 10
+      potentiallyBlocked = (pos.rule50_count() > 8
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
 

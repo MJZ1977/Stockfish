@@ -899,6 +899,7 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
       potentiallyBlocked = (pos.rule50_count() > 10
                             && depth >= 9 * ONE_PLY
+							&& alpha <= Value(600)
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
 
@@ -1088,9 +1089,9 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
-          if (potentiallyBlocked && alpha > VALUE_DRAW 
+          if (potentiallyBlocked && alpha > VALUE_DRAW
 		             && value <= ttValue && ttHit && tte->depth() <= newDepth
-		  		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
+					 && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		     value = std::min(value,VALUE_DRAW);
       }
 

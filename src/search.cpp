@@ -899,7 +899,7 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
       potentiallyBlocked = (pos.rule50_count() > 10
                             && depth >= 9 * ONE_PLY
-							&& alpha <= Value(600)
+							&& alpha <= Value(500)
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
 

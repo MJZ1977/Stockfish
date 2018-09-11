@@ -898,7 +898,7 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
       potentiallyBlocked = (pos.rule50_count() > 10
-                            && depth >= 9 * ONE_PLY
+                            && depth >= 15 * ONE_PLY
 							&& alpha <= Value(600)
                             && pos.non_pawn_material()
                             && pos.count<PAWN>() >= 1);
@@ -1006,7 +1006,7 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-		  if (potentiallyBlocked && alpha >= VALUE_DRAW
+		  if (potentiallyBlocked && alpha > VALUE_DRAW
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 			  r += ONE_PLY;
 
@@ -1058,7 +1058,7 @@ moves_loop: // When in check, search starts from here
 
           // If position is potentially blocked : we verify that reversible moves can't lead
 		  // to a progression, if not it is a draw. Non reversible moves are treated in normal way.
-		  if (potentiallyBlocked && alpha >= VALUE_DRAW
+		  if (potentiallyBlocked && alpha > VALUE_DRAW
 		     && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		  {
 		     d = std::min(d, 48 * ONE_PLY);
@@ -1089,7 +1089,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
-          if (potentiallyBlocked && alpha >= VALUE_DRAW
+          if (potentiallyBlocked && alpha > VALUE_DRAW
 		             && value <= ttValue && ttHit && tte->depth() <= newDepth
 					 && !(captureOrPromotion || movedPiece == W_PAWN || movedPiece == B_PAWN))
 		     value = std::min(value,VALUE_DRAW);

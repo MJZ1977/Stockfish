@@ -604,6 +604,7 @@ namespace {
 	    && pos.non_pawn_material()
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(600)
+		&& beta >= Value(-600)
 		&& pos.rule50_count() > 18 + 2 * depth / ONE_PLY)
 		return VALUE_DRAW;
 

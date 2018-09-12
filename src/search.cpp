@@ -600,11 +600,11 @@ namespace {
     }
 	
 	// Check for blocked position
-	if (ss->ply > 16 + 2 * depth / ONE_PLY
+	if (ss->ply > 18 + 2 * depth / ONE_PLY
 	    && pos.non_pawn_material()
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(600)
-		&& pos.rule50_count() > 16 + 2 * depth / ONE_PLY)
+		&& pos.rule50_count() > 18 + 2 * depth / ONE_PLY)
 		return VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);

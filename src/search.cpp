@@ -607,6 +607,13 @@ namespace {
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
+    // Actualize "blocked" situation
+	ss->Blocked |= (pos.rule50_count() > 10
+	                 && depth >= 9 * ONE_PLY
+	                 && alpha <= Value(600)
+	                 && pos.non_pawn_material()
+	                 && pos.count<PAWN>() >= 1);
+
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
     // starts with statScore = 0. Later grandchildren start with the last calculated
@@ -623,12 +630,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-	if ((ttHit && tte->depth() >= 2*ONE_PLY) || excludedMove || (ss-1)->currentMove == MOVE_NULL)
-	   ss->newPos = false;
-	else
-	   ss->newPos = true;
-	if (pos.rule50_count() <= 3)
-	   ss->newPos = true;
+
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
@@ -893,10 +895,10 @@ moves_loop: // When in check, search starts from here
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
       {
-          /*if (ss->newPos)
-             sync_cout << "NEW POSITION" << sync_endl;
+          if (ss->Blocked)
+             sync_cout << "BLOCKED POS" << sync_endl;
           else
-             sync_cout << "NO NEW POSITION" << sync_endl;*/
+             sync_cout << "OPEN POS" << sync_endl;
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
@@ -1004,6 +1006,8 @@ moves_loop: // When in check, search starts from here
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
 
+      (ss+1)->Blocked = ss->Blocked;
+
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
@@ -1057,7 +1061,6 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
-          ss->newPos |= (ss+1)->newPos;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
@@ -1077,8 +1080,12 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
-          ss->newPos |= (ss+1)->newPos;
       }
+
+      if (ss->Blocked != (ss+1)->Blocked)
+         if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+            sync_cout << "CHANGEMENT" << sync_endl;
+      ss->Blocked = ss->Blocked & (ss+1)->Blocked;
 
       // Step 18. Undo move
       pos.undo_move(move);
@@ -1154,16 +1161,6 @@ moves_loop: // When in check, search starts from here
       }
     }
 
-      if (!ss->newPos
-        && depth > 16 * ONE_PLY
-        && ttHit
-        && tte->depth() + ONE_PLY < depth
-		&& abs(bestValue - pureStaticEval) < Value(600))
-          {
-			  bestValue = bestValue * std::max((24 - depth / ONE_PLY) / 8, 0);		  
-		  }
-
-
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully
     // searched our subtree, and we can anyhow save the result in TT.
@@ -1209,6 +1206,24 @@ moves_loop: // When in check, search starts from here
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, pureStaticEval);
+
+
+	// if we found a good move that is not in blocked positions TT, we consider the position
+	// as no more blocked
+	if (ss->Blocked && !excludedMove && ((ss-1)->currentMove != MOVE_NULL || rootNode))
+	{
+		bool ttHit2;
+		Key posKey2 = posKey + 101;
+		TTEntry* tte2 = TT.probe(posKey2, ttHit2);
+		if (!ttHit2 && bestValue > alpha && depth >= 8*ONE_PLY && alpha > VALUE_DRAW)
+		{
+		   ss->Blocked = false;
+		   //if (thisThread == Threads.main() && Time.elapsed() > 3000)
+		   //  sync_cout << "New position - ply = " << ss->ply << " depth = " << depth / ONE_PLY << sync_endl;
+	    }
+		tte2->save(posKey2, VALUE_NONE, BOUND_NONE, DEPTH_NONE, MOVE_NONE, pureStaticEval);
+	}
+
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

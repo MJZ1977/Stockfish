@@ -484,7 +484,8 @@ void Thread::search() {
 
               // If the bestMove is stable over several iterations, reduce time accordingly
               timeReduction = 1.0;
-              for (int i : {3, 4, 5})
+              if (rootPos.rule50_count() <= 10)		//added : to avoid reduction in semi-blocked positions
+                for (int i : {3, 4, 5})
                   if (lastBestMoveDepth * i < completedDepth)
                      timeReduction *= 1.25;
 
@@ -598,7 +599,7 @@ namespace {
         if (alpha >= beta)
             return alpha;
     }
-	
+
 	// Check for blocked position
 	if (ss->ply > 18 + 2 * depth / ONE_PLY
 	    && pos.non_pawn_material()

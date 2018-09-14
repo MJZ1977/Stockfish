@@ -559,7 +559,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
     bool ttHit, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
-    Piece movedPiece;
+    Piece movedPiece, capturedPiece;
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
@@ -896,6 +896,7 @@ moves_loop: // When in check, search starts from here
       extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
+      capturedPiece = pos.piece_on(to_sq(move));
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
@@ -928,6 +929,8 @@ moves_loop: // When in check, search starts from here
       else if (    givesCheck // Check extension (~2 Elo)
                && !moveCountPruning
                &&  pos.see_ge(move))
+          extension = ONE_PLY;
+      else if (capturedPiece == B_QUEEN || capturedPiece == W_QUEEN)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

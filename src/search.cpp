@@ -557,7 +557,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, inCheck, givesCheck, improving;
+    bool ttHit, inCheck, givesCheck, improving, reduce_futility;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -747,9 +747,11 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     // Step 8. Futility pruning: child node (~30 Elo)
+	reduce_futility = improving 
+	                  || (eval == ttValue && (tte->bound() & BOUND_LOWER));
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth, (improving || (eval == ttValue))) >= beta
+        &&  eval - futility_margin(depth, reduce_futility) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

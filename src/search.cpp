@@ -758,7 +758,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 23200
         &&  eval >= beta
-        //&&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
+        &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -784,7 +784,12 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 12 * ONE_PLY))
+            {
+                if (eval != ss->staticEval)
+                   sync_cout << "NMP; beta = " << beta << " ; eval = " << eval << " ; static = " << ss->staticEval
+                     << " ; Difference = " << ss->staticEval - eval << " ; Depth = " << depth/ONE_PLY << sync_endl;
                 return nullValue;
+		    }
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
 

@@ -747,8 +747,8 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     // Step 8. Futility pruning: child node (~30 Elo)
-	reduce_futility = improving 
-	                  || (eval == ttValue && (tte->bound() & BOUND_LOWER));
+	reduce_futility = improving
+	                  || (eval == ttValue && (tte->bound() & BOUND_UPPER));
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, reduce_futility) >= beta

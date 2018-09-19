@@ -992,12 +992,18 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+	  
+	  bool NoEGReduction = (pos.non_pawn_material() == 0
+	  		&&  abs(eval) <= Value(180)
+	  		&&  abs(eval) >= Value(5)
+	  		&&  (PvNode || improving));
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!captureOrPromotion || moveCountPruning)
+		  && !NoEGReduction)
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 

@@ -932,8 +932,10 @@ moves_loop: // When in check, search starts from here
       else if ( pos.non_pawn_material() == 0
 	  		&&  abs(eval) <= Value(160)
 	  		&&  abs(eval) >= Value(10)
-	  		&&  pos.rule50_count() <= 16
+	  		&&  pos.rule50_count() <= 12
 	  		&&  depth >= 4 * ONE_PLY
+			&&  !rootNode
+			&&  (moveCount <= 4 || move == ttMove)
 	  		&&  (PvNode || improving))	// Endgame extension
      	  extension = ONE_PLY;
 

@@ -991,7 +991,12 @@ moves_loop: // When in check, search starts from here
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
       // Step 15. Make the move
+      Value last_nonPawnMaterial = pos.non_pawn_material();
+
       pos.do_move(move, st, givesCheck);
+
+      if (pos.non_pawn_material() == 0 && last_nonPawnMaterial > 0 && extension == DEPTH_ZERO)
+         newDepth += ONE_PLY;
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.

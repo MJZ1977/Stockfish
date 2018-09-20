@@ -997,7 +997,7 @@ moves_loop: // When in check, search starts from here
 
       if (pos.non_pawn_material() == 0 && last_nonPawnMaterial > 0
           && extension == DEPTH_ZERO
-          && abs(eval) <= Value(200))
+          && abs(eval) <= Value(220))
          newDepth += ONE_PLY;
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be

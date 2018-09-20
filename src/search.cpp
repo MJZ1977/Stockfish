@@ -995,7 +995,9 @@ moves_loop: // When in check, search starts from here
 
       pos.do_move(move, st, givesCheck);
 
-      if (pos.non_pawn_material() == 0 && last_nonPawnMaterial > 0 && extension == DEPTH_ZERO)
+      if (pos.non_pawn_material() == 0 && last_nonPawnMaterial > 0
+          && extension == DEPTH_ZERO
+          && depth >= 4 * ONE_PLY)
          newDepth += ONE_PLY;
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be

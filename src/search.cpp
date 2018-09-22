@@ -995,7 +995,7 @@ moves_loop: // When in check, search starts from here
 
       pos.do_move(move, st, givesCheck);
 
-      if (pos.non_pawn_material() == 0 && last_nonPawnMaterial > 0
+      if (pos.non_pawn_material() <= Value(1600) && last_nonPawnMaterial > pos.non_pawn_material()
           && extension == DEPTH_ZERO
           && abs(eval) <= Value(200))
          newDepth += ONE_PLY;

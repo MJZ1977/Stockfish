@@ -165,8 +165,8 @@ void Search::init() {
 
   for (int d = 0; d < 16; ++d)
   {
-      FutilityMoveCounts[0][d] = int(2.4 + 0.74 * pow(d, 1.78));
-      FutilityMoveCounts[1][d] = int(5.0 + 1.00 * pow(d, 2.00));
+      FutilityMoveCounts[0][d] = int(5.4 + 0.74 * pow(d, 1.78));
+      FutilityMoveCounts[1][d] = int(7.0 + 1.00 * pow(d, 2.00));
   }
 }
 
@@ -899,7 +899,8 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY] - 
+						                int(thisThread->nodes.load(std::memory_order_relaxed) % 3);
 
       // Step 13. Extensions (~70 Elo)
 

@@ -622,6 +622,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  TheirCamp = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                                 : Rank2BB | Rank3BB | Rank4BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -631,7 +633,7 @@ namespace {
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
-	bool passedPhalanx = (b & shift<WEST>(b));
+	bool passedPhalanx = (b & shift<WEST>(b) & TheirCamp);
 
     while (b)
     {

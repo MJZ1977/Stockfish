@@ -631,6 +631,7 @@ namespace {
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
+	bool passedPhalanx = (b & shift<WEST>(b));
 
     while (b)
     {
@@ -697,6 +698,10 @@ namespace {
         if (   !pos.pawn_passed(Us, s + Up)
             || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
             bonus = bonus / 2;
+		
+		// Bonus for passed Phalanx
+		if (passedPhalanx)
+		    bonus += bonus / 8;
 
         score += bonus + PassedFile[file_of(s)];
     }

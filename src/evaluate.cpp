@@ -799,13 +799,12 @@ namespace {
             Bitboard camp = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB
                                            : Rank2BB | Rank3BB | Rank4BB);
             Bitboard b = (pe->passed_pawns(strongSide) & camp);
-            sf = 8;
+            sf = 8 + 3 * pe->pawn_asymmetry();
             while (b)
             {
-               sf += 2;
                Square s = pop_lsb(&b) + (strongSide == WHITE ? NORTH : SOUTH);
-               if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s) - 2)
-                 sf += 8;
+               if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s) - 1)
+                 sf += 4;
 		    }
 		}
         else

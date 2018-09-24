@@ -802,9 +802,9 @@ namespace {
             sf = 8;
             while (b)
             {
-               sf += 4;
+               sf += 2;
                Square s = pop_lsb(&b) + (strongSide == WHITE ? NORTH : SOUTH);
-               if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s) - 1)
+               if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s) - 2)
                  sf += 8;
 		    }
 		}

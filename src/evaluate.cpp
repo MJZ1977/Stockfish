@@ -804,7 +804,7 @@ namespace {
             {
                Square s = pop_lsb(&b) + (strongSide == WHITE ? NORTH : SOUTH);
                if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s) - 1)
-                 sf += 4;
+                 sf += 3;
 		    }
 		}
         else

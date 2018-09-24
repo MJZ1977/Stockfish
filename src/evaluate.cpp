@@ -796,8 +796,8 @@ namespace {
             && pos.non_pawn_material(WHITE) == BishopValueMg
             && pos.non_pawn_material(BLACK) == BishopValueMg)
         {
-            Bitboard camp = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB
-                                           : Rank2BB | Rank3BB | Rank4BB);
+            Bitboard camp = (strongSide == WHITE ? Rank4BB | Rank5BB | Rank6BB | Rank7BB
+                                           : Rank2BB | Rank3BB | Rank4BB | Rank5BB);
             Bitboard b = (pe->passed_pawns(strongSide) & camp);
             sf = 8;
             while (b)

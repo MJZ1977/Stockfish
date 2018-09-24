@@ -795,7 +795,19 @@ namespace {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material(WHITE) == BishopValueMg
             && pos.non_pawn_material(BLACK) == BishopValueMg)
-            sf = 8 + 4 * pe->pawn_asymmetry();
+        {
+            Bitboard camp = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                           : Rank2BB | Rank3BB | Rank4BB);
+            Bitboard b = (pe->passed_pawns(strongSide) & camp);
+            sf = 8;
+            while (b)
+            {
+               sf += 4;
+               Square s = pop_lsb(&b) + (strongSide == WHITE ? NORTH : SOUTH);
+               if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s))
+                 sf += 8;
+		    }
+		}
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
 

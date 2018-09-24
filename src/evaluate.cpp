@@ -796,13 +796,13 @@ namespace {
             && pos.non_pawn_material(WHITE) == BishopValueMg
             && pos.non_pawn_material(BLACK) == BishopValueMg)
         {
-            Bitboard camp = (strongSide == WHITE ? Rank4BB | Rank5BB | Rank6BB | Rank7BB
-                                           : Rank2BB | Rank3BB | Rank4BB | Rank5BB);
+            Bitboard camp = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                           : Rank2BB | Rank3BB | Rank4BB);
             Bitboard b = (pe->passed_pawns(strongSide) & camp);
             sf = 8;
             while (b)
             {
-               sf += 4;
+               sf += 2;
                Square s = pop_lsb(&b) + (strongSide == WHITE ? NORTH : SOUTH);
                if (distance(pos.square<KING>(strongSide), s) < distance(pos.square<KING>(~strongSide), s))
                  sf += 8;

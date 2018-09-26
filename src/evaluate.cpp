@@ -692,6 +692,12 @@ namespace {
                 bonus += make_score(w + r * 2, w + r * 2);
         } // w != 0
 
+        // If path is blocked by an opponent rook and no more minor pieces left,
+        // assign a penality
+        if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
+           if (!pos.pieces(Us, BISHOP, KNIGHT))
+             bonus = bonus * 3 / 4;
+
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed, or have a pawn in front of them.
         if (   !pos.pawn_passed(Us, s + Up)

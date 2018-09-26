@@ -690,13 +690,13 @@ namespace {
             }
             else if (pos.pieces(Us) & blockSq)
                 bonus += make_score(w + r * 2, w + r * 2);
+            // If path is blocked by an opponent rook and no more minor pieces left,
+            // assign a penality
+            if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
+               if (!(pos.pieces(Us, BISHOP, KNIGHT) || (pawn_attack_span(Them,blockSq) & pos.pieces(Us, PAWN))))
+                 bonus = bonus * 7 / 8;
         } // w != 0
 
-        // If path is blocked by an opponent rook and no more minor pieces left,
-        // assign a penality
-        if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
-           if (!(pos.pieces(Us, BISHOP, KNIGHT) || (attackedBy[Us][PAWN] & s)))
-             bonus = bonus * 7 / 8;
 
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed, or have a pawn in front of them.

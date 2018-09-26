@@ -695,7 +695,7 @@ namespace {
         // If path is blocked by an opponent rook and no more minor pieces left,
         // assign a penality
         if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
-           if (!pos.pieces(Us, BISHOP, KNIGHT))
+           if (!(pos.pieces(Us, BISHOP, KNIGHT) || (attackedBy[Us][PAWN] & s)))
              bonus = bonus * 3 / 4;
 
         // Scale down bonus for candidate passers which need more than one

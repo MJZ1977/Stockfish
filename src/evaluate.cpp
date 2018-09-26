@@ -142,7 +142,7 @@ namespace {
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(5, 18), S(12, 23), S(10, 31), S(57, 62), S(163, 167), S(271, 250)
+    S(0, 0), S(5, 18), S(12, 23), S(10, 32), S(57, 64), S(163, 171), S(271, 256)
   };
 
   // PassedFile[File] contains a bonus according to the file of a passed pawn
@@ -693,7 +693,7 @@ namespace {
             // If path is blocked by an opponent rook and no more minor pieces left,
             // assign a penality
             if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
-               if (!(pos.pieces(Us, BISHOP, KNIGHT) || (pawn_attack_span(Them,blockSq) & pos.pieces(Us, PAWN))))
+               if (!pos.pieces(Us, BISHOP, KNIGHT))
                  bonus = bonus * 7 / 8;
         } // w != 0
 

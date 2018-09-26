@@ -696,7 +696,7 @@ namespace {
         // assign a penality
         if (forward_file_bb(Us, s) & pos.pieces(Them, ROOK))
            if (!(pos.pieces(Us, BISHOP, KNIGHT) || (attackedBy[Us][PAWN] & s)))
-             bonus = bonus * 3 / 4;
+             bonus = bonus * 7 / 8;
 
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed, or have a pawn in front of them.

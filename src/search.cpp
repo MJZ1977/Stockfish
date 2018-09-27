@@ -1046,6 +1046,12 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+		  
+		  if (value < alpha - Value(160))
+		  {
+		     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), -stat_bonus(d));
+			 thisThread->mainHistory[us][from_to(move)] << -stat_bonus(d);
+		  }
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

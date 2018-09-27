@@ -562,10 +562,10 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
-    uint64_t nodesSearched = Threads.nodes_searched();
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+    uint64_t nodesSearched = thisThread->nodes.load(std::memory_order_relaxed);
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
@@ -890,12 +890,12 @@ moves_loop: // When in check, search starts from here
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 300)
       {
-          sync_cout << " Nodes searched = "  << Threads.nodes_searched() - nodesSearched << sync_endl;
+          sync_cout << " Nodes searched = "  << thisThread->nodes.load(std::memory_order_relaxed) - nodesSearched << sync_endl;
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
-                    << " currmovenumber " << moveCount + thisThread->pvIdx;
+                    << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
       }
-      nodesSearched = Threads.nodes_searched();
+      nodesSearched = thisThread->nodes.load(std::memory_order_relaxed);
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1037,6 +1037,15 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
                              - 4000;
+              
+			  if (rootNode && thisThread == Threads.main() && Time.elapsed() > 300)
+              {
+                  sync_cout << " term1 = "  << thisThread->mainHistory[us][from_to(move)] 
+				            << " term2 = "  << (*contHist[0])[movedPiece][to_sq(move)]
+				            << " term3 = "  << (*contHist[1])[movedPiece][to_sq(move)]
+				            << " term4 = "  << (*contHist[3])[movedPiece][to_sq(move)]
+				            << sync_endl;
+				}
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= 0 && (ss-1)->statScore < 0)
@@ -1052,6 +1061,12 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+		  
+		  /*if (value < alpha - Value(200))
+		  {
+		     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), -stat_bonus(d));
+			 thisThread->mainHistory[us][from_to(move)] << -1000;
+		  }*/
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

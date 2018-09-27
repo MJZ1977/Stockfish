@@ -608,6 +608,12 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Find pawns blocked in first ranks
+    Bitboard BlockedPawns = pos.pieces(Us, PAWN) & shift<-Up>(pos.pieces(Them));
+    BlockedPawns &= (Us == WHITE ? Rank2BB : Rank7BB);
+    score -= make_score(6,3) * popcount(BlockedPawns);
+
+
     if (T)
         Trace::add(THREAT, Us, score);
 

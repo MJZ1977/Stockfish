@@ -836,7 +836,7 @@ namespace {
 
                 if (value >= rbeta)
                 {
-                    if (!excludedMove)
+                    if (!excludedMove && TT.hashfull() < 800)
                         tte->save(posKey, value_to_tt(value, ss->ply),
 					             BOUND_LOWER, depth - 4 * ONE_PLY, move, pureStaticEval);
                     return value;

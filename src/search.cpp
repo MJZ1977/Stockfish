@@ -837,8 +837,8 @@ namespace {
                 if (value >= rbeta)
                 {
                     if (!excludedMove)
-                        tte->save(posKey, value_to_tt(value, ss->ply),
-					             BOUND_LOWER, depth - 4 * ONE_PLY, move, pureStaticEval);
+                        tte->save(posKey, value_to_tt(value - 216 + 48 * improving, ss->ply),
+					             BOUND_LOWER, depth, move, pureStaticEval);
                     return value;
 				}
             }

@@ -809,7 +809,7 @@ namespace {
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         Value rbeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
-		Value rbeta_Lost = std::min(beta + 800, VALUE_INFINITE);
+		Value rbeta_Lost = std::min(beta + 660, VALUE_INFINITE);
 		Value value_Lost;
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
@@ -834,7 +834,7 @@ namespace {
                 if (value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode);
 				
-				if (value >= rbeta)
+				if (value >= rbeta && depth >= 10 * ONE_PLY)
 				{
 				    value_Lost = -search<NonPV>(pos, ss+1, -rbeta_Lost, -rbeta_Lost+1, depth - 4 * ONE_PLY, !cutNode);
 					if (value_Lost >= rbeta_Lost)
@@ -845,7 +845,7 @@ namespace {
 
                 if (value >= rbeta)
                 {
-                    if (!excludedMove && value >= rbeta_Lost)
+                    if (!excludedMove && value >= rbeta_Lost && depth >= 10 * ONE_PLY)
                         tte->save(posKey, value_to_tt(value, ss->ply),
 					             BOUND_LOWER, depth + 4 * ONE_PLY, move, pureStaticEval);
                     return value;

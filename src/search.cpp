@@ -834,7 +834,7 @@ namespace {
                 if (value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode);
 				
-				if (value >= rbeta && depth >= 8 * ONE_PLY)
+				if (value >= rbeta && depth >= 12 * ONE_PLY)
 				{
 				    value_Lost = -search<NonPV>(pos, ss+1, -rbeta_Lost, -rbeta_Lost+1, depth - 4 * ONE_PLY, !cutNode);
 					if (value_Lost >= rbeta_Lost)
@@ -845,7 +845,7 @@ namespace {
 
                 if (value >= rbeta)
                 {
-                    if (!excludedMove && value >= rbeta_Lost && depth >= 8 * ONE_PLY)
+                    if (!excludedMove && value >= rbeta_Lost && depth >= 12 * ONE_PLY)
                         tte->save(posKey, value_to_tt(value, ss->ply),
 					             BOUND_LOWER, depth + 4 * ONE_PLY, move, pureStaticEval);
                     return value;

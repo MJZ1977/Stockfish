@@ -833,10 +833,10 @@ namespace {
                 // If the qsearch held perform the regular search
                 if (value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode);
-				
+
 				if (value >= rbeta && depth >= 12 * ONE_PLY)
 				{
-				    value_Lost = -search<NonPV>(pos, ss+1, -rbeta_Lost, -rbeta_Lost+1, depth - 4 * ONE_PLY, !cutNode);
+				    value_Lost = -search<NonPV>(pos, ss+1, -rbeta_Lost, -rbeta_Lost+1, depth - 2 * ONE_PLY, !cutNode);
 					if (value_Lost >= rbeta_Lost)
 				        value = value_Lost;
 				}

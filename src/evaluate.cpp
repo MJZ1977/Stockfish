@@ -386,6 +386,10 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
+
+			// Penality / bonus according to the number of other pieces blocking rooks
+			score += make_score(4,0) * (1 - 
+			           popcount(PseudoAttacks[ROOK][s] & (pos.pieces(Us, KNIGHT, BISHOP) | pos.pieces(Us, KING))));
         }
 
         if (Pt == QUEEN)

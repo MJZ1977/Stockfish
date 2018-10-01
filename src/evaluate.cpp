@@ -388,7 +388,7 @@ namespace {
             }
 
 			// Penality / bonus according to the number of other pieces blocking rooks
-			score += make_score(4,0) * (2 - 
+			score += make_score(8,0) * (1 - 
 			           popcount(PseudoAttacks[ROOK][s] & (pos.pieces(Us, KNIGHT, BISHOP) | pos.pieces(Us, KING))));
         }
 

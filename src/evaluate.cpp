@@ -792,7 +792,7 @@ namespace {
             sf = 8 + 4 * pe->pawn_asymmetry();
         else
             sf = std::min(39 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide)
-                             + abs(eg) / 100, sf);
+                             + abs(eg) / 60, sf);
 
     }
 

@@ -278,7 +278,7 @@ namespace {
         kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
     }
     else
-        kingRing[Us] = kingAttackersCount[Them] = 0;
+        kingRing[Us] = kingAttackersCount[Them] = kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
   }
 
 

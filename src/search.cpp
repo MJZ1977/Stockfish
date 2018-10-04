@@ -899,7 +899,7 @@ moves_loop: // When in check, search starts from here
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
-                                        + (eval > alpha - Value(20)? 1 : 0);
+                                        + std::max(0, int(alpha - eval) / 100);
 
       // Step 13. Extensions (~70 Elo)
 

@@ -513,6 +513,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard Camp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
+                                           : Rank1BB | Rank2BB | Rank3BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -606,6 +608,10 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+	
+	// Bonus for squares controlled by pawn and another piece in enemy camp
+	b = attackedBy2[Us] & attackedBy[Us][PAWN] & ~attackedBy[Them][PAWN] & Camp;
+	score += make_score(5,5) * popcount(b);
 
     if (T)
         Trace::add(THREAT, Us, score);

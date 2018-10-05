@@ -413,6 +413,9 @@ namespace {
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
+	
+    if (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
+        return SCORE_ZERO;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
@@ -487,7 +490,7 @@ namespace {
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
             kingDanger = std::max(0, kingDanger + mobilityDanger);
-            score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+            score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 8);
         }
     }
 

@@ -610,9 +610,8 @@ namespace {
     }
 	
 	// Bonus for squares controlled by pawn and another piece in enemy camp
-	b = attackedBy[Us][ROOK] | attackedBy[Us][QUEEN];
-	b &= attackedBy[Us][PAWN] & ~attackedBy[Them][PAWN] & Camp;
-	score += make_score(5,5) * popcount(b);
+	b = attackedBy2[Us] & attackedBy[Us][PAWN] & ~attackedBy[Them][PAWN] & Camp;
+	score += make_score(8,5) * popcount(b);
 
     if (T)
         Trace::add(THREAT, Us, score);

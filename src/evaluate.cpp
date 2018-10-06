@@ -479,7 +479,7 @@ namespace {
                      + 129 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      +   4 * tropism
                      - 873 * !pos.count<QUEEN>(Them)
-					 -  36 * (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
+					 -  30 * (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
                      -   6 * mg_value(score) / 8
                      -   30;
 
@@ -488,7 +488,7 @@ namespace {
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
             kingDanger = std::max(0, kingDanger + mobilityDanger);
-            score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 12);
+            score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 10);
         }
     }
 

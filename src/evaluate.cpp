@@ -479,7 +479,7 @@ namespace {
                      + 129 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      +   4 * tropism
                      - 873 * !pos.count<QUEEN>(Them)
-					 -  50 * (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
+					 -  24 * (pos.non_pawn_material(Them) <= RookValueMg + BishopValueMg)
                      -   6 * mg_value(score) / 8
                      -   30;
 

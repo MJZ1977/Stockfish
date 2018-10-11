@@ -1145,7 +1145,9 @@ moves_loop: // When in check, search starts from here
 
     if ((ss-1)->currentMove != MOVE_NULL)
     {
-       pureStaticEval += 2*Value(goodMovesCount - 3);
+       pureStaticEval += 2*Value(goodMovesCount - 1);
+	   if (depth <= ONE_PLY)
+	      bestValue += 2*Value(goodMovesCount - 1);
     }
 
     // The following condition would detect a stop only after move loop has been

@@ -1055,7 +1055,7 @@ moves_loop: // When in check, search starts from here
       if (doFullDepthSearch)
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
-      if (value >= alpha)
+      if (value >= alpha - 10)
          goodMovesCount++;
 
       // For PV nodes only, do a full PV search on the first move or after a fail
@@ -1145,7 +1145,9 @@ moves_loop: // When in check, search starts from here
 
     if ((ss-1)->currentMove != MOVE_NULL)
     {
-       pureStaticEval += Value(goodMovesCount - 3);
+       pureStaticEval += 2*Value(goodMovesCount - 1);
+	   if (depth <= ONE_PLY)
+	      bestValue += 2*Value(goodMovesCount - 1);
     }
 
     // The following condition would detect a stop only after move loop has been

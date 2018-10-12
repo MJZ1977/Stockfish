@@ -1213,6 +1213,7 @@ moves_loop: // When in check, search starts from here
     Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
     bool ttHit, inCheck, givesCheck, evasionPrunable;
     int moveCount;
+    int goodMovescount = 0;
 
     if (PvNode)
     {
@@ -1368,9 +1369,15 @@ moves_loop: // When in check, search starts from here
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
+      if (value >= bestValue - Value(10))
+         goodMovescount++;
+
       // Check for a new best move
       if (value > bestValue)
       {
+          if (value > bestValue + Value(10))
+             goodMovescount = 0;		//reset for new bestValue
+
           bestValue = value;
 
           if (value > alpha)
@@ -1392,6 +1399,15 @@ moves_loop: // When in check, search starts from here
               }
           }
        }
+    }
+
+    bestValue += goodMovescount - 1;
+    if (bestValue >= beta)  // Fail high after bonus
+    {
+          tte->save(posKey, value_to_tt(bestValue, ss->ply), BOUND_LOWER,
+                    ttDepth, move, ss->staticEval);
+
+          return bestValue;
     }
 
     // All legal moves have been searched. A special case: If we're in check

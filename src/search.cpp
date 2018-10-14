@@ -561,6 +561,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+	int GoodMovesCount = 0;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -897,7 +898,7 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
-      moveCountPruning =   depth < 16 * ONE_PLY
+      moveCountPruning =   depth < 16 * ONE_PLY && depth > ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
 
       // Step 13. Extensions (~70 Elo)
@@ -1043,18 +1044,23 @@ moves_loop: // When in check, search starts from here
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
+		  Value ralpha = alpha - Value(10);
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+          value = -search<NonPV>(pos, ss+1, -(ralpha+1), -ralpha, d, true);
+		  
+		  if (value > ralpha)
+		    GoodMovesCount++;
 
-          doFullDepthSearch = (value > alpha && d != newDepth);
+          doFullDepthSearch = (value > ralpha && d != newDepth);
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;
 
-      // Step 17. Full depth search when LMR is skipped or fails high
+	  
+	  // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
-
+		  
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
       // parent node fail low with value <= alpha and try another move.
@@ -1139,6 +1145,12 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+	
+	if (depth <= 8 * ONE_PLY)
+    {
+       pureStaticEval += 2*Value(GoodMovesCount - 2);
+	   bestValue += 2*Value(GoodMovesCount - 2);
+	}
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

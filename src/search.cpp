@@ -1063,7 +1063,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
 
-		  if (newDepth < 5 * ONE_PLY && ss->ply % 6 == 0 && beta > alpha + Value(80) && !extension)
+		  if (newDepth < 5 * ONE_PLY && ss->ply % 6 == 0 && beta > alpha + Value(100) && !extension)
 	         extension = ONE_PLY;
 		  else
 		     extension = DEPTH_ZERO;

@@ -62,6 +62,7 @@ public:
   Endgames endgames;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
+  Value instability;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
 

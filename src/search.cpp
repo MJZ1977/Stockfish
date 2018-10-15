@@ -403,7 +403,7 @@ void Thread::search() {
           // high/low anymore.
           while (true)
           {
-              this->instability = (this->instability + beta - alpha) / 2;
+              this->instability = std::min(beta - alpha, Value(200));
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, rootDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -818,7 +818,7 @@ namespace {
         &&  depth >= 5 * ONE_PLY
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
-        Value rbeta = std::min(beta + 200 - 48 * improving + instability / 4, VALUE_INFINITE);
+        Value rbeta = std::min(beta + 200 - 48 * improving + instability / 5, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 

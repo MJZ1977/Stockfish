@@ -403,6 +403,7 @@ void Thread::search() {
           // high/low anymore.
           while (true)
           {
+              this->instability = beta - alpha;
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, rootDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -433,7 +434,6 @@ void Thread::search() {
               {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
-                  this->instability = beta - alpha;
 
                   if (mainThread)
                   {

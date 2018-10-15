@@ -403,7 +403,7 @@ void Thread::search() {
           // high/low anymore.
           while (true)
           {
-              this->instability = beta - alpha;
+              this->instability = (this->instability + beta - alpha) / 2;
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, rootDepth, false);
 
               // Bring the best move to the front. It is critical that sorting

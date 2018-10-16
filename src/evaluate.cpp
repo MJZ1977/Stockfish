@@ -357,7 +357,7 @@ namespace {
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
                    && pos.count<PAWN>() > 7)
                     score += make_score(5,2)
-                             * std::max(0, popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN))) - 6);
+                             * (popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN))) - 7);
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

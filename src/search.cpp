@@ -458,6 +458,9 @@ void Thread::search() {
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
       }
 
+	  //sync_cout << "PV Change " << this->PvChange << sync_endl;
+	  this->PvChange = 1000;
+
       if (!Threads.stop)
           completedDepth = rootDepth;
 
@@ -935,6 +938,9 @@ moves_loop: // When in check, search starts from here
       else if (    givesCheck // Check extension (~2 Elo)
                &&  pos.see_ge(move))
           extension = ONE_PLY;
+	  else if (PvNode 
+	           && ss->ply == thisThread->PvChange)
+		  extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -1092,10 +1098,20 @@ moves_loop: // When in check, search starts from here
           {
               rm.score = value;
               rm.selDepth = thisThread->selDepth;
-              rm.pv.resize(1);
 
               assert((ss+1)->pv);
+			  if (moveCount > 1)
+			      thisThread->PvChange = 1;
+		      else
+                for (unsigned i = 0; i+1 < rm.pv.size() && (ss+1)->pv[i]!= MOVE_NONE; i++)
+                  if (rm.pv[i+1] != (ss+1)->pv[i])
+                  {
+                      thisThread->PvChange = i+2;
+					  //sync_cout << UCI::move(rm.pv[i], pos.is_chess960()) << UCI::move((ss+1)->pv[i], pos.is_chess960()) << sync_endl;
+					  break;
+				  }
 
+              rm.pv.resize(1);
               for (Move* m = (ss+1)->pv; *m != MOVE_NONE; ++m)
                   rm.pv.push_back(*m);
 

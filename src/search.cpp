@@ -939,7 +939,9 @@ moves_loop: // When in check, search starts from here
                &&  pos.see_ge(move))
           extension = ONE_PLY;
 	  else if (PvNode 
-	           && ss->ply == thisThread->PvChange)
+	           && ss->ply == thisThread->PvChange - 1
+			   && ss->ply > 2
+			   && depth >= 6 * ONE_PLY)
 		  extension = ONE_PLY;
 
       // Calculate new depth for this move
@@ -1101,12 +1103,12 @@ moves_loop: // When in check, search starts from here
 
               assert((ss+1)->pv);
 			  if (moveCount > 1)
-			      thisThread->PvChange = 1;
+			      thisThread->PvChange = 0;
 		      else
                 for (unsigned i = 0; i+1 < rm.pv.size() && (ss+1)->pv[i]!= MOVE_NONE; i++)
                   if (rm.pv[i+1] != (ss+1)->pv[i])
                   {
-                      thisThread->PvChange = i+2;
+                      thisThread->PvChange = i+1;
 					  //sync_cout << UCI::move(rm.pv[i], pos.is_chess960()) << UCI::move((ss+1)->pv[i], pos.is_chess960()) << sync_endl;
 					  break;
 				  }

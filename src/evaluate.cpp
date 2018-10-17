@@ -356,7 +356,7 @@ namespace {
                 // Bonus for bishop controlling several squares with no opposed bishop
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
                    && pos.count<PAWN>() > 7)
-                    score += make_score(5,1)
+                    score += make_score(5,3)
                              * (popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN))) - 7);
             }
 

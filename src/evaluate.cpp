@@ -161,7 +161,7 @@ namespace {
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
-  constexpr Score LongDiagonalBishop = S( 40,  0);
+  constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
@@ -355,7 +355,7 @@ namespace {
 
                 // Bonus for bishop controlling several squares with no opposed bishop
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
-                   && pos.count<PAWN>() > 7)
+                   && pos.count<PAWN>() > 6)
                     score += make_score(5,2)
                              * (popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN))) - 7);
             }

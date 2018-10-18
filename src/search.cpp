@@ -906,11 +906,9 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
+						                + (PvNode && bestValue < alpha)? 4 : 0;
 	  
-	  if (PvNode && bestValue < alpha)
-	     moveCountPruning = false;
-
       // Step 13. Extensions (~70 Elo)
 
       // Singular extension search (~60 Elo). If all moves but one fail low on a

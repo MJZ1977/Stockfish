@@ -1056,7 +1056,8 @@ moves_loop: // When in check, search starts from here
           doFullDepthSearch = !PvNode || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
-      if (PvNode && moveCount > 1 && newDepth > 4 * ONE_PLY && !rootNode)
+      if (PvNode && moveCount > 1 && newDepth > 4 * ONE_PLY
+          && ss->ply > newDepth / ONE_PLY / 6)
          extension = ONE_PLY;
       else
          extension = DEPTH_ZERO;

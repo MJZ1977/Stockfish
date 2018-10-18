@@ -907,6 +907,9 @@ moves_loop: // When in check, search starts from here
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+	  
+	  if (PvNode && bestValue < alpha)
+	     moveCountPruning = false;
 
       // Step 13. Extensions (~70 Elo)
 

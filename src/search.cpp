@@ -1057,12 +1057,14 @@ moves_loop: // When in check, search starts from here
           doFullDepthSearch = !PvNode || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
-      if (PvNode && moveCount > 1 && newDepth > 4 * ONE_PLY && !rootNode)
-         extension = ONE_PLY;
-      else
-         extension = DEPTH_ZERO;
       if (doFullDepthSearch)
+      {
+          if (PvNode && moveCount > 1 && newDepth > 4 * ONE_PLY && !rootNode)
+            extension = ONE_PLY;
+          else
+            extension = DEPTH_ZERO;
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth + extension, !cutNode);
+	  }
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the

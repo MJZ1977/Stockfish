@@ -1312,6 +1312,7 @@ moves_loop: // When in check, search starts from here
                                       to_sq((ss-1)->currentMove));
 
     // Loop through the moves until no moves remain or a beta cutoff occurs
+    int badMoveCount = 0;
     while ((move = mp.next_move()) != MOVE_NONE)
     {
       assert(is_ok(move));
@@ -1371,6 +1372,9 @@ moves_loop: // When in check, search starts from here
       pos.do_move(move, st, givesCheck);
       value = -qsearch<NT>(pos, ss+1, -beta, -alpha, depth - ONE_PLY);
       pos.undo_move(move);
+	  
+	  if (value <= VALUE_MATED_IN_MAX_PLY)
+		  badMoveCount++;
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
@@ -1399,6 +1403,8 @@ moves_loop: // When in check, search starts from here
           }
        }
     }
+	
+	bestValue -= 4*Value(badMoveCount);
 
     // All legal moves have been searched. A special case: If we're in check
     // and no legal moves were found, it is checkmate.

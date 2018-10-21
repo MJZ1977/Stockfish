@@ -567,7 +567,7 @@ namespace {
     bool ttHit, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, mateDangerCount;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -871,6 +871,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
 
     skipQuiets = false;
+	mateDangerCount = 0;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
 
@@ -1049,6 +1050,9 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+		  
+		  if (value <= VALUE_MATED_IN_MAX_PLY)
+			  mateDangerCount++;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
@@ -1145,6 +1149,8 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+	
+	bestValue -= Value(mateDangerCount);
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

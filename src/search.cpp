@@ -1404,7 +1404,7 @@ moves_loop: // When in check, search starts from here
        }
     }
 	
-	bestValue -= 4*Value(badMoveCount);
+	bestValue -= Value(badMoveCount);
 
     // All legal moves have been searched. A special case: If we're in check
     // and no legal moves were found, it is checkmate.

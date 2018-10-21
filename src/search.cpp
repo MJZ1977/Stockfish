@@ -1051,7 +1051,7 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 		  
-		  if (value <= VALUE_MATED_IN_MAX_PLY)
+		  if (value <= VALUE_MATED_IN_MAX_PLY && depth <= 4*ONE_PLY)
 			  mateDangerCount++;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
@@ -1150,7 +1150,8 @@ moves_loop: // When in check, search starts from here
       }
     }
 	
-	bestValue -= Value(mateDangerCount);
+	if (depth <= 4*ONE_PLY)
+	   bestValue -= Value(mateDangerCount);
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

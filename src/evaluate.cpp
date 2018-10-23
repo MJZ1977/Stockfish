@@ -505,11 +505,11 @@ namespace {
        b = attackedBy[Us][KING] & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us));
        if (!(b & (file_bb(ksq) << 1)) && (file_of(ksq) < FILE_E))
           score -= KingBlocked;
-       if (!(b & (file_bb(ksq) >> 1)) && (file_of(ksq) > FILE_D))
+       else if (!(b & (file_bb(ksq) >> 1)) && (file_of(ksq) > FILE_D))
           score -= KingBlocked;
-       if (!(b & (rank_bb(ksq) << 8)) && (rank_of(ksq) < RANK_5))
+       else if (!(b & (rank_bb(ksq) << 8)) && (rank_of(ksq) < RANK_5))
           score -= KingBlocked;
-       if (!(b & (rank_bb(ksq) >> 8)) && (rank_of(ksq) > RANK_4))
+       else if (!(b & (rank_bb(ksq) >> 8)) && (rank_of(ksq) > RANK_4))
           score -= KingBlocked;
     }
 

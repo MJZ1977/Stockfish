@@ -64,6 +64,7 @@ public:
   int selDepth, nmpMinPly;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
+  bool check_PV;
 
   Position rootPos;
   Search::RootMoves rootMoves;

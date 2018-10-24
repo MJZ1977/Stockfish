@@ -500,7 +500,7 @@ namespace {
     score -= CloseEnemies * tropism;
 
     // In endgame : verify that king is not blocked along a row or a file
-    if (pos.non_pawn_material() < EndgameLimit * 3 / 2)
+    if (pos.non_pawn_material() < MidgameLimit)
     {
        b = attackedBy[Us][KING] & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us));
        if (!(b & (file_bb(ksq) << 1)) && (file_of(ksq) < FILE_E))

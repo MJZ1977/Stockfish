@@ -450,7 +450,14 @@ void Thread::search() {
                   if (mainThread)
                 	  ++failedHighCnt;
               }
-              else
+              else if (failedHighCnt > 2 && mainThread)
+			  {
+				  --failedHighCnt;
+				  delta = Value(18);
+				  alpha = std::max(bestValue - delta, -VALUE_INFINITE);
+				  beta = std::min(bestValue + delta, VALUE_INFINITE);
+			  }
+			  else
                   break;
 
               delta += delta / 4 + 5;

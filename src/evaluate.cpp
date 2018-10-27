@@ -387,14 +387,6 @@ namespace {
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
         }
-
-        if (Pt == QUEEN)
-        {
-            // Penalty if any relative pin or discovered attack against the queen
-            Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
-                score -= WeakQueen;
-        }
     }
     if (T)
         Trace::add(Pt, Us, score);
@@ -600,6 +592,19 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+	
+	// Penalty if any relative pin or discovered attack against the queen
+	b = pos.pieces(Us, QUEEN);
+    Bitboard queenPinners;
+	while (b)
+    {
+        Square s = pop_lsb(&b);
+        if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
+           if (!(queenPinners & attackedBy[Us][ALL_PIECES]))
+	           score -= WeakQueen;
+	}
+
+
 
     if (T)
         Trace::add(THREAT, Us, score);

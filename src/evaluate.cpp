@@ -599,7 +599,7 @@ namespace {
 	while (b)
     {
         Square s = pop_lsb(&b);
-        if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
+        if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners) & ~pos.pieces(PAWN))
            if (!(queenPinners & attackedBy[Us][ALL_PIECES]))
 	           score -= WeakQueen;
 	}

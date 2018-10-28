@@ -162,6 +162,7 @@ namespace {
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
+  constexpr Score LinkedRooks        = S( 10,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
@@ -378,6 +379,10 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
+			
+			// Bonus if rooks are linked
+			if (b & pos.pieces(Us, ROOK))
+				score += LinkedRooks;
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

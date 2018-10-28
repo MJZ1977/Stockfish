@@ -165,6 +165,8 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
+  constexpr Score QueenPin           = S( 40,  8);
+  constexpr Score QueenDiscovered    = S( 60, 12);
   constexpr Score RookOnPawn         = S( 10, 30);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 23, 76);
@@ -172,7 +174,6 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
   constexpr Score TrappedRook        = S( 92,  0);
-  constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
 #undef S
@@ -392,8 +393,11 @@ namespace {
         {
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners) & ~pos.pieces(Us,PAWN))
-                score -= WeakQueen;
+			Bitboard Qblockers = pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners);
+            if (Qblockers & pos.pieces(Them))
+                score -= QueenDiscovered;
+            if (Qblockers & pos.pieces(Us) & ~pos.pieces(Us,PAWN))
+                score -= QueenPin;
         }
     }
     if (T)

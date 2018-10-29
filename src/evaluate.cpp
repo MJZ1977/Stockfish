@@ -162,7 +162,7 @@ namespace {
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
-  constexpr Score LinkedRooks        = S( 10,  0);
+  constexpr Score LinkedRooks        = S( 16,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
@@ -311,7 +311,7 @@ namespace {
 
 		// Bonus if rooks can be easily linked
 		if (Pt == ROOK)
-		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us) & mobilityArea[Us])
+		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us))
 			score += LinkedRooks;
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;

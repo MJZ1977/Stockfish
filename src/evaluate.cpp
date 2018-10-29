@@ -311,7 +311,7 @@ namespace {
 
 		// Bonus if rooks can be easily linked
 		if (Pt == ROOK)
-		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us) & mobilityArea[Us])
+		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us))
 			score += LinkedRooks;
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;

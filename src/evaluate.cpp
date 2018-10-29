@@ -308,10 +308,10 @@ namespace {
 
         if (pos.blockers_for_king(Us) & s)
             b &= LineBB[pos.square<KING>(Us)][s];
-		
+
 		// Bonus if rooks can be easily linked
 		if (Pt == ROOK)
-		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us))
+		  if (b & attackedBy[Us][ROOK] & ~pos.pieces(Us) & mobilityArea[Us])
 			score += LinkedRooks;
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
@@ -384,7 +384,7 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
-			
+
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)
             {

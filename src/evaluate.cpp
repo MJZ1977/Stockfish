@@ -377,9 +377,8 @@ namespace {
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
 
 			// Bonus for rook controlling squares in large center
-			if (attacks_bb<ROOK>(s, (pos.pieces(PAWN) | pos.pieces(Them,KNIGHT,BISHOP)))
-			    & LargeCenter)
-			    score += make_score(16,0);
+			if (b & LargeCenter)
+			    score += make_score(20,0);
 
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))

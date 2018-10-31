@@ -537,7 +537,7 @@ namespace {
     safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];
 
 	// Bonus for center control
-	score -= make_score(5,0) * popcount((stronglyProtected | ~safe) & LargeCenter);
+	score -= make_score(4,0) * popcount((stronglyProtected | ~safe) & LargeCenter);
 
     // Bonus according to the kind of attacking pieces
     if (defended | weak)

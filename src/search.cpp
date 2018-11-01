@@ -815,7 +815,7 @@ namespace {
             if (v >= beta)
 			{
                 tte->save(posKey, value_to_tt(v, ss->ply),
-					       BOUND_LOWER, depth, MOVE_NONE, pureStaticEval);
+					       BOUND_LOWER, depth, ttMove, pureStaticEval);
                 return v;
 			}
         }

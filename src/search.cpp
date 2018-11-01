@@ -813,7 +813,11 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+			{
+                tte->save(posKey, value_to_tt(v, ss->ply),
+					       BOUND_LOWER, depth, MOVE_NONE, pureStaticEval);
+                return v;
+			}
         }
     }
 

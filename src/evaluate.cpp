@@ -292,7 +292,7 @@ namespace {
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b, bb, mob_bb2;
     Square s;
     Score score = SCORE_ZERO;
 
@@ -319,7 +319,16 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
+        bb = b & mobilityArea[Us];	
+        int mob = popcount(bb);
+		
+		if (mob <= 2)
+		{
+            mob_bb2 = bb;
+			while (bb)
+				mob_bb2 |= attacks_bb<Pt>(pop_lsb(&bb), pos.pieces()) & mobilityArea[Us];
+			score -= make_score(10,10) * std::max(3 - popcount(mob_bb2),0);		
+		}
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

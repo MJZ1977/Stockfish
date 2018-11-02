@@ -601,6 +601,14 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Penality for squares attacked by our queen and ennemy minor piece or rook
+    if (pos.count<QUEEN>(Us))
+    {
+      b = attackedBy[Us][QUEEN] & ~pos.pieces(Us) & ~attackedBy[Them][PAWN];
+      b &= (attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP]);
+      score -= make_score(5,5) * (popcount(b) - 2);
+    }
+
     if (T)
         Trace::add(THREAT, Us, score);
 

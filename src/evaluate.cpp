@@ -499,20 +499,6 @@ namespace {
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
 
-    // In endgame : verify that king is not blocked along a row or a file
-    if (pos.non_pawn_material() < MidgameLimit)
-    {
-       b = attackedBy[Us][KING] & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us));
-       if (!(b & (file_bb(ksq) << 1)) && (file_of(ksq) < FILE_E))
-          score -= KingBlocked;
-       if (!(b & (file_bb(ksq) >> 1)) && (file_of(ksq) > FILE_D))
-          score -= KingBlocked;
-       if (!(b & (rank_bb(ksq) << 8)) && (rank_of(ksq) < RANK_5))
-          score -= KingBlocked;
-       if (!(b & (rank_bb(ksq) >> 8)) && (rank_of(ksq) > RANK_4))
-          score -= KingBlocked;
-    }
-
     if (T)
         Trace::add(KING, Us, score);
 
@@ -770,7 +756,23 @@ namespace {
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    -118 ;
+                    -120 ;
+
+    // In endgame : if opponent king is blocked, we have a slight advantage
+    if (pos.non_pawn_material() < EndgameLimit * 2)
+    {
+       Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+       Square ksq = pos.square<KING>(~strongSide);
+       Bitboard b = attackedBy[~strongSide][KING] & ~(attackedBy[strongSide][ALL_PIECES] | pos.pieces(~strongSide));
+       if (!(b & (file_bb(ksq) << 1)) && (file_of(ksq) < FILE_E))
+          complexity += 20;
+       if (!(b & (file_bb(ksq) >> 1)) && (file_of(ksq) > FILE_D))
+          complexity += 20;
+       if (!(b & (rank_bb(ksq) << 8)) && (rank_of(ksq) < RANK_5))
+          complexity += 20;
+       if (!(b & (rank_bb(ksq) >> 8)) && (rank_of(ksq) > RANK_4))
+          complexity += 20;
+    }
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

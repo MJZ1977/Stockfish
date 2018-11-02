@@ -606,7 +606,7 @@ namespace {
     {
       b = attackedBy[Us][QUEEN] & ~pos.pieces(Us) & ~attackedBy[Them][PAWN];
       b &= (attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP]);
-      score -= make_score(5,5) * (popcount(b) - 2);
+      score -= make_score(5,5) * popcount(b);
     }
 
     if (T)

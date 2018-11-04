@@ -589,9 +589,7 @@ namespace {
     if (pos.count<QUEEN>(Them) == 1)
     {
         Square s = pos.square<QUEEN>(Them);
-		pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces());
-        safe = mobilityArea[Us] & ~stronglyProtected 
-		       & ~(pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces())));
+        safe = mobilityArea[Us] & ~stronglyProtected & ~pos.pieces(Us);
 
         b = attackedBy[Us][KNIGHT] & pos.attacks_from<KNIGHT>(s);
 

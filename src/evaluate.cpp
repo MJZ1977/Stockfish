@@ -387,7 +387,7 @@ namespace {
 				{
                     int factor = (4 + !pos.can_castle(Us) * 
 					                  (2 + 5 * ((rank_of(pos.square<KING>(Us)) == rank_of(s)) 
-									         && (attackedBy[Us][KING] & pos.pieces(Us,PAWN)))));
+									         && more_than_one(kingRing[Us] & pos.pieces(Us,PAWN)))));
 					score -= (TrappedRook - make_score(mob * 22, 0)) * factor / 4;
 				}
             }

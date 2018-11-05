@@ -386,7 +386,7 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
 				{
                     int factor = (4 + !pos.can_castle(Us) * (2 + 5 * (rank_of(pos.square<KING>(Us)) == rank_of(s))));
-					score -= (TrappedRook - make_score(mob * 22, 0)) / 4 * factor;
+					score -= (TrappedRook - make_score(mob * 22, 0)) * factor / 4;
 				}
             }
         }

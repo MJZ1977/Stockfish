@@ -385,7 +385,9 @@ namespace {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
 				{
-                    int factor = (4 + !pos.can_castle(Us) * (2 + 5 * (rank_of(pos.square<KING>(Us)) == rank_of(s))));
+                    int factor = (4 + !pos.can_castle(Us) * 
+					                  (2 + 5 * ((rank_of(pos.square<KING>(Us)) == rank_of(s)) 
+									         && (attackedBy[Us][KING] & pos.pieces(Us,PAWN)))));
 					score -= (TrappedRook - make_score(mob * 22, 0)) * factor / 4;
 				}
             }

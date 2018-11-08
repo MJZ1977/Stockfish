@@ -133,11 +133,11 @@ namespace {
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 31), S(39, 42), S(57, 44), S(68, 112), S(62, 120)
+    S(0, 0), S(3, 31), S(39, 42), S(57, 44), S(68, 112), S(62, 120)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(51, 38)
+    S(0, 0), S(3, 24), S(38, 71), S(38, 61), S(0, 38), S(51, 38)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
@@ -159,7 +159,7 @@ namespace {
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
-  constexpr Score HangingPawn        = S( 52, 32);
+  constexpr Score HangingPawn        = S( 50, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);

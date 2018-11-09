@@ -679,7 +679,7 @@ namespace {
                 if (((attackedBy2[Us] & ~attackedBy2[Them])
                    | (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
                    |  attackedBy[Us][PAWN]) & s)
-                   bonus += make_score(w, 0);
+                   bonus += make_score(2 * w, 0);
             }
         } // w != 0
 

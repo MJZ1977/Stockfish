@@ -603,6 +603,10 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Bonus for pawns in late endgame
+    if (pos.non_pawn_material() < 2 * RookValueMg)
+       score += make_score(0,20) * pos.count<PAWN>(Us);
+
     if (T)
         Trace::add(THREAT, Us, score);
 

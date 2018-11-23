@@ -128,7 +128,7 @@ namespace {
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
   constexpr Score RookOnFile[][2] = {
-	{ S(18, 7), S(42, 19) },
+	{ S(18, 7), S(40, 18) },
 	{ S(18, 7), S(50, 24) }
   };
 

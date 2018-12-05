@@ -502,6 +502,12 @@ void Thread::search() {
               for (int i : {3, 4, 5})
                   if (lastBestMoveDepth * i < completedDepth)
                      timeReduction *= 1.25;
+			  
+			  if (mainThread->lastCheck && F[1] < -16)
+			  {
+				  timeReduction = 1.0;
+				  mainThread->lastCheck = false;
+			  }
 
               // Use part of the gained time from a previous stable move for the current move
               double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
@@ -509,10 +515,15 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 591)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".
+				  if (!mainThread->lastCheck && timeReduction > 1.0)
+				  {
+					  mainThread->lastCheck = true;
+					  continue;
+				  }
                   if (Threads.ponder)
                       Threads.stopOnPonderhit = true;
                   else
@@ -902,6 +913,10 @@ moves_loop: // When in check, search starts from here
       if (rootNode && !std::count(thisThread->rootMoves.begin() + thisThread->pvIdx,
                                   thisThread->rootMoves.begin() + thisThread->pvLast, move))
           continue;
+
+      if (rootNode && thisThread == Threads.main() 
+		  && thisThread->lastCheck && moveCount > 1)
+		  continue;
 
       ss->moveCount = ++moveCount;
 

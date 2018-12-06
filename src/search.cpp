@@ -503,9 +503,12 @@ void Thread::search() {
                   if (lastBestMoveDepth * i < completedDepth)
                      timeReduction *= 1.25;
 			  
-			  if (mainThread->lastCheck && F[1] < -16)
+			  if (mainThread->lastCheck && (bestValue - rootMoves[0].previousScore) < -40)
 			  {
 				  timeReduction = 1.0;
+				 // sync_cout << "LastCheck insuccessful at depth " << completedDepth/ONE_PLY 
+				 //           << " - BestValue " << bestValue << " - Previous Value " << rootMoves[0].previousScore << sync_endl;
+				  rootDepth -= ONE_PLY;
 				  mainThread->lastCheck = false;
 			  }
 
@@ -515,13 +518,14 @@ void Thread::search() {
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 591)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 601)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".
-				  if (!mainThread->lastCheck && timeReduction > 1.0)
+				  if (!mainThread->lastCheck && timeReduction > 1.25)
 				  {
 					  mainThread->lastCheck = true;
+					//  sync_cout << "LastCheck at depth " << completedDepth/ONE_PLY << sync_endl;
 					  continue;
 				  }
                   if (Threads.ponder)

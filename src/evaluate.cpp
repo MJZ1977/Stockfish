@@ -600,6 +600,20 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+	
+	// Bonus in end game if king is not cut from the center
+	if (pos.non_pawn_material() < EndgameLimit * 2)
+	{
+		safe = ~(pos.pieces(Us) | attackedBy[Them][ALL_PIECES]);
+		b = attackedBy[Us][KING] & safe;
+		Bitboard bb = b;
+        while (b)
+        {
+			bb |= pos.attacks_from<KING>(pop_lsb(&b)) & safe;
+		}
+		if (bb & Center)
+			score += make_score(0,20);
+	}
 
     if (T)
         Trace::add(THREAT, Us, score);

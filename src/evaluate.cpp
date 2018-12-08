@@ -643,6 +643,20 @@ namespace {
             // Adjust bonus based on the king's proximity
             bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
                                     - king_proximity(Us,   blockSq) * 2) * w);
+									
+			// Bonus if opponent king is cut from pawn path
+			if (pos.non_pawn_material() < EndgameLimit * 2)
+			{
+				Bitboard safe = ~(pos.pieces(Them) | attackedBy[Us][ALL_PIECES]);
+				Bitboard b2 = attackedBy[Them][KING] & safe;
+				bb = b2;
+                while (b2)
+                {
+					bb |= pos.attacks_from<KING>(pop_lsb(&b2)) & safe;
+				}
+				if (!(bb & forward_file_bb(Us, s + Up)))
+					bonus += make_score(0,30);
+			}
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

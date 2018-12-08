@@ -655,7 +655,7 @@ namespace {
 					bb |= pos.attacks_from<KING>(pop_lsb(&b2)) & safe;
 				}
 				if (!(bb & forward_file_bb(Us, s + Up)))
-					bonus += make_score(0,30);
+					bonus += make_score(0,12);
 			}
 
             // If blockSq is not the queening square then consider also a second push

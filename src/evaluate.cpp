@@ -645,7 +645,7 @@ namespace {
                                     - king_proximity(Us,   blockSq) * 2) * w);
 									
 			// Bonus if opponent king is cut from pawn path
-			if (pos.non_pawn_material() < EndgameLimit * 2)
+			if (pos.non_pawn_material() < EndgameLimit * 2 && king_proximity(Them, blockSq) < 3)
 			{
 				Bitboard safe = ~(pos.pieces(Them) | attackedBy[Us][ALL_PIECES]);
 				Bitboard b2 = attackedBy[Them][KING] & safe;

@@ -570,7 +570,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, inCheck, givesCheck, improving;
+    bool ttHit, inCheck, givesCheck, improving, AccurateLowerBound;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -763,11 +763,22 @@ namespace {
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
 
+    AccurateLowerBound = ttHit
+                && tte->depth() >= std::min(depth / 2, 12 * ONE_PLY)
+                && (tte->bound() & BOUND_LOWER)
+                && eval == ttValue;
+
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !rootNode
+        &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
+
+    if (AccurateLowerBound
+       &&  eval >= beta + Value(400)
+       &&  eval < VALUE_KNOWN_WIN)
+       return eval;
 
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode

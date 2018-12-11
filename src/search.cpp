@@ -764,7 +764,7 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     AccurateLowerBound = ttHit
-                && tte->depth() >= std::min(depth - 4 * ONE_PLY, 20 * ONE_PLY)
+                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)
                 && (tte->bound() & BOUND_LOWER)
                 && eval == ttValue;
 

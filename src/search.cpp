@@ -776,7 +776,7 @@ namespace {
         return eval;
 
     if (AccurateLowerBound
-       &&  eval >= beta + Value(360)
+       &&  eval >= beta + Value(440)
        &&  eval < VALUE_KNOWN_WIN)
        return eval;
 

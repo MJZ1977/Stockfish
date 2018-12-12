@@ -871,8 +871,12 @@ namespace {
     if (    depth >= 8 * ONE_PLY
         && !ttMove)
     {
-        search<NT>(pos, ss, alpha, beta, depth - 7 * ONE_PLY, cutNode);
-
+        Depth iter_depth = ONE_PLY;
+        while (iter_depth <= depth - 7 * ONE_PLY)
+        {
+           search<NT>(pos, ss, alpha, beta, iter_depth, cutNode);
+           iter_depth += 2 * ONE_PLY;
+	    }
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
         ttMove = ttHit ? tte->move() : MOVE_NONE;

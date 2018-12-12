@@ -764,7 +764,7 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     AccurateLowerBound = ttHit
-                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 6 * ONE_PLY)
+                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)
                 && (tte->bound() & BOUND_LOWER)
                 && eval == ttValue;
 
@@ -776,6 +776,7 @@ namespace {
         return eval;
 
     if (AccurateLowerBound
+       &&  !PvNode
        &&  eval >= beta + Value(360)
        &&  eval < VALUE_KNOWN_WIN)
        return eval;

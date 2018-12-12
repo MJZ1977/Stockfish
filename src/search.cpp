@@ -776,7 +776,6 @@ namespace {
         return eval;
 
     if (AccurateLowerBound
-       &&  !PvNode
        &&  eval >= beta + Value(360)
        &&  eval < VALUE_KNOWN_WIN)
        return eval;
@@ -864,7 +863,12 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
-                    return value;
+                {
+                    if (!excludedMove)
+                    tte->save(posKey, value_to_tt(value, ss->ply),
+					             BOUND_LOWER, depth - 4 * ONE_PLY, move, pureStaticEval);
+					return value;
+                }
             }
     }
 

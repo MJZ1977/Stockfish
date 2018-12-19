@@ -355,8 +355,8 @@ namespace {
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
 					&& pos.non_pawn_material() > EndgameLimit)
 				{
-                    Bitboard OppCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
-                                           : Rank1BB | Rank2BB | Rank3BB);
+                    Bitboard OppCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB | (Rank5BB & CenterFiles)
+                                           : Rank1BB | Rank2BB | Rank3BB |  (Rank4BB & CenterFiles));
 					score += make_score(3 * (popcount(b & mobilityArea[Us] & OppCamp) - 1),0);
 				}
             }

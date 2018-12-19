@@ -354,7 +354,7 @@ namespace {
                 // Bonus for bishop controlling several squares with no opposed bishop
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
                    && pos.count<PAWN>() > 7)
-                    score += make_score(2,0) * (mob - 4);
+                    score += make_score(2,1) * (mob - 6);
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

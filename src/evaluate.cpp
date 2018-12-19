@@ -353,8 +353,12 @@ namespace {
 
                 // Bonus for bishop controlling several squares with no opposed bishop
                 if (!(((DarkSquares & s)? DarkSquares : ~DarkSquares) & pos.pieces(Them,BISHOP))
-                   && pos.count<PAWN>() > 7)
-                    score += make_score((mob - 6) * (pos.count<PAWN>() - 8) / 2, 0);
+					&& pos.non_pawn_material() > EndgameLimit)
+				{
+                    Bitboard OppCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
+                                           : Rank1BB | Rank2BB | Rank3BB);
+					score += make_score(4 * (popcount(b & mobilityArea[Us] & OppCamp) - 1),0);
+				}
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

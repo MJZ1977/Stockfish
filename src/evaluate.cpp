@@ -357,7 +357,7 @@ namespace {
 				{
                     Bitboard OppCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
                                            : Rank1BB | Rank2BB | Rank3BB);
-					score += make_score(4 * (popcount(b & mobilityArea[Us] & OppCamp) - 1),0);
+					score += make_score(3 * popcount(b & mobilityArea[Us] & OppCamp),0);
 				}
             }
 

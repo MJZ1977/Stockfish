@@ -357,7 +357,8 @@ namespace {
 				{
                     Bitboard OppCamp = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB | (Rank5BB & CenterFiles)
                                            : Rank1BB | Rank2BB | Rank3BB |  (Rank4BB & CenterFiles));
-					score += make_score(3 * (popcount(b & mobilityArea[Us] & OppCamp) - 1),0);
+					score += make_score(3 * (popcount(b & mobilityArea[Us] & OppCamp 
+					                                    & ~pe->pawn_attacks_span(Them)) - 1),0);
 				}
             }
 

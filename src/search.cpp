@@ -867,12 +867,12 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)
-    if (    depth >= 8 * ONE_PLY
+    if (    depth >= 6 * ONE_PLY
         && !ttMove)
     {
         Depth iter_depth = ONE_PLY;
 
-        while (iter_depth <= depth - 7 * ONE_PLY)
+        while (iter_depth <= depth / 2 - 2 * ONE_PLY)
         {
            search<NT>(pos, ss, alpha, beta, iter_depth, cutNode);
            iter_depth += 2 * ONE_PLY;

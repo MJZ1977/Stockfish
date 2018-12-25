@@ -641,7 +641,7 @@ namespace {
             Square PSquare = lsb(PRank & forward_file_bb(Us, s));
             if (distance(pos.square<KING>(Them), PSquare) >
               distance(s, PSquare) + (pos.side_to_move() == Us? 0 : 1))
-            bonus += make_score(0,120) * (6 - distance(s, PSquare));
+            bonus += make_score(0,100) * (6 - distance(s, PSquare));
 		}
 
         if (r > RANK_3)

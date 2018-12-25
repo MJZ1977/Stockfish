@@ -644,7 +644,7 @@ namespace {
             bonus += make_score(0,100) * (6 - distance(s, PSquare));
 		}
 
-        if (r > RANK_3 && pos.non_pawn_material(Them))
+        if (r > RANK_3)
         {
             int w = (r-2) * (r-2) + 2;
             Square blockSq = s + Up;

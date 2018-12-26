@@ -137,6 +137,9 @@ namespace {
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
 
+        if (backward && more_than_one(leverPush) && pos.empty(s + Up))
+            score -= Backward /4;
+
         if (doubled && !support)
             score -= Doubled;
     }

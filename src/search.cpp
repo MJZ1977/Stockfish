@@ -778,7 +778,7 @@ namespace {
                 && eval == ttValue;
 
     if (AccurateUpperBound
-       &&  eval < alpha - Value(380))
+       &&  eval < alpha - Value(460))
        return eval;
 
     // Step 8. Futility pruning: child node (~30 Elo)

@@ -773,7 +773,7 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     AccurateUpperBound = ttHit
-                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)
+                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 10 * ONE_PLY)
                 && (tte->bound() & BOUND_UPPER)
                 && eval == ttValue;
 

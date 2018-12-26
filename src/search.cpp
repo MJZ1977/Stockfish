@@ -773,12 +773,13 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     AccurateUpperBound = ttHit
-                && tte->depth() >= std::max(depth - 2 * ONE_PLY, 10 * ONE_PLY)
+                && tte->depth() >= 10 * ONE_PLY
                 && (tte->bound() & BOUND_UPPER)
                 && eval == ttValue;
 
     if (AccurateUpperBound
-       &&  eval < alpha - Value(380))
+       && !PvNode
+       &&  eval < alpha - futility_margin(depth - tte->depth(), !improving))
        return eval;
 
     // Step 8. Futility pruning: child node (~30 Elo)

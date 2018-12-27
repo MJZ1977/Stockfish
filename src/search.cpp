@@ -579,6 +579,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
     bool ttHit, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool badCapture = false;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -921,6 +922,8 @@ moves_loop: // When in check, search starts from here
 
       extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
+      if (captureOrPromotion && moveCount > 1)
+         badCapture = !pos.see_ge(move, -Value(600));
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
@@ -967,7 +970,7 @@ moves_loop: // When in check, search starts from here
           && pos.non_pawn_material(us)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
-          if (   !captureOrPromotion
+          if (   (!captureOrPromotion || badCapture)
               && !givesCheck
               && !pos.advanced_pawn_push(move))
           {
@@ -1023,7 +1026,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!captureOrPromotion || moveCountPruning || badCapture))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 

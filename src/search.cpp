@@ -923,7 +923,7 @@ moves_loop: // When in check, search starts from here
       extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
       if (captureOrPromotion && moveCount > 1)
-         badCapture = !pos.see_ge(move, -Value(600));
+         badCapture = !pos.see_ge(move, -Value(800));
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 

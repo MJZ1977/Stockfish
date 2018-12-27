@@ -1028,7 +1028,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           if (pos.non_pawn_material() < 2 * RookValueMg
-              && eval >= Value(360)
+              && eval >= Value(450)
               && !PvNode)
               r += ONE_PLY;
 

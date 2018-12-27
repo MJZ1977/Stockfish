@@ -1034,7 +1034,7 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          if (!captureOrPromotion)
+          if (!captureOrPromotion || badCapture)
           {
               // Decrease reduction for exact PV nodes (~0 Elo)
               if (pvExact)

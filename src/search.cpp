@@ -962,6 +962,12 @@ moves_loop: // When in check, search starts from here
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
+      if (pos.non_pawn_material() < 2 * RookValueMg
+          && eval >= Value(450)
+          && !PvNode
+          && newDepth > 4 * ONE_PLY)
+          newDepth -= ONE_PLY;
+
       // Step 14. Pruning at shallow depth (~170 Elo)
       if (  !rootNode
           && pos.non_pawn_material(us)
@@ -1026,11 +1032,6 @@ moves_loop: // When in check, search starts from here
           && (!captureOrPromotion || moveCountPruning))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
-
-          if (pos.non_pawn_material() < 2 * RookValueMg
-              && eval >= Value(450)
-              && !PvNode)
-              r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

@@ -1029,7 +1029,8 @@ moves_loop: // When in check, search starts from here
 
           if (pos.non_pawn_material() <= 2 * RookValueMg
               && abs(ss->staticEval) >= Value(400)
-              && !PvNode)
+              && !PvNode
+			  && ss->ply > 1)
               r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

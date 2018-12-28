@@ -742,8 +742,8 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 	
 	Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
-	bool winningEG = pos.non_pawn_material() < RookValueMg
-	                 && eg > Value(300)
+	bool winningEG = pos.non_pawn_material() < 2*RookValueMg
+	                 && eg > Value(500)
 					 && pos.count<PAWN>(strongSide) > 1;
 
     // Compute the initiative bonus for the attacking side

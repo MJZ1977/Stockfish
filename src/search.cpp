@@ -652,7 +652,7 @@ namespace {
     if (depth > 8 * ONE_PLY && !excludedMove)
     {
         pvHit = (std::find(pvPos.begin(),pvPos.end(),posKey) != pvPos.end());
-        if (!pvHit && PvNode)
+        if (!pvHit && PvNode && pvPos.size() < 2000)
         {
            pvPos.push_back(posKey);
            pvHit = true;

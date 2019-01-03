@@ -1021,6 +1021,10 @@ moves_loop: // When in check, search starts from here
 
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
+	  pvHit = (std::find(pvPos.begin(),pvPos.end(),pos.key_after(move)) != pvPos.end());
+	  
+	  if (!pvHit && (pvPos.size() % 2) == 1)
+		  newDepth -= ONE_PLY;
 
       // Check for legality just before making the move
       if (!rootNode && !pos.legal(move))

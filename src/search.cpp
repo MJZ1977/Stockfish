@@ -649,7 +649,7 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
 
     pvHit = false;
-    if (depth > 6 * ONE_PLY && !excludedMove)
+    if (depth > 5 * ONE_PLY && !excludedMove)
     {
         pvHit = (std::find(pvPos.begin(),pvPos.end(),posKey) != pvPos.end());
         if (!pvHit && PvNode && pvPos.size() < 5000)

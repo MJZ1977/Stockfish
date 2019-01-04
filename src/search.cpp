@@ -652,7 +652,7 @@ namespace {
     if (depth > 6 * ONE_PLY && !excludedMove)
     {
         pvHit = (std::find(pvPos.begin(),pvPos.end(),posKey) != pvPos.end());
-        if (!pvHit && PvNode && pvPos.size() < 5000)
+        if (!pvHit && PvNode && pvPos.size() < 10000)
         {
            pvPos.push_back(posKey);
            pvHit = true;
@@ -1044,7 +1044,7 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-          if (pvHit && !PvNode && moveCount < 10)
+          if (pvHit && !PvNode)
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1092,6 +1092,10 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+
+          if (pvHit && d > 6 * ONE_PLY && value > alpha)
+            if (std::find(pvPos.begin(),pvPos.end(),pos.key()) == pvPos.end() && pvPos.size() < 10000)
+              pvPos.push_back(pos.key());
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

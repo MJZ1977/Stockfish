@@ -649,12 +649,13 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
 
     pvHit = false;
-    if (depth > 6 * ONE_PLY && !excludedMove)
+    if (depth > 6 * ONE_PLY && !excludedMove && !rootNode)
     {
         pvHit = (std::find(pvPos.begin(),pvPos.end(),posKey) != pvPos.end());
         if (!pvHit && PvNode && pvPos.size() < 10000)
         {
            pvPos.push_back(posKey);
+		   //sync_cout << pos.fen() << sync_endl;
            pvHit = true;
 	    }
     }
@@ -1095,7 +1096,10 @@ moves_loop: // When in check, search starts from here
 
           if (pvHit && d > 6 * ONE_PLY && value > alpha)
             if (std::find(pvPos.begin(),pvPos.end(),pos.key()) == pvPos.end() && pvPos.size() < 10000)
-              pvPos.push_back(pos.key());
+            {  
+		        pvPos.push_back(pos.key());
+				//sync_cout << pos.fen() << sync_endl;
+			}
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

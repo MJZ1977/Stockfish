@@ -1094,7 +1094,7 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (pvHit && d > 6 * ONE_PLY && value > alpha)
+          if (pvHit && d > 7 * ONE_PLY && value > alpha)
             if (std::find(pvPos.begin(),pvPos.end(),pos.key()) == pvPos.end() && pvPos.size() < 10000)
             {  
 		        pvPos.push_back(pos.key());

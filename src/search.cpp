@@ -676,6 +676,9 @@ namespace {
         return ttValue;
     }
 	
+	if (pvHit)
+		   sync_cout << pos.fen() << sync_endl;
+	
 	if (depth > 6 * ONE_PLY && !excludedMove && !pvHit && PvNode)
            pvHit = true;
 

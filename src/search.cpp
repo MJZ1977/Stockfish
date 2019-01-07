@@ -1037,6 +1037,11 @@ moves_loop: // When in check, search starts from here
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
 
+      // Random extension if pvHit
+      if (pvHit && (thisThread->nodes.load(std::memory_order_relaxed) % 8) == 1)
+         if (std::find(pvPos.begin(),pvPos.end(),pos.key()) == pvPos.end())		//pvHit after move
+            newDepth += ONE_PLY;
+
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
@@ -1045,8 +1050,8 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-          if (pvHit && !PvNode)
-              r -= ONE_PLY;
+          //if (pvHit && !PvNode)
+          //    r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
@@ -1096,7 +1101,7 @@ moves_loop: // When in check, search starts from here
 
           if (pvHit && d > 7 * ONE_PLY && value > alpha)
             if (std::find(pvPos.begin(),pvPos.end(),pos.key()) == pvPos.end() && pvPos.size() < 10000)
-            {  
+            {
 		        pvPos.push_back(pos.key());
 				//sync_cout << pos.fen() << sync_endl;
 			}

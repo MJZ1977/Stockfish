@@ -675,6 +675,9 @@ namespace {
         }
         return ttValue;
     }
+	
+	if (depth > 6 * ONE_PLY && !excludedMove && !pvHit && PvNode)
+           pvHit = true;
 
     // Step 5. Tablebases probe
     if (!rootNode && TB::Cardinality)
@@ -709,7 +712,7 @@ namespace {
                 if (    b == BOUND_EXACT
                     || (b == BOUND_LOWER ? value >= beta : value <= alpha))
                 {
-                    tte->save(posKey, value_to_tt(value, ss->ply), false, b,
+                    tte->save(posKey, value_to_tt(value, ss->ply), pvHit, b,
                               std::min(DEPTH_MAX - ONE_PLY, depth + 6 * ONE_PLY),
                               MOVE_NONE, VALUE_NONE);
 
@@ -760,7 +763,7 @@ namespace {
         else
             ss->staticEval = eval = pureStaticEval = -(ss-1)->staticEval + 2 * Eval::Tempo;
 
-        tte->save(posKey, VALUE_NONE, false, BOUND_NONE, DEPTH_NONE, MOVE_NONE, pureStaticEval);
+        tte->save(posKey, VALUE_NONE, pvHit, BOUND_NONE, DEPTH_NONE, MOVE_NONE, pureStaticEval);
     }
 
     // Step 7. Razoring (~2 Elo)
@@ -771,6 +774,9 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
+     
+    if (pvHit)
+        goto moves_loop;
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode

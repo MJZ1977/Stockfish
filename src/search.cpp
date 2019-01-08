@@ -675,10 +675,10 @@ namespace {
         }
         return ttValue;
     }
-	
+
 	//if (pvHit)
-		//   sync_cout << pos.fen() << sync_endl;
-	
+	//	   sync_cout << pos.fen() << sync_endl;
+
 	if (depth > 6 * ONE_PLY && !excludedMove && !pvHit && PvNode)
            pvHit = true;
 
@@ -777,7 +777,7 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
-     
+
     if (pvHit)
         goto moves_loop;
 

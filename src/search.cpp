@@ -973,6 +973,14 @@ moves_loop: // When in check, search starts from here
       // Extension if castling
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
+	  
+	  // Endgame extension for critical search tree lines
+      else if (pos.non_pawn_material() == 0
+	  				&&  pvHit
+	       			&&  abs(ss->staticEval) <= Value(160)
+	       			&&  abs(ss->staticEval) >= Value(5)
+	       			&&  pos.rule50_count() <= 10)
+     	  extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

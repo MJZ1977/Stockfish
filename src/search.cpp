@@ -677,7 +677,7 @@ namespace {
         return ttValue;
     }
 
-    if (   depth > 4 * ONE_PLY
+    if (   depth > 6 * ONE_PLY
         && !excludedMove
         && PvNode)
         pvHit = true;
@@ -777,6 +777,9 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
+
+    if (pvHit)
+       goto moves_loop;
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode

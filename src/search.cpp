@@ -677,7 +677,7 @@ namespace {
         return ttValue;
     }
 
-	if (depth > 4 * ONE_PLY && !excludedMove && PvNode)
+	if (depth > 3 * ONE_PLY && !excludedMove && PvNode)
            pvHit = true;
 
     // Step 5. Tablebases probe

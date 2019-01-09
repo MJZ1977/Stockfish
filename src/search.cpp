@@ -677,7 +677,7 @@ namespace {
         return ttValue;
     }
 
-    if (   depth > 6 * ONE_PLY
+    if (   depth > 4 * ONE_PLY
         && !excludedMove
         && PvNode)
         pvHit = true;

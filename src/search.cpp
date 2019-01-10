@@ -932,8 +932,8 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
-                                        + (pvHit && bestValue < alpha)? 2 : 0;
+                        && moveCount >= (FutilityMoveCounts[improving][depth / ONE_PLY]
+                                        + ((pvHit && bestValue < alpha)? 2 : 0));
 
       // Step 13. Extensions (~70 Elo)
 

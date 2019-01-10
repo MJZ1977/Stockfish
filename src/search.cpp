@@ -1163,7 +1163,7 @@ moves_loop: // When in check, search starts from here
 			  
 			  // if previous position is in critical search tree and we found a good move,
 			  // we add the new position to the critical search tree
-			  if (!rootNode) 
+			  if (!rootNode && !excludedMove) 
 				  ss->pvHit |= (ss-1)->pvHit;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case

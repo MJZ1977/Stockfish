@@ -931,11 +931,9 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
-      if (pvHit && bestValue < alpha)
-	     moveCountPruning = false;
-      else
-         moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+      moveCountPruning =   depth < 16 * ONE_PLY
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
+                                        + (pvHit && bestValue < alpha)? 2 : 0;
 
       // Step 13. Extensions (~70 Elo)
 

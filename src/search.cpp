@@ -784,6 +784,27 @@ namespace {
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
+	
+	// Blocked position verification : if opponent can't progress with a null move,
+	// return VALUE_DRAW
+	if (   !PvNode
+	    && depth > 16 * ONE_PLY 
+	    && pos.rule50_count() > 10 
+		&& pos.non_pawn_material(us))
+		//&& beta < 0)
+	{
+        ss->currentMove = MOVE_NULL;
+        ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
+
+        pos.do_null_move(st);
+
+        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth - 4 * ONE_PLY, !cutNode);
+
+        pos.undo_null_move();
+		
+		if (nullValue == beta)
+			return VALUE_DRAW;
+	}		
 
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode

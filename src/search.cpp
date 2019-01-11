@@ -577,7 +577,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, inCheck, givesCheck, improving;
+    bool ttHit, inCheck, givesCheck, improving, pvHit;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -781,7 +781,7 @@ namespace {
     // for critical search tree, it is important to skip early pruning to avoid nonPV search with low alpha
 	if (ss->pvHit)
        goto moves_loop;
-	
+
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < 7 * ONE_PLY
@@ -829,7 +829,9 @@ namespace {
             thisThread->nmpMinPly = ss->ply + 3 * (depth-R) / 4;
             thisThread->nmpColor = us;
 
+            pvHit = ss->pvHit;
             Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false);
+            ss->pvHit = pvHit;
 
             thisThread->nmpMinPly = 0;
 
@@ -880,7 +882,9 @@ namespace {
     if (    depth >= 8 * ONE_PLY
         && !ttMove)
     {
+        pvHit = ss->pvHit;
         search<NT>(pos, ss, alpha, beta, depth - 7 * ONE_PLY, cutNode);
+        ss->pvHit = pvHit;
 
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
@@ -955,7 +959,9 @@ moves_loop: // When in check, search starts from here
       {
           Value singularBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
           ss->excludedMove = move;
+          pvHit = ss->pvHit;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth / 2, cutNode);
+          ss->pvHit = pvHit;
           ss->excludedMove = MOVE_NONE;
 
           if (value < singularBeta)
@@ -1160,10 +1166,10 @@ moves_loop: // When in check, search starts from here
           if (value > alpha)
           {
               bestMove = move;
-			  
+
 			  // if previous position is in critical search tree and we found a good move,
 			  // we add the new position to the critical search tree
-			  if (!rootNode && !excludedMove && depth > 6) 
+			  if (!rootNode && !excludedMove && depth > 6)
 				  ss->pvHit |= (ss-1)->pvHit;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case

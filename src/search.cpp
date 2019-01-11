@@ -788,7 +788,8 @@ namespace {
 	// Blocked position verification : if opponent can't progress with a null move,
 	// return VALUE_DRAW
 	if (   !PvNode
-	    && depth > 16 * ONE_PLY 
+	    && (ss-1)->currentMove != MOVE_NULL
+	    && depth > 12 * ONE_PLY 
 	    && pos.rule50_count() > 10 
 		&& pos.non_pawn_material(us))
 		//&& beta < 0)

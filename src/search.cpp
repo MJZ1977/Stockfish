@@ -377,6 +377,10 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
+      // Reset pvHit counter
+      sync_cout << this->pvHitCnt << sync_endl;
+      this->pvHitCnt = 0;
+
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)
       {
@@ -560,6 +564,12 @@ namespace {
             return alpha;
     }
 
+    if (depth < ONE_PLY
+        && pos.this_thread()->pvHitCnt == 0
+        && ss->ply > 10
+        && pos.rule50_count() > 10)
+        return VALUE_DRAW;
+
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
         return qsearch<NT>(pos, ss, alpha, beta);
@@ -679,8 +689,12 @@ namespace {
 
     if (   depth > 4 * ONE_PLY
         && !excludedMove
-        && PvNode)
-        pvHit = true;
+        && PvNode
+        && !pvHit)
+        {
+           thisThread->pvHitCnt += 1;
+           pvHit = true;
+	    }
 
     // Step 5. Tablebases probe
     if (!rootNode && TB::Cardinality)

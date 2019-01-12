@@ -1049,16 +1049,16 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
+		  // Increase reduction if the position is an almost winning EG
+		  if (pos.non_pawn_material() < 2 * RookValueMg
+             && abs(ss->staticEval) >= 2 * PawnValueEg
+             && !pvHit)
+              r += ONE_PLY;
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
-                  r += ONE_PLY;
-			  
-			  // Increase reduction if the position is an almost winning EG
-			  if (pos.non_pawn_material() < 2 * RookValueMg
-                 && abs(ss->staticEval) >= 2 * PawnValueEg
-                 && !pvHit)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)

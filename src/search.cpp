@@ -1058,7 +1058,8 @@ moves_loop: // When in check, search starts from here
 			  // Increase reduction if the position is an almost winning EG
 			  if (pos.non_pawn_material() < 2 * RookValueMg
                  && abs(ss->staticEval) >= 2 * PawnValueEg
-                 && !pvHit)
+                 && !pvHit
+				 && moveCount > 6)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)

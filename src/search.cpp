@@ -786,7 +786,7 @@ namespace {
         return eval;
 	
 	// Blocked position verification : if opponent can't progress with a null move,
-	// return VALUE_DRAW
+	// position can be blocked
 	if (   !PvNode
 	    && (ss-1)->currentMove != MOVE_NULL
 	    && depth > 12 * ONE_PLY 
@@ -803,8 +803,8 @@ namespace {
 
         pos.undo_null_move();
 		
-		if (nullValue == beta)
-			return VALUE_DRAW;
+		if (nullValue >= beta)
+			return nullValue / 2;
 	}		
 
     // Step 9. Null move search with verification search (~40 Elo)

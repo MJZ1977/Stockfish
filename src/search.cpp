@@ -789,7 +789,7 @@ namespace {
 	// position can be blocked
 	if (   !PvNode
 	    && (ss-1)->currentMove != MOVE_NULL
-	    && depth > 12 * ONE_PLY 
+	    && depth > 20 * ONE_PLY 
 	    && pos.rule50_count() > 10 
 		&& pos.non_pawn_material(us))
 		//&& beta < 0)

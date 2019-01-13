@@ -1052,9 +1052,9 @@ moves_loop: // When in check, search starts from here
 		  // Increase reduction if the position is an almost winning EG
 		  if (pos.non_pawn_material() < 2 * RookValueMg
              && abs(ss->staticEval) >= 2 * PawnValueEg
-			 && pos.count<PAWN>() > 2
+			 && pos.count<PAWN>() > 3
              && !pvHit)
-              r += depth / 4;
+              r += ONE_PLY;
 
           if (!captureOrPromotion)
           {

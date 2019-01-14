@@ -1042,6 +1042,13 @@ moves_loop: // When in check, search starts from here
           if (pvHit)
               r -= ONE_PLY;
 
+          // Increase reduction for almost winning/losing positions
+          if ( !rootNode
+            && abs(ss->staticEval - (ss-1)->staticEval) >= Value(800) + pos.non_pawn_material() / 16
+            && pos.count<PAWN>() > 2
+            && !pvHit)
+              r += ONE_PLY;
+
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;

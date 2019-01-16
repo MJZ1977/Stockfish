@@ -503,10 +503,7 @@ void Thread::search() {
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = 1.0;
-          for (int i : {3, 4, 5})
-              if (lastBestMoveDepth * i < completedDepth)
-                  timeReduction *= 1.25;
+          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
 
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
@@ -578,7 +575,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
     bool ttHit, pvHit, inCheck, givesCheck, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -643,7 +640,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-    pvHit = ttHit ? tte->pv_hit() : false;
+    pvHit = ttHit && tte->pv_hit();
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
@@ -677,7 +674,7 @@ namespace {
         return ttValue;
     }
 
-    if (   depth > 6 * ONE_PLY
+    if (   depth > 4 * ONE_PLY
         && !excludedMove
         && PvNode)
         pvHit = true;
@@ -881,7 +878,7 @@ namespace {
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
         ttMove = ttHit ? tte->move() : MOVE_NONE;
-        pvHit = ttHit ? tte->pv_hit() : false;
+        pvHit = ttHit && tte->pv_hit();
     }
 
 moves_loop: // When in check, search starts from here
@@ -898,7 +895,6 @@ moves_loop: // When in check, search starts from here
 
     skipQuiets = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1051,7 +1047,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           // Decrease reduction if position is or has been on the PV
-          if (pvHit && !PvNode)
+          if (pvHit)
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1060,10 +1056,6 @@ moves_loop: // When in check, search starts from here
 
           if (!captureOrPromotion)
           {
-              // Decrease reduction for exact PV nodes (~0 Elo)
-              if (pvExact)
-                  r -= ONE_PLY;
-
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
                   r += ONE_PLY;
@@ -1300,7 +1292,7 @@ moves_loop: // When in check, search starts from here
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove = ttHit ? tte->move() : MOVE_NONE;
-    pvHit = ttHit ? tte->pv_hit() : false;
+    pvHit = ttHit && tte->pv_hit();
 
     if (  !PvNode
         && ttHit

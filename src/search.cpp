@@ -972,11 +972,12 @@ moves_loop: // When in check, search starts from here
 
       // Endgame extension for critical search tree lines
       else if (pos.non_pawn_material() == 0
-              &&  pvHit
+              &&  pvHit 
+              &&  improving
               &&  abs(ss->staticEval) <= Value(160)
               &&  abs(ss->staticEval) >= Value(5)
               &&  pos.rule50_count() <= 12
-			  &&  depth >= (ss->ply / 2 + 3) * ONE_PLY)
+              &&  depth >= (ss->ply / 2 + 3) * ONE_PLY)
          extension = ONE_PLY;
 
       // Calculate new depth for this move

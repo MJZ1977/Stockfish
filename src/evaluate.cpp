@@ -832,7 +832,7 @@ namespace {
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
+            + passed< WHITE>() - passed< BLACK>();
 
     if (abs(mg_value(score)) < Value(400) 
 		|| abs(eg_value(score)) < Value(400))

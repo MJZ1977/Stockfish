@@ -834,8 +834,8 @@ namespace {
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>();
 
-    if (abs(mg_value(score)) < Value(400) 
-		|| abs(eg_value(score)) < Value(400))
+    if (abs(mg_value(score)) < Value(360) 
+		|| abs(eg_value(score)) < Value(360))
 		{
            score += space<  WHITE>() - space<  BLACK>();
 		   score += initiative(eg_value(score));

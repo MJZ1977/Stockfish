@@ -616,6 +616,15 @@ namespace {
             return alpha;
     }
 
+	// Check for blocked position
+	if (ss->ply > 24 + depth / ONE_PLY
+	    && pos.non_pawn_material()
+        && pos.count<PAWN>() >= 1
+		&& alpha <= Value(800)
+		&& beta >= Value(-800)
+		&& pos.rule50_count() > 24 + depth / ONE_PLY)
+		return VALUE_DRAW;
+
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     (ss+1)->ply = ss->ply + 1;
@@ -635,7 +644,8 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() + pos.rule50_count()/5) ^ Key(excludedMove << 16); // Isn't a very good hash
+    //posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -1280,6 +1290,7 @@ moves_loop: // When in check, search starts from here
     ttDepth = inCheck || depth >= DEPTH_QS_CHECKS ? DEPTH_QS_CHECKS
                                                   : DEPTH_QS_NO_CHECKS;
     // Transposition table lookup
+    //posKey = pos.key() + pos.rule50_count()/5;
     posKey = pos.key();
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

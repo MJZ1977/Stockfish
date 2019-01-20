@@ -644,7 +644,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = (pos.key() + pos.rule50_count()/5) ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() ^ Key((pos.rule50_count() > 20) << 15)) ^ Key(excludedMove << 16); // Isn't a very good hash
     //posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
@@ -1290,7 +1290,6 @@ moves_loop: // When in check, search starts from here
     ttDepth = inCheck || depth >= DEPTH_QS_CHECKS ? DEPTH_QS_CHECKS
                                                   : DEPTH_QS_NO_CHECKS;
     // Transposition table lookup
-    //posKey = pos.key() + pos.rule50_count()/5;
     posKey = pos.key();
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

@@ -617,7 +617,6 @@ namespace {
 
 	// Check for blocked position
 	if (ss->ply > 28 + depth / ONE_PLY
-	    && pos.non_pawn_material()
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(800)
 		&& beta >= Value(-800)
@@ -643,7 +642,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = (pos.key() ^ Key((pos.rule50_count() > 32) << 15)) ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() ^ Key((pos.rule50_count() > 32) << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     //posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

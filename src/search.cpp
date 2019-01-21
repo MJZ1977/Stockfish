@@ -621,7 +621,7 @@ namespace {
 		&& alpha <= Value(800)
 		&& beta >= Value(-800)
 		&& pos.rule50_count() > 28 + depth / ONE_PLY)
-		return VALUE_DRAW;
+		return VALUE_DRAW;//(ss-1)->staticEval * (pos.rule50_count() - 100) / 100;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -972,6 +972,12 @@ moves_loop: // When in check, search starts from here
       // Extension if castling
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
+	  
+	  // Extension to detect if position is blocked
+	  else if (pos.rule50_count() > 32 
+	           && ss->ply > 20 
+			   && depth > 5 * ONE_PLY)
+		  extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

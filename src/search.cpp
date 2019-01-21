@@ -616,11 +616,12 @@ namespace {
     }
 
 	// Check for blocked position
-	if (ss->ply > 28 + depth / ONE_PLY
+	if (ss->ply > 32 + depth / ONE_PLY
+	    && depth < 6 * ONE_PLY
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(800)
 		&& beta >= Value(-800)
-		&& pos.rule50_count() > 28 + depth / ONE_PLY)
+		&& pos.rule50_count() > 32 + depth / ONE_PLY)
 		return VALUE_DRAW;//(ss-1)->staticEval * (pos.rule50_count() - 100) / 100;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);

@@ -616,13 +616,13 @@ namespace {
     }
 
 	// Check for blocked position
-	if (ss->ply > 32 + depth / ONE_PLY
+	if (ss->ply > 20 + depth / ONE_PLY
 	    && depth < 6 * ONE_PLY
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(800)
 		&& beta >= Value(-800)
-		&& pos.rule50_count() > 32 + depth / ONE_PLY)
-		return VALUE_DRAW;//(ss-1)->staticEval * (pos.rule50_count() - 100) / 100;
+		&& pos.rule50_count() > 28 + depth / ONE_PLY)
+		return (ss-1)->staticEval * std::min((std::min(ss->ply, pos.rule50_count()) - 40) / 40, 0);
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -974,12 +974,6 @@ moves_loop: // When in check, search starts from here
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 	  
-	  // Extension to detect if position is blocked
-	  else if (pos.rule50_count() > 32 
-	           && ss->ply > 20 
-			   && depth > 5 * ONE_PLY)
-		  extension = ONE_PLY;
-
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

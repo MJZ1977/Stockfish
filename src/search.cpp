@@ -616,8 +616,7 @@ namespace {
     }
 
 	// Check for blocked position
-	if (ss->ply > 20 + depth / ONE_PLY
-	    && depth < 6 * ONE_PLY
+	if (ss->ply > 24 + depth / ONE_PLY
         && pos.count<PAWN>() >= 1
 		&& alpha <= Value(800)
 		&& beta >= Value(-800)

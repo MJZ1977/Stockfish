@@ -557,6 +557,8 @@ namespace {
     }
 
     // Dive into quiescence search when the depth reaches zero
+	if (PvNode && ss->ply > 40 && pos.rule50_count() > 40 && pos.count<PAWN>() >= 1 && depth < ONE_PLY)
+		return VALUE_DRAW;
     if (depth < ONE_PLY)
         return qsearch<NT>(pos, ss, alpha, beta);
 

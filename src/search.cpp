@@ -557,6 +557,8 @@ namespace {
     }
 
     // Dive into quiescence search when the depth reaches zero
+	//if (PvNode && ss->ply > 40 && pos.rule50_count() > 40 && pos.count<PAWN>() >= 1 && depth < ONE_PLY)
+		//return VALUE_DRAW;
     if (depth < ONE_PLY)
         return qsearch<NT>(pos, ss, alpha, beta);
 
@@ -634,7 +636,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-	potentiallyBlocked = (ss->ply > 16 + 4 * depth / ONE_PLY && pos.rule50_count() > 28);
+	potentiallyBlocked = (ss->ply > 16 + 4 * depth / ONE_PLY && pos.rule50_count() > 20 && pos.count<PAWN>() >= 1);
     posKey = (pos.key() ^ Key(potentiallyBlocked << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

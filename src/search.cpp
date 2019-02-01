@@ -557,7 +557,7 @@ namespace {
     }
 
     // Dive into quiescence search when the depth reaches zero
-	if (PvNode && ss->ply > 40 && pos.rule50_count() > 40 && pos.count<PAWN>() >= 1 && depth < ONE_PLY)
+	if (PvNode && ss->ply > 30 + depth / ONE_PLY && pos.rule50_count() > 40 && pos.count<PAWN>() >= 1 && depth < ONE_PLY)
 		return VALUE_DRAW;
     if (depth < ONE_PLY)
         return qsearch<NT>(pos, ss, alpha, beta);
@@ -923,7 +923,8 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
+						&& !potentiallyBlocked;
 
       // Step 13. Extensions (~70 Elo)
 

@@ -960,7 +960,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 		  
 	  // Extension to verify perpetual threat
-	  else if (    inCheck && abs(alpha) > Value(400) && depth < 3 * ONE_PLY)
+	  else if (    inCheck && abs(alpha) > Value(600) && depth < 3 * ONE_PLY)
           extension = ONE_PLY;
 
       // Castling extension

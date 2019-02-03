@@ -958,6 +958,10 @@ moves_loop: // When in check, search starts from here
       else if (    givesCheck
                && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
           extension = ONE_PLY;
+		  
+	  // Extension to verify perpetual threat
+	  else if (    inCheck && abs(alpha) > Value(400) && depth < 4 * ONE_PLY)
+          extension = ONE_PLY;
 
       // Castling extension
       else if (type_of(move) == CASTLING)

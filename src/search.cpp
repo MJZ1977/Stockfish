@@ -788,6 +788,7 @@ namespace {
 
         // Null move dynamic reduction based on depth and value
         Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min(int(eval - beta) / 200, 3)) * ONE_PLY;
+        //R = ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
@@ -959,10 +960,6 @@ moves_loop: // When in check, search starts from here
                && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
           extension = ONE_PLY;
 
-	  // Extension to verify perpetual threat
-	  else if (    inCheck && abs(alpha) > Value(300) && depth < 3 * ONE_PLY && pvHit)
-          extension = ONE_PLY;
-
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
@@ -1041,6 +1038,10 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
+              r -= ONE_PLY;
+
+          // Less reduction in case of perpetual threat
+          if (inCheck && abs(alpha) > Value(300))
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

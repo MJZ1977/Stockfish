@@ -1040,7 +1040,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Less reduction in case of perpetual threat
-          if (inCheck && abs(alpha) > Value(300))
+          if (inCheck)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

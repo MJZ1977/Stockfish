@@ -1032,7 +1032,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           // Winning side : concentrate on verifying winning line, losing side : try other lines
-          r += std::max(std::min(int(alpha / 360), 1), -2) * ONE_PLY;
+          r += std::max(std::min(int(alpha / 360), 2), -2) * ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
           if (pvHit)

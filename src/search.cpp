@@ -1032,7 +1032,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           // Decrease reduction if position is or has been on the PV
-          if (pvHit && alpha <= Value(340))
+          if (pvHit && alpha <= Value(320))
               r -= ONE_PLY;
 
 		  // Winning side : concentrate on verifying winning line

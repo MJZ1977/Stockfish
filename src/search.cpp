@@ -1034,9 +1034,9 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (pvHit)
               r -= ONE_PLY;
-		  
+
 		  // Winning side : concentrate on verifying winning line
-		  if (alpha > Value(340) && PvNode)
+		  if (alpha > Value(340))
 			  r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

@@ -416,6 +416,9 @@ namespace {
     b1 = attackedBy[Them][ALL_PIECES] & kingFlank & Camp;
     b2 = b1 & attackedBy2[Them];
 
+    // Shelter with non pawn pieces defending the king
+    score += make_score(3 * popcount((pos.pieces(Us) ^ pos.pieces(Us, PAWN)) & kingFlank & Camp), 0);
+
     int tropism = popcount(b1) + popcount(b2);
 
     // Main king safety evaluation
@@ -457,7 +460,7 @@ namespace {
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.
-    Bitboard BishopCheck =  b2 
+    Bitboard BishopCheck =  b2
                           & attackedBy[Them][BISHOP]
                           & safe
                           & ~QueenCheck;

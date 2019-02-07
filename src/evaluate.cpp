@@ -405,7 +405,7 @@ namespace {
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     const Square ksq = pos.square<KING>(Us);
-    Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
+    Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks, NP_Shelter;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
@@ -417,7 +417,12 @@ namespace {
     b2 = b1 & attackedBy2[Them];
 
     // Shelter with non pawn pieces defending the king
-    score += make_score(3 * popcount((pos.pieces(Us) ^ pos.pieces(Us, PAWN)) & kingFlank & Camp), 0);
+    NP_Shelter = (pos.pieces(Us) ^ pos.pieces(Us, PAWN))
+                  & kingFlank
+                  & Camp
+                  & ~forward_ranks_bb(Them, ksq);
+    if(NP_Shelter)
+         score += make_score(3 * popcount(NP_Shelter), 0);
 
     int tropism = popcount(b1) + popcount(b2);
 

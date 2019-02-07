@@ -422,7 +422,7 @@ namespace {
                   & Camp
                   & ~forward_ranks_bb(Them, ksq);
     if(NP_Shelter)
-         score += make_score(6 * popcount(NP_Shelter), 0);
+         score += make_score(10 * popcount(NP_Shelter), 0);
 
     int tropism = popcount(b1) + popcount(b2);
 

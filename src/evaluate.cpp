@@ -422,7 +422,7 @@ namespace {
                   & Camp
                   & ~forward_ranks_bb(Them, ksq);
     if(NP_Shelter)
-         score += make_score(6 * popcount(NP_Shelter), 2);
+         score += make_score(8 * popcount(NP_Shelter), 0);
 
     int tropism = popcount(b1) + popcount(b2);
 
@@ -490,7 +490,7 @@ namespace {
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
-                 -  80 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
+                 -  70 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                  +   5 * tropism * tropism / 16
                  - 873 * !pos.count<QUEEN>(Them)

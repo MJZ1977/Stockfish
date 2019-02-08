@@ -164,7 +164,7 @@ void Search::init() {
 
               Reductions[NonPV][imp][d][mc] = imp ? int(std::round(r)) : int(std::round(r * 1.2));
 
-              Reductions[PV][imp][d][mc] = Reductions[NonPV][imp][d][mc] * 4 / 5;
+              Reductions[PV][imp][d][mc] = Reductions[NonPV][imp][d][mc] * 7 / 8;
           }
 
   for (int d = 0; d < 16; ++d)

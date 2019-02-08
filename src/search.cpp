@@ -962,9 +962,13 @@ moves_loop: // When in check, search starts from here
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
-	  
-	  else if (eval > alpha && abs(alpha) < Value(240) && abs(alpha) > Value(50) && depth < 3 * ONE_PLY && pvHit)
-		  extension = ONE_PLY;
+
+      else if (eval > alpha
+               && abs(alpha) < Value(240)
+               && abs(alpha) > Value(50)
+               && depth < 3 * ONE_PLY
+               && (pvHit || PvNode))
+          extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

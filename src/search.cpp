@@ -963,7 +963,7 @@ moves_loop: // When in check, search starts from here
                && abs(alpha) < Value(240)
                && abs(alpha) > Value(50)
                && depth < 3 * ONE_PLY
-               && (pvHit || PvNode))
+               && (ttPv || PvNode))
           extension = ONE_PLY;
 
       // Calculate new depth for this move

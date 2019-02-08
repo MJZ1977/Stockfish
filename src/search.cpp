@@ -996,6 +996,14 @@ moves_loop: // When in check, search starts from here
               // Prune moves with negative SEE (~10 Elo)
               if (!pos.see_ge(move, Value(-29 * lmrDepth * lmrDepth)))
                   continue;
+			  
+			  // Random pruning
+			  if (thisThread->nodes.load(std::memory_order_relaxed) % std::max(30 - moveCount / 2, 4) == 0
+			      && lmrDepth < 7
+			      && !(ttPv || PvNode)
+				  && !inCheck
+				  && moveCount > 10)
+				  continue;
           }
           else if (   !extension // (~20 Elo)
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY)))

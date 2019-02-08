@@ -962,7 +962,7 @@ moves_loop: // When in check, search starts from here
       else if (eval > alpha
                && ss->ply % 2 == 1
                && abs(alpha) < Value(120)
-               && abs(alpha) > Value(20)
+               && abs(alpha) > Value(40)
                && depth < 3 * ONE_PLY
                && (ttPv || PvNode))
           extension = ONE_PLY;

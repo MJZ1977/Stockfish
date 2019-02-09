@@ -502,8 +502,8 @@ void Thread::search() {
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          if (completedDepth >  4 * ONE_PLY)
-		     timeReduction = 0.95 + pow(double((completedDepth - std::max(lastBestMoveDepth, 4 * ONE_PLY)) / ONE_PLY) / 8, 2);
+          if (completedDepth >  6 * ONE_PLY)
+		     timeReduction = 0.95 + pow(double((completedDepth - std::max(lastBestMoveDepth, 6 * ONE_PLY)) / ONE_PLY) / 8, 2);
 		  else 
 			 timeReduction = 1.0;
 

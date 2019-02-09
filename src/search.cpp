@@ -494,11 +494,18 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (306 + 119 * failedLow + 6 * (mainThread->previousScore - bestValue)) / 581.0;
+          //sync_cout << "- ElapsedTime " << Time.elapsed()
+          //          << " OptimumTime " << Time.optimum()
+          //          << " MaximumTime " << Time.maximum() << sync_endl;
+		  
+		  double fallingEval = (306 + 119 * failedLow + 6 * (mainThread->previousScore - bestValue)) / 581.0;
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = 0.95 + pow(double((completedDepth - lastBestMoveDepth) / ONE_PLY) / 10, 2);
+          if (completedDepth >  4 * ONE_PLY)
+		     timeReduction = 0.95 + pow(double((completedDepth - std::max(lastBestMoveDepth, 4 * ONE_PLY)) / ONE_PLY) / 8, 2);
+		  else 
+			 timeReduction = 1.0;
 
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;

@@ -121,7 +121,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
       hypMyTime = std::max(hypMyTime, TimePoint(0));
 
-      TimePoint t1 = minThinkingTime + remaining<OptimumTime>(hypMyTime, hypMTG, ply, slowMover);
+      TimePoint t1 = minThinkingTime + limits.time[us] / 100 + remaining<OptimumTime>(hypMyTime, hypMTG, ply, slowMover);
       TimePoint t2 = minThinkingTime + remaining<MaxTime    >(hypMyTime, hypMTG, ply, slowMover);
 
       optimumTime = std::min(t1, optimumTime);

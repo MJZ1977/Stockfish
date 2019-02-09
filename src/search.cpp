@@ -453,15 +453,23 @@ void Thread::search() {
                       ++failedHighCnt;
               }
               else
-                  break;
+			  {
+                  // Sort the PV lines searched so far and update the GUI
+                  std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+                 
+                  if (rootMoves[0].pv[0] != lastBestMove) {
+                     lastBestMove = rootMoves[0].pv[0];
+                     lastBestMoveDepth = rootDepth;
+                  }
+				  else
+				     break;
+			  }
 
               delta += delta / 4 + 5;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
 
-          // Sort the PV lines searched so far and update the GUI
-          std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
@@ -470,11 +478,6 @@ void Thread::search() {
 
       if (!Threads.stop)
           completedDepth = rootDepth;
-
-      if (rootMoves[0].pv[0] != lastBestMove) {
-         lastBestMove = rootMoves[0].pv[0];
-         lastBestMoveDepth = rootDepth;
-      }
 
       // Have we found a "mate in x"?
       if (   Limits.mate

@@ -569,10 +569,11 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, MateDanger;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+	MateDanger = false;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -1082,6 +1083,12 @@ moves_loop: // When in check, search starts from here
       if (doFullDepthSearch)
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
+      // Mate Danger : if on move lead to a big loss, avoid it at low depth
+      if (value <= VALUE_MATED_IN_MAX_PLY
+          && depth < 3 * ONE_PLY
+          && !PvNode)
+         MateDanger = true;
+
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
       // parent node fail low with value <= alpha and try another move.
@@ -1134,6 +1141,12 @@ moves_loop: // When in check, search starts from here
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
       }
+	  
+	  if (MateDanger)
+	  {
+		  bestValue = value;
+		  break;
+	  }
 
       if (value > bestValue)
       {

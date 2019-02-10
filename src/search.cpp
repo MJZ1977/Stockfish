@@ -1144,7 +1144,7 @@ moves_loop: // When in check, search starts from here
 	  
 	  if (MateDanger)
 	  {
-		  bestValue = value;
+		  bestValue = std::max(value, bestValue - Value(6000));
 		  break;
 	  }
 

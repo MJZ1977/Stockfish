@@ -1085,7 +1085,7 @@ moves_loop: // When in check, search starts from here
 
       // Mate Danger : if on move lead to a big loss, avoid it at low depth
       if (value <= VALUE_MATED_IN_MAX_PLY
-          && depth < 3 * ONE_PLY
+          && depth < 4 * ONE_PLY
           && !PvNode)
          MateDanger = true;
 

@@ -635,7 +635,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-    ttPv = (ttHit && tte->is_pv()) || (CST && depth > 5 * ONE_PLY);
+    ttPv = (ttHit && tte->is_pv()) || (CST && depth > 4 * ONE_PLY);
     //if (ttPv && ss->ply < 4)
     //    sync_cout << pos.fen() << sync_endl;
 
@@ -1082,7 +1082,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode, (ttPv && value > alpha));
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode, (ttPv && (value > alpha || moveCount == 1)));
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the

@@ -636,7 +636,7 @@ namespace {
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 4 * ONE_PLY);
-    //if (ttPv && ss->ply < 4)
+    //if (ttPv && ss->ply < 8)
     //    sync_cout << pos.fen() << sync_endl;
 
     // At non-PV nodes we check for an early TT cutoff
@@ -1212,7 +1212,7 @@ moves_loop: // When in check, search starts from here
 
     // If parent position is in CST and we can't find a counter move,
     // then last move is good and should be added to CST
-    ttPv |= (CST && depth > 4 * ONE_PLY && bestValue <= alpha);
+    ttPv |= (CST && depth > 6 * ONE_PLY && bestValue <= alpha);
 
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

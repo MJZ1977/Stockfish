@@ -1213,7 +1213,7 @@ moves_loop: // When in check, search starts from here
 
     // If parent position is in CST and we can't find a counter move,
     // then last move is good and should be added to CST
-    ttPv |= (CST && depth > 4 * ONE_PLY && value <= alpha);
+    ttPv |= (CST && depth > 4 * ONE_PLY && bestValue <= alpha);
 
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

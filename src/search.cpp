@@ -635,7 +635,9 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-    ttPv = (ttHit && tte->is_pv()) || (CST && depth > 4 * ONE_PLY);
+    ttPv = (ttHit && tte->is_pv()) || (CST && depth > 5 * ONE_PLY);
+    //if (ttPv && ss->ply < 4)
+    //    sync_cout << pos.fen() << sync_endl;
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode

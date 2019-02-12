@@ -999,7 +999,7 @@ moves_loop: // When in check, search starts from here
 
               // Deep plies : prune all tactical moves
               if (ss->ply > 2 * depth / ONE_PLY
-                  && !pos.see_ge(move, Value(-100)))
+                  && !pos.see_ge(move, Value(-300)))
                   continue;
 
           }

@@ -996,6 +996,12 @@ moves_loop: // When in check, search starts from here
               // Prune moves with negative SEE (~10 Elo)
               if (!pos.see_ge(move, Value(-29 * lmrDepth * lmrDepth)))
                   continue;
+
+              // Deep plies : prune all tactical moves
+              if (ss->ply > 2 * depth / ONE_PLY
+                  && !pos.see_ge(move, Value(-100)))
+                  continue;
+
           }
           else if (   !extension // (~20 Elo)
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY)))

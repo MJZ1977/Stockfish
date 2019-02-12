@@ -935,9 +935,12 @@ moves_loop: // When in check, search starts from here
           &&  tte->depth() >= depth - 3 * ONE_PLY
           &&  pos.legal(move))
       {
-          Value singularBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
+          Value singularBeta = std::max(ttValue - (PvNode? 0 : 2 * depth / ONE_PLY), -VALUE_MATE);
           ss->excludedMove = move;
-          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth / 2, cutNode, false);
+		  if (PvNode)
+             value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth - 4 * ONE_PLY, cutNode, true);
+		  else
+			 value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth / 2, cutNode, false);
           ss->excludedMove = MOVE_NONE;
 
           if (value < singularBeta)
@@ -1212,9 +1215,11 @@ moves_loop: // When in check, search starts from here
 
     // If parent position is in CST and we can't find a counter move,
     // then last move is good and should be added to CST
+	//if (!ttPv && (CST && depth > 7 * ONE_PLY && bestValue <= alpha))
+    //   sync_cout << pos.fen() << sync_endl;
     ttPv |= (CST && depth > 7 * ONE_PLY && bestValue <= alpha);
 
-    if (!excludedMove)
+    if (!excludedMove || ttPv)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,

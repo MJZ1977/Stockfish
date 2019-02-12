@@ -938,7 +938,7 @@ moves_loop: // When in check, search starts from here
           Value singularBeta = std::max(ttValue - (PvNode? 0 : 2 * depth / ONE_PLY), -VALUE_MATE);
           ss->excludedMove = move;
 		  if (PvNode)
-             value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth - 4 * ONE_PLY, cutNode, true);
+             value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth - 2 * ONE_PLY, cutNode, true);
 		  else
 			 value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, depth / 2, cutNode, false);
           ss->excludedMove = MOVE_NONE;

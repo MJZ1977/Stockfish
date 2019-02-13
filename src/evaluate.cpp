@@ -640,6 +640,10 @@ namespace {
         if (r > RANK_3)
         {
             int w = (r-2) * (r-2) + 2;
+
+            // Adjust w with the number of rooks
+            w += pos.count<ROOK>(Us) - pos.count<ROOK>(Them);
+
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity

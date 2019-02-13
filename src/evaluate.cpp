@@ -641,10 +641,6 @@ namespace {
         {
             int w = (r-2) * (r-2) + 2;
 
-            // Adjust w with the number of rooks
-            w += pos.count<ROOK>(Us) - pos.count<ROOK>(Them);
-            w += 2 * pos.count<QUEEN>(Us) - 2 * pos.count<QUEEN>(Them);
-
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity
@@ -682,6 +678,10 @@ namespace {
 
                 else if (defendedSquares & blockSq)
                     k += 4;
+
+                // Adjust k with the number of rooks and queens
+                k += 2 * (pos.count<ROOK>(Us) - pos.count<ROOK>(Them));
+                k += 4 * (pos.count<QUEEN>(Us) - pos.count<QUEEN>(Them));
 
                 bonus += make_score(k * w, k * w);
             }

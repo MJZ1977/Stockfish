@@ -643,6 +643,7 @@ namespace {
 
             // Adjust w with the number of rooks
             w += pos.count<ROOK>(Us) - pos.count<ROOK>(Them);
+            w += 2 * pos.count<QUEEN>(Us) - 2 * pos.count<QUEEN>(Them);
 
             Square blockSq = s + Up;
 

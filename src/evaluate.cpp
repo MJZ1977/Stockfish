@@ -679,13 +679,13 @@ namespace {
                     k += 4;
 
                 bonus += make_score(k * w, k * w);
-
-                // Bonus in the MG for a well protected passed pawn
-                if (((attackedBy2[Us] & ~attackedBy2[Them])
-                   | (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
-                   |  attackedBy[Us][PAWN]) & s)
-                   bonus += make_score(w, w);
             }
+			// More bonus in the MG for a well protected passed pawn
+            if (((attackedBy2[Us] & ~attackedBy2[Them])
+               | (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
+               |  attackedBy[Us][PAWN]) & s)
+               bonus += bonus / 12 ;
+
         } // rank > RANK_3
 
         // Scale down bonus for candidate passers which need more than one

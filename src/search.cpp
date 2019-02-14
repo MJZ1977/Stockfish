@@ -998,11 +998,12 @@ moves_loop: // When in check, search starts from here
                   continue;
 			  
 			  // Random pruning
-			  if (thisThread->nodes.load(std::memory_order_relaxed) % std::max(30 - moveCount / 2, 4) == 0
-			      && lmrDepth < 7
+			  if (thisThread->nodes.load(std::memory_order_relaxed) % std::max(30 - ss->ply + lmrDepth, 4) == 0
 			      && !(ttPv || PvNode)
 				  && !inCheck
-				  && moveCount > 10)
+				  && ss->ply > 8
+				  && moveCount > 5
+				  && !pos.see_ge(move))
 				  continue;
           }
           else if (   !extension // (~20 Elo)

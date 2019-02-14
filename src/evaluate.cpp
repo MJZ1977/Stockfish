@@ -492,6 +492,12 @@ namespace {
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
 
+    // Penality if mobile bishop pair against pawnless kingring
+    if (!(kingRing[Us] & pos.pieces(Us,PAWN))
+        && popcount(attackedBy[Them][BISHOP] > 14)
+        && pos.count<BISHOP>(Us) < 2)
+          score -= make_score(10, 10);
+
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 

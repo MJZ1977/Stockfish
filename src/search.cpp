@@ -1453,9 +1453,9 @@ moves_loop: // When in check, search starts from here
     if (depth <= ONE_PLY)
     {
         if (pos.non_pawn_material(us) < pos.non_pawn_material(~us))
-         return 1;
-        if (pos.non_pawn_material(us) > pos.non_pawn_material(~us))
          return -1;
+        if (pos.non_pawn_material(us) > pos.non_pawn_material(~us))
+         return 1;
         if (pos.non_pawn_material(us) == pos.non_pawn_material(~us))
          return 0;
 	}

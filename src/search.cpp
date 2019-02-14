@@ -1471,7 +1471,7 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers);
-    while ((move = mp.next_move()) != MOVE_NONE)
+    while ((move = mp.next_move()) != MOVE_NONE && movecount <= 10)
         if (pos.legal(move))
         {
             pos.do_move(move, st);
@@ -1485,7 +1485,7 @@ moves_loop: // When in check, search starts from here
 	if (!movecount)
 	   return (pos.checkers() ? -1 : 0);
     assert (movecount > 0);
-	return value;
+	return value / movecount;
   }
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to

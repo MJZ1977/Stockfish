@@ -109,6 +109,9 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
+  template <NodeType NT>
+  Value playout(Position& pos, Depth depth, Stack* ss);
+
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -554,7 +557,8 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return qsearch<NT>(pos, ss, alpha, beta);
+        return playout<NT>(pos, depth + 2 * ONE_PLY, ss);
+        //return qsearch<NT>(pos, ss, alpha, beta);
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -1432,6 +1436,60 @@ moves_loop: // When in check, search starts from here
     return bestValue;
   }
 
+  // playout(pos, depth) plays all moves of a position and return a mean value.
+  // Evaluation only at depth zero
+  template <NodeType NT>
+  Value playout(Position& pos, Depth depth, Stack* ss)
+  {
+    StateInfo st;
+    Thread* thisThread = pos.this_thread();
+    Move move;
+    Value best1, best2, value;
+    best1 = best2 = -VALUE_INFINITE;
+    int movecount = 0;
+
+    // Evaluate statiquelly when the depth reaches zero
+    if (depth <= ONE_PLY)
+        return evaluate(pos);
+
+    // Move loop
+    //sync_cout << "Step 1 - depth " << depth / ONE_PLY << sync_endl;
+    const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory, nullptr, (ss-4)->continuationHistory };
+    Square prevSq = to_sq((ss-1)->currentMove);
+    Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+
+    MovePicker mp(pos, MOVE_NONE, depth, &thisThread->mainHistory,
+                                      &thisThread->captureHistory,
+                                      contHist,
+                                      countermove,
+                                      ss->killers);
+    while ((move = mp.next_move()) != MOVE_NONE)
+        if (pos.legal(move))
+        {
+            pos.do_move(move, st);
+            movecount++;
+            //sync_cout << "-" << movecount << " currmove " << UCI::move(move, pos.is_chess960()) << sync_endl;
+
+            value = -playout<NonPV>(pos, depth - ONE_PLY, ss);
+
+            if (value > best1)
+            {
+				best2 = best1;
+				best1 = value;
+			}
+			else if (value > best2)
+			    best2 = value;
+
+            pos.undo_move(move);
+	    }
+    //sync_cout << "Step 2 - loop end "<< sync_endl;
+	if (best1 == -VALUE_INFINITE)
+	   best1 = pos.checkers() ? VALUE_MATE_IN_MAX_PLY : VALUE_DRAW;
+	if (best2 == -VALUE_INFINITE)
+	   best2 = best1;
+    //sync_cout << "Step 3 - best1 = " << best1 << " - best2 = " << best2 << sync_endl;
+	return (best1 + best2) / 2;
+  }
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to
   // "plies to mate from the current position". Non-mate scores are unchanged.

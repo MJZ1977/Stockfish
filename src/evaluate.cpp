@@ -624,6 +624,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
+    int k = 0;
 
     b = pe->passed_pawns(Us);
 
@@ -668,7 +669,7 @@ namespace {
 
                 // If there aren't any enemy attacks, assign a big bonus. Otherwise
                 // assign a smaller bonus if the block square isn't attacked.
-                int k = !unsafeSquares ? 20 : !(unsafeSquares & blockSq) ? 9 : 0;
+                k = !unsafeSquares ? 20 : !(unsafeSquares & blockSq) ? 9 : 0;
 
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
@@ -680,8 +681,9 @@ namespace {
 
                 bonus += make_score(k * w, k * w);
             }
-			// More bonus in the MG for a well protected passed pawn
-            if (((attackedBy2[Us] & ~attackedBy2[Them])
+			// If the pawn is blocked, give bonus for a well protected passed pawn
+            else if (k == 0 ||
+               ((attackedBy2[Us] & ~attackedBy2[Them])
                | (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
                |  attackedBy[Us][PAWN]) & s)
                bonus += bonus / 16 ;

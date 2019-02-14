@@ -292,12 +292,20 @@ namespace {
         // Find attacked squares, including x-ray attacks for bishops and rooks
         b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
           : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
+          : Pt ==  QUEEN ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(Us, BISHOP)) |
+                           attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(Us, ROOK))
                          : pos.attacks_from<Pt>(s);
 
         if (pos.blockers_for_king(Us) & s)
             b &= LineBB[pos.square<KING>(Us)][s];
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
+        if (Pt ==  QUEEN)
+		{
+			b = pos.attacks_from<QUEEN>(s);
+            if (pos.blockers_for_king(Us) & s)
+                b &= LineBB[pos.square<KING>(Us)][s];
+        }
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
@@ -684,7 +692,7 @@ namespace {
             if (((attackedBy2[Us] & ~attackedBy2[Them])
                | (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
                |  attackedBy[Us][PAWN]) & s)
-               bonus += bonus / 12 ;
+               bonus += bonus / 16 ;
 
         } // rank > RANK_3
 
@@ -842,8 +850,8 @@ namespace {
     // Pieces should be evaluated first (populate attack tables)
     score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
-            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
-            + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >();
+    score +=  pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
     score += mobility[WHITE] - mobility[BLACK];
 

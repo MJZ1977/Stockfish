@@ -1452,12 +1452,14 @@ moves_loop: // When in check, search starts from here
     // Evaluate statiquelly when the depth reaches zero
     if (depth <= ONE_PLY)
     {
-        if (pos.non_pawn_material(us) < pos.non_pawn_material(~us))
-         return -1;
-        if (pos.non_pawn_material(us) > pos.non_pawn_material(~us))
-         return 1;
-        if (pos.non_pawn_material(us) == pos.non_pawn_material(~us))
+        Value eval = pos.non_pawn_material(us) - pos.non_pawn_material(~us);
+		            // + (pos.count<PAWN>(us) - pos.count<PAWN>(~us)) * PawnValueMg;
+        if (abs(eval) < 50)
          return 0;
+		if (eval < 0)
+         return -1;
+        if (eval > 0)
+         return 1;
 	}
 
     // Move loop
@@ -1472,7 +1474,7 @@ moves_loop: // When in check, search starts from here
                                       countermove,
                                       ss->killers);
     while ((move = mp.next_move()) != MOVE_NONE && movecount <= 10)
-        if (pos.legal(move))
+      if (pos.legal(move) && pos.see_ge(move))
         {
             pos.do_move(move, st);
             movecount++;

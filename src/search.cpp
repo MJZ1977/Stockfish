@@ -110,7 +110,7 @@ namespace {
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
   template <NodeType NT>
-  Value playout(Position& pos, Depth depth, Stack* ss);
+  double playout(Position& pos, Depth depth, Stack* ss);
 
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
@@ -557,8 +557,9 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return playout<NT>(pos, depth + 2 * ONE_PLY, ss);
-        //return qsearch<NT>(pos, ss, alpha, beta);
+    {
+        return qsearch<NT>(pos, ss, alpha, beta) + Value(playout<NT>(pos, depth + 2 * ONE_PLY, ss) * 208);
+	}
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -1439,18 +1440,25 @@ moves_loop: // When in check, search starts from here
   // playout(pos, depth) plays all moves of a position and return a mean value.
   // Evaluation only at depth zero
   template <NodeType NT>
-  Value playout(Position& pos, Depth depth, Stack* ss)
+  double playout(Position& pos, Depth depth, Stack* ss)
   {
     StateInfo st;
     Thread* thisThread = pos.this_thread();
     Move move;
-    Value best1, best2, value;
-    best1 = best2 = -VALUE_INFINITE;
+    double value = 0;
     int movecount = 0;
+    Color us = pos.side_to_move();
 
     // Evaluate statiquelly when the depth reaches zero
     if (depth <= ONE_PLY)
-        return evaluate(pos);
+    {
+        if (pos.non_pawn_material(us) < pos.non_pawn_material(~us))
+         return 1;
+        if (pos.non_pawn_material(us) > pos.non_pawn_material(~us))
+         return -1;
+        if (pos.non_pawn_material(us) == pos.non_pawn_material(~us))
+         return 0;
+	}
 
     // Move loop
     //sync_cout << "Step 1 - depth " << depth / ONE_PLY << sync_endl;
@@ -1470,25 +1478,14 @@ moves_loop: // When in check, search starts from here
             movecount++;
             //sync_cout << "-" << movecount << " currmove " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
-            value = -playout<NonPV>(pos, depth - ONE_PLY, ss);
-
-            if (value > best1)
-            {
-				best2 = best1;
-				best1 = value;
-			}
-			else if (value > best2)
-			    best2 = value;
+            value -= playout<NonPV>(pos, depth - ONE_PLY, ss);
 
             pos.undo_move(move);
 	    }
-    //sync_cout << "Step 2 - loop end "<< sync_endl;
-	if (best1 == -VALUE_INFINITE)
-	   best1 = pos.checkers() ? VALUE_MATE_IN_MAX_PLY : VALUE_DRAW;
-	if (best2 == -VALUE_INFINITE)
-	   best2 = best1;
-    //sync_cout << "Step 3 - best1 = " << best1 << " - best2 = " << best2 << sync_endl;
-	return (best1 + best2) / 2;
+	if (!movecount)
+	   return (pos.checkers() ? -1 : 0);
+    assert (movecount > 0);
+	return value;
   }
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to

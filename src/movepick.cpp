@@ -115,7 +115,9 @@ void MovePicker::score() {
                    + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
-                   + (type_of(pos.moved_piece(m)) == KING && pos.non_pawn_material() > 3000 ? -500 : 0);
+                   + ((type_of(pos.moved_piece(m)) == KING
+                      && pos.non_pawn_material() > 6000
+                      && type_of(m) != CASTLING) ? -10000 : 0);
 
       else // Type == EVASIONS
       {

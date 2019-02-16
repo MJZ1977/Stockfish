@@ -160,7 +160,7 @@ void Search::init() {
       for (int d = 1; d < 64; ++d)
           for (int mc = 1; mc < 64; ++mc)
           {
-              double r = (1 - exp(-double(d)/4)) * log(mc) / 0.69;
+              double r = (1 - exp(-double(d)/6)) * log(mc) / 0.58;
 
               Reductions[NonPV][imp][d][mc] = int(std::round(r));
               Reductions[PV][imp][d][mc] = std::max(Reductions[NonPV][imp][d][mc] - 1, 0);

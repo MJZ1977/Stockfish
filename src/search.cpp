@@ -1046,7 +1046,10 @@ moves_loop: // When in check, search starts from here
                   r += 2 * ONE_PLY;
 			  
 			  // Increase reduction for king moves at MG
-			  if (type_of(movedPiece) == KING && pos.non_pawn_material() > 10000 && type_of(move) != CASTLING)
+			  if (type_of(movedPiece) == KING 
+			      && pos.non_pawn_material() > 9000 
+				  && type_of(move) != CASTLING
+				  && !inCheck)
 				  r += ONE_PLY;
 
               // Decrease reduction for moves that escape a capture. Filter out

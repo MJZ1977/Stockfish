@@ -1046,7 +1046,7 @@ moves_loop: // When in check, search starts from here
 			  {
 				 if (abs(alpha) < Value(600))
                      r += 2 * ONE_PLY;
-				 else if (alpha < -Value(600))	// Loosing side
+				 else if (alpha < 0)	// Loosing side
 					 r += ONE_PLY;
 				 else
 					 r += 3 * ONE_PLY;  // Winning side

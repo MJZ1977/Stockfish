@@ -1030,6 +1030,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= ONE_PLY;
+		  
+		  // Decrease reduction randomly
+		  if (thisThread->nodes.load(std::memory_order_relaxed) % 20 == 0)
+			  r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

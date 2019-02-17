@@ -1070,10 +1070,10 @@ moves_loop: // When in check, search starts from here
 			  			  
 			  // Increase reduction for king moves at MG
 			  if (type_of(movedPiece) == KING 
-			      && pos.non_pawn_material(~us) > 4000 
+			      && pos.non_pawn_material(~us) > 6000 
 				  && type_of(move) != CASTLING
 				  && !inCheck)
-				  r += ONE_PLY;
+				  r += 2 * ONE_PLY;
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

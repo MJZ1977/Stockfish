@@ -362,6 +362,12 @@ namespace {
 
         if (Pt == ROOK)
         {
+            // Penalty if any relative pin or discovered attack against the rook
+            Bitboard rookPinners;
+            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, rookPinners)
+                & pos.pieces(Us, BISHOP, KNIGHT))
+                score -= make_score(10,10);
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);

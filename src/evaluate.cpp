@@ -362,12 +362,6 @@ namespace {
 
         if (Pt == ROOK)
         {
-            // Penalty if any relative pin against the rook
-            Bitboard rookPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, rookPinners)
-                & pos.pieces(Us, BISHOP, KNIGHT))
-                score -= make_score(10,10);
-
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
@@ -517,7 +511,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted, rookPinners;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -607,6 +601,16 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+
+    // Bonus if any relative pin against enemy rook
+    b = pos.pieces(Them, ROOK);
+    while (b)
+    {
+    Square s = pop_lsb(&b);
+    if (pos.slider_blockers(pos.pieces(Us, ROOK, BISHOP), s, rookPinners)
+        & pos.pieces(Them, BISHOP, KNIGHT) & weak)
+        score += make_score(10,10);
     }
 
     if (T)

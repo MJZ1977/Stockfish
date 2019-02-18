@@ -1067,13 +1067,13 @@ moves_loop: // When in check, search starts from here
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
-			  			  
+
 			  // Increase reduction for king moves at MG
-			  if (type_of(movedPiece) == KING 
-			      && pos.non_pawn_material(~us) > 6000 
+			  if (type_of(movedPiece) == KING
+			      && pos.non_pawn_material(~us) > 5000
 				  && type_of(move) != CASTLING
 				  && !inCheck)
-				  r += ONE_PLY;
+				  r += ONE_PLY + (r < depth / 2 ? ONE_PLY : DEPTH_ZERO);
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

@@ -1032,8 +1032,11 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Winning side : focus on main line, filter out NMP and singular search
-          if (alpha > Value(340) && (ss-1)->currentMove != MOVE_NULL && !excludedMove)
-              r += depth / 4;
+          if (eval > Value(300)
+              && (tte->bound() & (BOUND_LOWER | BOUND_EXACT))
+              && (ss-1)->currentMove != MOVE_NULL
+              && !excludedMove)
+              r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

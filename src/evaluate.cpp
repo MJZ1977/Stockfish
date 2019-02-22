@@ -793,11 +793,11 @@ namespace {
 			sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
 			if (abs(eg) < Value(400) && pos.non_pawn_material() < 6000)
 			{
-                Bitboard safePawnPush = pos.pieces(strongSide, PAWN) + (strongSide == WHITE ? SOUTH : NORTH);
+                Bitboard safePawnPush = pos.pieces(strongSide, PAWN) + (strongSide == WHITE ? NORTH : SOUTH);
 				safePawnPush &= ~pos.pieces(~strongSide);
 				safePawnPush &= ~(attackedBy[~strongSide][PAWN]
                            | (attackedBy2[~strongSide] & ~attackedBy2[strongSide]));
-				if (~safePawnPush) 
+				if (~safePawnPush)
 					sf -= 2;
 			}
 		}

@@ -799,10 +799,11 @@ namespace {
                 else
                    safePawnPush = shift<SOUTH>(pos.pieces(strongSide, PAWN));
 				safePawnPush &= ~pos.pieces(~strongSide);
-				//safePawnPush &= ~(attackedBy[~strongSide][PAWN]
-                //          | (attackedBy2[~strongSide] & ~attackedBy2[strongSide]));
+				safePawnPush &= ~(attackedBy[~strongSide][PAWN]
+				                  & attackedBy2[~strongSide]
+				                  & ~attackedBy[strongSide][PAWN] );
 				if (safePawnPush == Bitboard(0))
-					sf -= 4;
+					sf -= 2;
 			}
 		}
 

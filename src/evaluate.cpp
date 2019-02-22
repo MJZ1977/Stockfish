@@ -791,7 +791,7 @@ namespace {
         else
 		{
 			sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
-			if (abs(eg) < Value(500) && pos.non_pawn_material() < 6000)
+			if (abs(eg) < Value(340) && pos.non_pawn_material() < 6000)
 			{
                 Bitboard safePawnPush;
                 if (strongSide == WHITE)

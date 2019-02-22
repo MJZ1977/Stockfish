@@ -801,8 +801,8 @@ namespace {
 				safePawnPush &= ~pos.pieces(~strongSide);
 				//safePawnPush &= ~(attackedBy[~strongSide][PAWN]
                 //          | (attackedBy2[~strongSide] & ~attackedBy2[strongSide]));
-				if (!bool(safePawnPush))
-					sf -= 2;
+				if (safePawnPush == Bitboard(0))
+					sf -= 4;
 			}
 		}
 

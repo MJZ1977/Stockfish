@@ -964,7 +964,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 	  
 	  // Blocked position extension
-	  else if (pos.rule50_count() > 20
+	  else if (pos.rule50_count() > 16
 	           && abs(alpha) > Value(100)
 			   && depth < 3 * ONE_PLY
 			   && PvNode)

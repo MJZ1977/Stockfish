@@ -609,6 +609,10 @@ namespace {
         if (alpha >= beta)
             return alpha;
     }
+	
+	// If we play 36 moves without progress, then it is probably shuffling
+	if (ss->ply > 36 && pos.rule50_count() > 36 && pos.count<PAWN>() >= 1)
+		return VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

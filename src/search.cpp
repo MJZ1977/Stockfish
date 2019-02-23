@@ -609,10 +609,6 @@ namespace {
         if (alpha >= beta)
             return alpha;
     }
-	
-	// If we play 36 moves without progress, then it is probably shuffling
-	if (ss->ply > 28 + depth / ONE_PLY && pos.rule50_count() > 32 && pos.count<PAWN>() >= 1)
-		return VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -964,9 +960,9 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 	  
 	  // Blocked position extension
-	  else if (pos.rule50_count() > 16
+	  else if (pos.rule50_count() > 20
 	           && abs(alpha) > Value(100)
-			   && depth < 3 * ONE_PLY
+			   && depth < 2 * ONE_PLY
 			   && PvNode)
 		  extension = ONE_PLY;
 

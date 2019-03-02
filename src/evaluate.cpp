@@ -144,7 +144,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Score Backward           = S(  9, 24);
+  //constexpr Score Backward           = S(  9, 24);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
@@ -605,7 +605,10 @@ namespace {
     }
 	
 	// Backward pawns
-	score -= Backward * popcount(pe->backward_pawns(Us));
+	safe = attackedBy[Us][ALL_PIECES] & ~attackedBy2[Them];
+	b = shift<Up>(pe->backward_pawns(Us));
+	score -= make_score( 7,20) * popcount(b & safe);
+	score -= make_score(11,28) * popcount(b & ~safe);
 
     if (T)
         Trace::add(THREAT, Us, score);

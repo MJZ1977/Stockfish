@@ -607,8 +607,8 @@ namespace {
 	// Backward pawns
 	safe = attackedBy[Us][ALL_PIECES] & ~attackedBy2[Them];
 	b = shift<Up>(pe->backward_pawns(Us));
-	score -= make_score( 7,20) * popcount(b & safe);
-	score -= make_score(11,28) * popcount(b & ~safe);
+	score -= make_score( 5,16) * popcount(b & safe);
+	score -= make_score(13,32) * popcount(b & ~safe);
 
     if (T)
         Trace::add(THREAT, Us, score);

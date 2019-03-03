@@ -1027,12 +1027,8 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if position is or has been on the PV
 		  // or if the moved piece is same than ttmove
-          if (ttPv || (from_sq(move) == from_sq(ttMove) && ttMove))
+          if (ttPv || (from_sq(move) == from_sq(ttMove) && ttMove && !moveSac))
               r -= ONE_PLY;
-		  
-		  // Increase reduction if SEE is negatif
-		  if (moveSac)
-			  r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

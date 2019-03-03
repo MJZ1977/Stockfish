@@ -568,7 +568,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, moveSac, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, positiveSEE, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -912,7 +912,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
-	  moveSac = !pos.see_ge(move, -PawnValueEg);
+	  positiveSEE = pos.see_ge(move);
 
       // Step 13. Extensions (~70 Elo)
 
@@ -1027,7 +1027,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if position is or has been on the PV
 		  // or if the moved piece is same than ttmove
-          if (ttPv || (from_sq(move) == from_sq(ttMove) && ttMove && !moveSac))
+          if (ttPv || (from_sq(move) == from_sq(ttMove) && ttMove && positiveSEE))
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

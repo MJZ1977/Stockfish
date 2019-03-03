@@ -1025,7 +1025,8 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           // Decrease reduction if position is or has been on the PV
-          if (ttPv)
+		  // or if the moved piece is same than ttmove
+          if (ttPv || from_sq(move) == from_sq(ttMove))
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

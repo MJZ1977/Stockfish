@@ -1029,9 +1029,9 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= ONE_PLY;
 		  
-		  // Increase reduction if SEE is negatif
+		  // Decrease reduction if SEE is negatif
 		  if (moveSac)
-			  r += ONE_PLY;
+			  r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

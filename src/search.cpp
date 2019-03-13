@@ -1014,7 +1014,10 @@ moves_loop: // When in check, search starts from here
       pos.do_move(move, st, givesCheck);
 
       // if position is potentially blocked, only look for non reversible moves
-      if (potentiallyBlocked && pos.rule50_count() > 24 && alpha > VALUE_DRAW && depth < 4 * ONE_PLY)
+      if (potentiallyBlocked
+          && pos.rule50_count() > 24
+          && alpha > VALUE_DRAW
+          && depth < 4 * ONE_PLY)
       {
 		  pos.undo_move(move);
 		  continue;

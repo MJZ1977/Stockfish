@@ -944,6 +944,15 @@ moves_loop: // When in check, search starts from here
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 
+      // PV last leafs verification
+      else if (pos.rule50_count() > 8
+               && abs(alpha) < Value(700)
+               && abs(alpha) > Value(100)
+               && depth < 2 * ONE_PLY
+               && ss->ply > 8
+               && PvNode)
+           extension = ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

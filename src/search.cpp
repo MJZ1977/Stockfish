@@ -538,7 +538,10 @@ namespace {
     }
 
     // Dive into quiescence search when the depth reaches zero
-	if (PvNode && ss->ply > 30 + depth / ONE_PLY && pos.rule50_count() > 40 && pos.count<PAWN>() >= 1 && depth < ONE_PLY)
+	if (PvNode
+	     && ss->ply > 20 + 2*depth / ONE_PLY
+	     && pos.rule50_count() >  24 + 2*depth / ONE_PLY
+	     && pos.count<PAWN>() >= 1)
 		return VALUE_DRAW;
     if (depth < ONE_PLY)
         return qsearch<NT>(pos, ss, alpha, beta);
@@ -617,7 +620,8 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-	potentiallyBlocked = (ss->ply > 16 + 4 * depth / ONE_PLY && pos.rule50_count() > 24);
+	potentiallyBlocked = (ss->ply > 20 + 2*depth / ONE_PLY
+	                      && pos.rule50_count() > 24 + 2*depth / ONE_PLY);
     posKey = (pos.key() ^ Key(potentiallyBlocked << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
@@ -1008,6 +1012,13 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+
+      // if position is potentially blocked, only look for non reversible moves
+      if (potentiallyBlocked && pos.rule50_count() > 24 && alpha > VALUE_DRAW && depth < 4 * ONE_PLY)
+      {
+		  pos.undo_move(move);
+		  continue;
+	  }
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.

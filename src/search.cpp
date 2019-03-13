@@ -946,7 +946,7 @@ moves_loop: // When in check, search starts from here
 
       // PV last leafs verification
       else if (pos.rule50_count() > 8
-               && abs(alpha) < Value(600)
+               && abs(alpha) < Value(400)
                && abs(alpha) > Value(200)
                && depth < 2 * ONE_PLY
                && ss->ply > 8

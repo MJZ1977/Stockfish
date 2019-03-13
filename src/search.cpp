@@ -945,11 +945,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // PV last leafs verification
-      else if (pos.rule50_count() > 8
-               && abs(alpha) < Value(500)
+      else if (pos.rule50_count() > 9
+               && abs(alpha) < Value(600)
                && abs(alpha) > Value(200)
                && depth < 2 * ONE_PLY
-               && ss->ply > 8
+               && ss->ply > 9
                && PvNode)
            extension = ONE_PLY;
 

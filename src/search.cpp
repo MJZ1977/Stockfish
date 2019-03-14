@@ -537,7 +537,7 @@ namespace {
             return alpha;
     }
 
-    if (pos.rule50_count() > 32 && ss->ply > 32 && depth < 3 * ONE_PLY)
+    if (pos.rule50_count() > 28 && ss->ply > 28 && depth < 3 * ONE_PLY)
              return VALUE_DRAW;
 
     // Dive into quiescence search when the depth reaches zero

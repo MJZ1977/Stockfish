@@ -592,6 +592,31 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Approaching endgames, King must move quickly next to important pawns
+    if (pos.non_pawn_material() < 8000 && pos.pieces(PAWN))
+    {
+		Bitboard targetBB, safeSqBB, bb;
+
+		targetBB = Rank3BB | Rank4BB | Rank5BB | Rank6BB;
+		if ((pos.pieces(PAWN) & QueenSide) && (pos.pieces(PAWN) & KingSide))
+		   targetBB &= CenterFiles;
+		else if (pos.pieces(PAWN) & QueenSide)
+		   targetBB &= QueenSide;
+		else if (pos.pieces(PAWN) & KingSide)
+		   targetBB &= KingSide;
+
+		safeSqBB = ~(pos.pieces(Us) | attackedBy[Them][ALL_PIECES]);
+		b = bb = attackedBy[Us][KING] & safeSqBB;
+
+		while (b)
+		{
+			Square s = pop_lsb(&b);
+			bb |= pos.attacks_from<KING>(s) & safeSqBB;
+		}
+		if (bb & targetBB)
+		score += make_score(0,40);
+	}
+
     if (T)
         Trace::add(THREAT, Us, score);
 

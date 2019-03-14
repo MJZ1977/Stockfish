@@ -537,7 +537,7 @@ namespace {
             return alpha;
     }
 
-    if (pos.rule50_count() > 32 && ss->ply > 32 && depth < 3 * ONE_PLY)
+    if (pos.rule50_count() > 32 && ss->ply > 32 && depth < 3 * ONE_PLY && pos.count<PAWN>() > 0)
              return VALUE_DRAW;
 
     // Dive into quiescence search when the depth reaches zero
@@ -1015,7 +1015,7 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
-          if (pos.rule50_count() > 12 && ss->ply > 12)
+          if (pos.rule50_count() > 12 && ss->ply > 12 && alpha > Value(20))
              r += 3 * ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV

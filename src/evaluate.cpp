@@ -593,7 +593,7 @@ namespace {
     }
 
     // Approaching endgames, King must move quickly next to important pawns
-    if (pos.non_pawn_material() < 9000 && pos.pieces(PAWN))
+    if (pos.non_pawn_material() < 8000 && pos.pieces(PAWN))
     {
 		Bitboard targetBB, safeSqBB, bb;
 
@@ -614,7 +614,7 @@ namespace {
 			bb |= pos.attacks_from<KING>(s) & safeSqBB;
 		}
 		if (bb & targetBB)
-		score += make_score(0,40);
+		score += make_score(0,20);
 	}
 
     if (T)

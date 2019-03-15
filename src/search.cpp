@@ -623,8 +623,8 @@ namespace {
     ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 4 * ONE_PLY);
 
 	// if position has been searched at higher depths and we are shuffling, return value_draw
-	if (pos.rule50_count() > 20 
-	    && ss->ply > 20 
+	if (pos.rule50_count() > 18 
+	    && ss->ply > 18 
 		&& depth < 3 * ONE_PLY
         && ttHit		
 		&& tte->depth() > depth

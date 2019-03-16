@@ -554,7 +554,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, potentiallyBlocked = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -627,10 +627,18 @@ namespace {
         && ss->ply > 18 
         && depth < 3 * ONE_PLY
         && ttHit        
-        && tte->depth() > depth
-        && tte->depth() <= depth + ss->ply * ONE_PLY        //try to avoid searchs at previous moves
         && pos.count<PAWN>() > 0)
-             return VALUE_DRAW;
+		{
+			   potentiallyBlocked = true;
+               posKey = (pos.key() ^ Key(potentiallyBlocked << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
+               tte = TT.probe(posKey, ttHit);
+			   if (ttHit)
+				   return VALUE_DRAW;
+               ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+               ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
+                       : ttHit    ? tte->move() : MOVE_NONE;
+               ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 4 * ONE_PLY);
+		}
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
@@ -768,17 +776,18 @@ namespace {
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 23200
+        && (((ss-1)->statScore < 23200
         &&  eval >= beta
-        &&  pureStaticEval >= beta - 36 * depth / ONE_PLY + 225
+        &&  pureStaticEval >= beta - 36 * depth / ONE_PLY + 225)
+		   || potentiallyBlocked)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
     {
-        assert(eval - beta >= 0);
+        assert(eval - beta >= 0 || potentiallyBlocked);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min(int(eval - beta) / 200, 3)) * ONE_PLY;
+        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::max(std::min(int(eval - beta) / 200, 3),0)) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
@@ -796,7 +805,7 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 12 * ONE_PLY))
-                return nullValue;
+                return potentiallyBlocked? VALUE_DRAW : nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
 
@@ -810,7 +819,7 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
-                return nullValue;
+                return potentiallyBlocked? VALUE_DRAW : nullValue;;
         }
     }
 

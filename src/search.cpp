@@ -554,7 +554,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, potentiallyBlocked = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -625,15 +625,20 @@ namespace {
     // if position has been searched at higher depths and we are shuffling, return value_draw
     if (pos.rule50_count() > 18 
         && ss->ply > 18 
-        && depth < 3 * ONE_PLY
+        && depth < 2 * ONE_PLY
         && ttHit        
         && tte->depth() > depth
         && tte->depth() <= depth + ss->ply * ONE_PLY        //try to avoid searchs at previous moves
         && pos.count<PAWN>() > 0)
-             return VALUE_DRAW;
+		{
+		    if (!PvNode || (pos.rule50_count() > 30 && ss->ply > 30))
+			   return VALUE_DRAW;
+            else 
+			    potentiallyBlocked = true;
+		}
 
     // At non-PV nodes we check for an early TT cutoff
-    if (  !PvNode
+    else if (  !PvNode
         && ttHit
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race
@@ -953,6 +958,10 @@ moves_loop: // When in check, search starts from here
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
+	  
+	  // Shuffle extension
+	  else if (potentiallyBlocked && PvNode)
+		  extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

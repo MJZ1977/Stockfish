@@ -623,12 +623,11 @@ namespace {
     ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 4 * ONE_PLY);
 
     // if position has been searched at higher depths and we are shuffling, return value_draw
-    if (pos.rule50_count() > 32
-        && ss->ply > 32
+    if (pos.rule50_count() > 36
+        && ss->ply > 36
         && depth < 3 * ONE_PLY
         && ttHit
         && tte->depth() > depth
-        //&& tte->depth() <= depth + ss->ply * ONE_PLY        //try to avoid searchs at previous moves
         && pos.count<PAWN>() > 0)
              return VALUE_DRAW;
 
@@ -955,7 +954,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Shuffle extension
-      else if(pos.rule50_count() > 16 && ss->ply > 16 && depth < 3 * ONE_PLY && PvNode)
+      else if(pos.rule50_count() > 14 && ss->ply > 14 && depth < 3 * ONE_PLY && PvNode)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

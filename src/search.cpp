@@ -809,7 +809,8 @@ namespace {
     // much above beta, we can (almost) safely prune the previous move.
     if (   !PvNode
         &&  depth >= 5 * ONE_PLY
-        &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
+        &&  abs(beta) < VALUE_MATE_IN_MAX_PLY
+        &&  beta < Value(300))
     {
         Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);

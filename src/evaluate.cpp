@@ -499,7 +499,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, pinners, sliders;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -590,6 +590,19 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+
+    // Bonus for pinning a non protected piece or pawn
+    b = pos.pieces(Them) ^ pos.pieces(Them, KING, QUEEN);
+    b &= ~attackedBy[Them][ALL_PIECES];
+    if (b)
+    {
+        sliders = pos.pieces(Us, ROOK, BISHOP) | pos.pieces(Us, QUEEN);
+        while (b)
+        {
+            if(pos.slider_blockers(sliders, pop_lsb(&b), pinners))
+                 score += make_score(5, 5);
+		}
     }
 
     if (T)

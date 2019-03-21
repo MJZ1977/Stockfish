@@ -592,7 +592,7 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
-    // Bonus for pinning a non protected piece or pawn
+    // Bonus for pinning a piece with non protected other piece behind
     b = pos.pieces(Them) ^ pos.pieces(Them, KING, QUEEN);
     b &= ~attackedBy[Them][ALL_PIECES];
     if (b)
@@ -600,7 +600,7 @@ namespace {
         sliders = pos.pieces(Us, ROOK, BISHOP) | pos.pieces(Us, QUEEN);
         while (b)
         {
-            if(pos.slider_blockers(sliders, pop_lsb(&b), pinners) & pos.pieces(Them))
+            if(pos.slider_blockers(sliders, pop_lsb(&b), pinners) & nonPawnEnemies)
                  score += make_score(5, 5);
 		}
     }

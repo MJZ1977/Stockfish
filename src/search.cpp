@@ -954,7 +954,8 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Shuffle extension
-      else if(pos.rule50_count() > 14 && ss->ply > 14 && depth < 3 * ONE_PLY && PvNode)
+      else if(pos.rule50_count() > 14 && ss->ply > 14 && depth < 3 * ONE_PLY && PvNode
+               && abs(alpha) > Value(2)  && ss->ply < 60)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

@@ -818,6 +818,9 @@ namespace {
        return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here
+	
+	bool risk;
+	Score score2;
 
     initialize<WHITE>();
     initialize<BLACK>();
@@ -830,11 +833,17 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
+    score +=  threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
+	score2 = king<   WHITE>();
+	risk = mg_value(score2) < -Value(300);
+	score += score2;
+	score2 = king<   BLACK>();
+	risk |= mg_value(score2) < -Value(300);
+	score -= score2;
+			
     score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
@@ -854,8 +863,13 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+	v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+	       + Eval::Tempo;
+	if (risk)
+		v = (2 * (v / 2)) + 1;
+	else
+		v = 2 * (v / 2);
+    return  v;
   }
 
 } // namespace

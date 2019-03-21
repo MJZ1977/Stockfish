@@ -600,7 +600,7 @@ namespace {
         sliders = pos.pieces(Us, ROOK, BISHOP) | pos.pieces(Us, QUEEN);
         while (b)
         {
-            if(pos.slider_blockers(sliders, pop_lsb(&b), pinners))
+            if(pos.slider_blockers(sliders, pop_lsb(&b), pinners) & pos.pieces(Them))
                  score += make_score(5, 5);
 		}
     }

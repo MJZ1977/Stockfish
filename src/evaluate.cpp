@@ -838,11 +838,13 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
 	score2 = king<   WHITE>();
-	risk = mg_value(score2) < -Value(260);
+	risk = mg_value(score2) < -Value(300);
 	score += score2;
 	score2 = king<   BLACK>();
-	risk |= mg_value(score2) < -Value(260);
+	risk |= mg_value(score2) < -Value(300);
 	score -= score2;
+
+	risk &= pos.non_pawn_material() > 9000;
 
     score += initiative(eg_value(score));
 

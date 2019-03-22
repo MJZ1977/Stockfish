@@ -542,7 +542,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, risky;
+    bool ttHit, ttPv, inCheck, givesCheck, improving;//, unsafety;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -735,12 +735,10 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
-	risky = (pureStaticEval % 2 == 1) && (pureStaticEval != VALUE_NONE);
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < 7 * ONE_PLY
-		&& !risky
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
@@ -859,6 +857,9 @@ moves_loop: // When in check, search starts from here
 
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    //unsafety = (pureStaticEval % 2 == 1) && (pureStaticEval != VALUE_NONE);
+    //if (!unsafety && depth < 3 * ONE_PLY && (ss-1)->currentMove != MOVE_NULL)
+    //      sync_cout << "Position " << pureStaticEval << " :  " << pos.fen() << sync_endl;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1004,7 +1005,11 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= ONE_PLY;
-		  
+
+          // Decrease reduction if the initial position is unsafe
+          //if (unsafety && ttPv)
+          //    r -= ONE_PLY;
+
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;

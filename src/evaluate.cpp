@@ -818,7 +818,7 @@ namespace {
        return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here
-	
+
 	bool risk;
 	Score score2;
 
@@ -843,7 +843,7 @@ namespace {
 	score2 = king<   BLACK>();
 	risk |= mg_value(score2) < -Value(300);
 	score -= score2;
-			
+
     score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

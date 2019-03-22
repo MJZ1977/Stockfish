@@ -1007,7 +1007,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Decrease reduction if the initial position is unsafe
-          if (unsafety)
+          if (unsafety && ttPv)
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

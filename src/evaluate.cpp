@@ -838,10 +838,10 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
 	score2 = king<   WHITE>();
-	risk = mg_value(score2) < -Value(340);
+	risk = mg_value(score2) < -Value(260);
 	score += score2;
 	score2 = king<   BLACK>();
-	risk |= mg_value(score2) < -Value(340);
+	risk |= mg_value(score2) < -Value(260);
 	score -= score2;
 
     score += initiative(eg_value(score));
@@ -865,10 +865,7 @@ namespace {
 
 	v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
 	       + Eval::Tempo;
-	if (risk)
-		v = (2 * (v / 2)) + 1;
-	else
-		v = 2 * (v / 2);
+    v = (2 * (v / 2)) + risk;
     return  v;
   }
 

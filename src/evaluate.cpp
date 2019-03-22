@@ -838,10 +838,10 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
 	score2 = king<   WHITE>();
-	risk = mg_value(score2) < -Value(300);
+	risk = mg_value(score2) < -Value(340);
 	score += score2;
 	score2 = king<   BLACK>();
-	risk |= mg_value(score2) < -Value(300);
+	risk |= mg_value(score2) < -Value(340);
 	score -= score2;
 
     score += initiative(eg_value(score));

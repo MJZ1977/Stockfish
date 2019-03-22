@@ -542,7 +542,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, unsafety;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, unsafe;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -857,8 +857,8 @@ moves_loop: // When in check, search starts from here
 
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    unsafety = (pureStaticEval % 2 == 1) && (pureStaticEval != VALUE_NONE);
-    //if (!unsafety && depth < 3 * ONE_PLY && (ss-1)->currentMove != MOVE_NULL)
+    unsafe = (pureStaticEval % 2 == 1) && (pureStaticEval != VALUE_NONE);
+    //if (!unsafe && depth < 3 * ONE_PLY && (ss-1)->currentMove != MOVE_NULL)
     //      sync_cout << "Position " << pureStaticEval << " :  " << pos.fen() << sync_endl;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
@@ -935,6 +935,10 @@ moves_loop: // When in check, search starts from here
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 
+      // Unsafe positions extension
+      else if (unsafe && depth < 4 * ONE_PLY && !rootNode)
+          extension = ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
@@ -1004,7 +1008,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
-              r -= (1 + unsafety) * ONE_PLY;
+              r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

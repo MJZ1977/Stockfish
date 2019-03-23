@@ -486,7 +486,7 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 	
-	risk |= (mg_value(score) < -Value(300));
+	risk |= (mg_value(score) < -Value(400));
 
     if (T)
         Trace::add(KING, Us, score);
@@ -818,7 +818,7 @@ namespace {
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
-    Value v = (mg_value(score) + eg_value(score)) / 2;
+    Value v = 2 * (mg_value(score) + eg_value(score)) / 4;
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
@@ -841,6 +841,8 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
+	
+	risk &= pos.non_pawn_material() > 9000;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

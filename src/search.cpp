@@ -936,7 +936,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Unsafe positions extension
-      else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
+      else if (unsafe && depth < 5 * ONE_PLY && !rootNode && PvNode)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

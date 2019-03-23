@@ -865,10 +865,8 @@ namespace {
 
 	v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
 	       + Eval::Tempo;
-	if (risk)
-		v = (2 * (v / 2)) + 1;
-	else
-		v = 2 * (v / 2);
+	v = (2 * (v / 2)) + risk;
+
     return  v;
   }
 

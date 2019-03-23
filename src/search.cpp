@@ -542,7 +542,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, unsafety;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, unsafe;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -857,9 +857,9 @@ moves_loop: // When in check, search starts from here
 
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    unsafety = (pureStaticEval % 2 == 1) && (pureStaticEval != VALUE_NONE);
-    //if (!unsafety && depth < 3 * ONE_PLY && (ss-1)->currentMove != MOVE_NULL)
-    //      sync_cout << "Position " << pureStaticEval << " :  " << pos.fen() << sync_endl;
+    unsafe = (pureStaticEval % 2 == 1) && (ss-1)->currentMove != MOVE_NULL && !excludedMove;
+    //if (unsafe && depth < 3 * ONE_PLY )
+    //      sync_cout << "Position " << pureStaticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1007,7 +1007,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Decrease reduction if the initial position is unsafe
-          if (unsafety && ttPv)
+          if (unsafe)
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

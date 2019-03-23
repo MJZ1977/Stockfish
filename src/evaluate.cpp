@@ -153,6 +153,8 @@ namespace {
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
+  
+  bool risk;
 
 #undef S
 
@@ -228,6 +230,7 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
 
     const Square ksq = pos.square<KING>(Us);
+	risk = false;
 
     // Find our pawns that are blocked or on the first two ranks
     Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
@@ -482,6 +485,8 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+	
+	risk |= (mg_value(score) < -Value(300));
 
     if (T)
         Trace::add(KING, Us, score);
@@ -819,9 +824,6 @@ namespace {
 
     // Main evaluation begins here
 
-	bool risk;
-	Score score2;
-
     initialize<WHITE>();
     initialize<BLACK>();
 
@@ -833,16 +835,10 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  threats<WHITE>() - threats<BLACK>()
+    score +=  king<   WHITE>() - king<   BLACK>()
+            + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
-
-	score2 = king<   WHITE>();
-	risk = mg_value(score2) < -Value(300);
-	score += score2;
-	score2 = king<   BLACK>();
-	risk |= mg_value(score2) < -Value(300);
-	score -= score2;
 
 	risk &= pos.non_pawn_material() > 9000;
 

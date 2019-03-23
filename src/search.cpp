@@ -858,8 +858,8 @@ moves_loop: // When in check, search starts from here
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     unsafe = (pureStaticEval % 2 == 1) && (ss-1)->currentMove != MOVE_NULL && !excludedMove;
-    //if (unsafe && depth < 4 * ONE_PLY)
-    //      sync_cout << "Position " << pureStaticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
+    //if (unsafe && depth < 4 * ONE_PLY && PvNode)
+    //     sync_cout << "Position " << pureStaticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -936,7 +936,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Unsafe positions extension
-      else if (unsafe && depth < 4 * ONE_PLY && !rootNode)
+      else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

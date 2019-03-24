@@ -842,7 +842,7 @@ namespace {
 
     score += initiative(eg_value(score));
 	
-	risk &= pos.non_pawn_material() > 7000;
+	risk &= pos.non_pawn_material() > 8000;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

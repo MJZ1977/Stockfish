@@ -153,7 +153,7 @@ namespace {
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
-  
+
   bool risk;
 
 #undef S
@@ -485,8 +485,8 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
-	
-	risk |= (mg_value(score) < -Value(360));
+
+	risk |= (mg_value(score) < -Value(400));
 
     if (T)
         Trace::add(KING, Us, score);
@@ -841,7 +841,7 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
-	
+
 	risk &= pos.non_pawn_material() > 8000;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

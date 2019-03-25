@@ -608,7 +608,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
-    ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 4 * ONE_PLY);
+    ttPv = (ttHit && tte->is_pv()) || (PvNode && depth > 5 * ONE_PLY);
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
@@ -937,9 +937,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Unsafe positions extension
-      else if (unsafe && depth < 8 * ONE_PLY && !rootNode && ttPv
-               && (move == ttMove || givesCheck || captureOrPromotion))
+      else if (unsafe && depth < 8 * ONE_PLY && !rootNode && ttPv)
+      {
           extension = ONE_PLY;
+          //sync_cout << "Position " << pureStaticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
+	  }
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

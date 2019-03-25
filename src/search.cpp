@@ -936,8 +936,8 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Unsafe positions extension
-      else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
-          extension = ONE_PLY;
+      //else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
+      //    extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -952,6 +952,7 @@ moves_loop: // When in check, search starts from here
 
           if (   !captureOrPromotion
               && !givesCheck
+              && !unsafe
               && !pos.advanced_pawn_push(move))
           {
               // Move count based pruning (~30 Elo)

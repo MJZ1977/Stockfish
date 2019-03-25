@@ -937,8 +937,8 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Unsafe positions extension
-      else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
-          extension = ONE_PLY;
+      //else if (unsafe && depth < 4 * ONE_PLY && !rootNode && PvNode)
+      //    extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -1009,7 +1009,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
-              r -= ONE_PLY;
+              r -= (1 + unsafe) * ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

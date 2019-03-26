@@ -154,6 +154,8 @@ namespace {
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
+  bool safety;
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -228,6 +230,8 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
 
     const Square ksq = pos.square<KING>(Us);
+
+    safety = true;
 
     // Find our pawns that are blocked or on the first two ranks
     Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
@@ -482,6 +486,8 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+
+    safety &= (mg_value(score) > 0);
 
     if (T)
         Trace::add(KING, Us, score);
@@ -813,7 +819,7 @@ namespace {
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
-    Value v = (mg_value(score) + eg_value(score)) / 2;
+    Value v = 2 * (mg_value(score) + eg_value(score)) / 4 + safety;
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
@@ -854,8 +860,10 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+    v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+	       + Eval::Tempo;
+    v = (2 * (v / 2)) + safety;
+    return  v;
   }
 
 } // namespace

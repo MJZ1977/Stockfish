@@ -804,7 +804,7 @@ namespace {
         &&  depth >= 5 * ONE_PLY
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
-        Value raisedBeta = std::min(beta + 226 - 48 * improving - 24 * kingSafety, VALUE_INFINITE);
+        Value raisedBeta = std::min(beta + 226 - 48 * improving - 28 * kingSafety, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 
@@ -1007,6 +1007,9 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= ONE_PLY;
+		  
+		  else if (kingSafety)
+			  r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

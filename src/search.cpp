@@ -737,7 +737,7 @@ namespace {
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
 
-    kingSafety = (pureStaticEval % 2 == 1) && (ss-1)->currentMove != MOVE_NULL && !excludedMove;
+    kingSafety = (pureStaticEval % 2 == 1);
    // if (kingSafety && depth < 6 * ONE_PLY && ttPv)
    //      sync_cout << "Position " << pureStaticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
 

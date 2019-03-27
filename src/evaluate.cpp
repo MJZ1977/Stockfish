@@ -154,6 +154,8 @@ namespace {
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
+  bool blockedPosition;
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -808,12 +810,18 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
+    // blockedPosition initialisation
+    blockedPosition = more_than_one(pos.pieces(BLACK, PAWN)
+                      & shift<NORTH>(pos.pieces(WHITE, PAWN))
+                      & (FileDBB | FileEBB));
+    blockedPosition &= pos.count<PAWN>() >= 12;
+
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
-    Value v = (mg_value(score) + eg_value(score)) / 2;
+    Value v = 2 * ((mg_value(score) + eg_value(score)) / 4) + blockedPosition;
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
@@ -854,8 +862,10 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+   v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+	       + Eval::Tempo;
+   v = (2 * (v / 2)) + blockedPosition;
+   return v;
   }
 
 } // namespace

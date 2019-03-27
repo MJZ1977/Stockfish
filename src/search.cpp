@@ -542,7 +542,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, blockedPos;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -698,6 +698,7 @@ namespace {
     {
         ss->staticEval = eval = pureStaticEval = VALUE_NONE;
         improving = false;
+        blockedPos = false;
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ttHit)
@@ -716,7 +717,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / 512;
+            int bonus = -2 * ((ss-1)->statScore / 1024);
 
             pureStaticEval = evaluate(pos);
             ss->staticEval = eval = pureStaticEval + bonus;
@@ -735,6 +736,13 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
+
+    blockedPos = (pureStaticEval % 2 == 1) && (ss-1)->currentMove != MOVE_NULL && !excludedMove;
+    if (blockedPos) // && depth < 6 * ONE_PLY && ttPv)
+         sync_cout << "Position " << pureStaticEval
+                   << " - " << evaluate(pos)
+                   << " - " << tte->eval()
+                   << " :  " << pos.fen() << sync_endl;
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode

@@ -487,7 +487,7 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
-    safety &= (mg_value(score) > 0);
+    safety &= (mg_value(score) > 40);
 
     if (T)
         Trace::add(KING, Us, score);

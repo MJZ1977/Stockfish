@@ -934,7 +934,7 @@ moves_loop: // When in check, search starts from here
 
       // Extension for unclear endgames
       else if (pos.non_pawn_material() < 2000
-               && abs(ss->staticEval) <= Value(500)
+               && abs(ss->staticEval) <= Value(400)
                && depth < 2 * ONE_PLY
                && pos.rule50_count() < 30
                && (ttPv || PvNode))

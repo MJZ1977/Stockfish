@@ -932,6 +932,14 @@ moves_loop: // When in check, search starts from here
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 
+      // Extension for unclear endgames
+      else if (pos.non_pawn_material() < 2000
+               && abs(ss->staticEval) <= Value(500)
+               && depth < 2 * ONE_PLY
+               && pos.rule50_count() < 30
+               && (ttPv || PvNode))
+          extension = ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

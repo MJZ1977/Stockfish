@@ -936,7 +936,7 @@ moves_loop: // When in check, search starts from here
       else if (pos.non_pawn_material() < 2000
                && abs(ss->staticEval) <= Value(400)
                && depth < 2 * ONE_PLY
-               && pos.rule50_count() < 30
+               && pos.rule50_count() < 6
                && (ttPv || PvNode))
           extension = ONE_PLY;
 

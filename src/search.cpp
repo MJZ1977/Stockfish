@@ -933,11 +933,10 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Extension for unclear endgames
-      else if (pos.non_pawn_material() < 3000
-               && abs(ss->staticEval) <= Value(400)
+      else if (pos.non_pawn_material() < 2000
+               && (abs(eval) <= Value(400) || inCheck)
                && depth < 2 * ONE_PLY
                && pos.rule50_count() < 6
-               && ss->ply > 2
                && (ttPv || PvNode))
           extension = ONE_PLY;
 

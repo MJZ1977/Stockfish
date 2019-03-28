@@ -937,6 +937,7 @@ moves_loop: // When in check, search starts from here
                && abs(ss->staticEval) <= Value(400)
                && depth < 2 * ONE_PLY
                && pos.rule50_count() < 6
+               && ss->ply > 2
                && (ttPv || PvNode))
           extension = ONE_PLY;
 

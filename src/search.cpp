@@ -1045,7 +1045,7 @@ moves_loop: // When in check, search starts from here
 			      && pos.non_pawn_material(~us) > 5000
 				  && type_of(move) != CASTLING
 				  && !inCheck)
-				  r = std::max(r + ONE_PLY, depth / 2);
+				  r = std::max(r + ONE_PLY, depth / 3);
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

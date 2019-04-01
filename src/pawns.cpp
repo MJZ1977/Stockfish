@@ -138,7 +138,7 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward + (make_score(3, 3) * more_than_one(theirPawns & PawnAttacks[Us][s + Up])), e->weakUnopposed[Us] += !opposed;
+            score -= Backward + (make_score(0, 5) * more_than_one(theirPawns & PawnAttacks[Us][s + Up])), e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !support)
             score -= Doubled;

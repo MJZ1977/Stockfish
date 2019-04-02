@@ -697,7 +697,7 @@ namespace {
     // Step 6. Static evaluation of the position
     if (inCheck)
     {
-        ss->staticEval = eval = pureStaticEval = VALUE_NONE;
+        ss->staticEval = eval = pureStaticEval = VALUE_CHECK;
         improving = false;
         goto moves_loop;  // Skip early pruning when in check
     }
@@ -1263,7 +1263,7 @@ moves_loop: // When in check, search starts from here
     // Evaluate the position statically
     if (inCheck)
     {
-        ss->staticEval = VALUE_NONE;
+        ss->staticEval = VALUE_CHECK;
         bestValue = futilityBase = -VALUE_INFINITE;
     }
     else

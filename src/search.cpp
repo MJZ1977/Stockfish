@@ -1012,6 +1012,16 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
+
+		  // Perpetual check verification
+		  if (inCheck && (ss-2)->staticEval == VALUE_CHECK)
+		    {
+		       //sync_cout << "Position - " << pos.fen()
+		       //  << " - " << UCI::move((ss-2)->currentMove, pos.is_chess960())
+		       //  << " - " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+		        r -= ONE_PLY;
+		    }
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)

@@ -31,7 +31,8 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward = S( 9, 24);
+  constexpr Score Backward = S(11, 30);
+  constexpr Score BackVRank = S( 1, 3);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
@@ -89,6 +90,7 @@ namespace {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
 
         File f = file_of(s);
+        int r = relative_rank(Us, s);
 
         e->semiopenFiles[Us]   &= ~(1 << f);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
@@ -118,7 +120,7 @@ namespace {
             e->passedPawns[Us] |= s;
 
         else if (   stoppers == square_bb(s + Up)
-                 && relative_rank(Us, s) >= RANK_5)
+                 && r >= RANK_5)
         {
             b = shift<Up>(support) & ~theirPawns;
             while (b)
@@ -129,7 +131,6 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int r = relative_rank(Us, s);
             int v = phalanx ? Connected[r] + Connected[r + 1] : 2 * Connected[r];
             v = 17 * popcount(support) + (v >> (opposed + 1));
             score += make_score(v, v * (r - 2) / 4);
@@ -138,7 +139,7 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+            score -= Backward - (BackVRank * r), e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !support)
             score -= Doubled;

@@ -876,22 +876,24 @@ moves_loop: // When in check, search starts from here
                                   thisThread->rootMoves.begin() + thisThread->pvLast, move))
           continue;
 
-      ss->moveCount = ++moveCount;
+      // Skip repetition moves for winning side
+      if (ss->ply > 3 
+         && alpha > Value(20)
+         && from_sq((ss-2)->currentMove) == to_sq(move)
+         && to_sq((ss-2)->currentMove) == from_sq(move)
+         && (ss-1)->currentMove != MOVE_NULL
+         && !PvNode
+         && moveCount > 1
+         && pos.rule50_count() > 3)
+      {
+             //sync_cout << "Position - " << pos.fen()
+           //  << " - " << UCI::move((ss-2)->currentMove, pos.is_chess960())
+           //  << " - " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+           //  << " - " << UCI::move(move, pos.is_chess960()) << sync_endl;
+          continue;
+      }
 
- 	  // Skip repetition moves for winning side
-	  if (ss->ply > 2 
-	      && alpha > Value(20)
-		  && from_sq((ss-2)->currentMove) == to_sq(move)
-		  && to_sq((ss-2)->currentMove) == from_sq(move)
-		  && (ss-1)->currentMove != MOVE_NULL
-		  && pos.rule50_count() > 2)
-	  {
-		   	//sync_cout << "Position - " << pos.fen()
-		    //  << " - " << UCI::move((ss-2)->currentMove, pos.is_chess960())
-		    //  << " - " << UCI::move((ss-1)->currentMove, pos.is_chess960())
-		    //  << " - " << UCI::move(move, pos.is_chess960()) << sync_endl;
-		   continue;
-	  }
+      ss->moveCount = ++moveCount;
 
      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth / ONE_PLY

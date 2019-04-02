@@ -927,7 +927,17 @@ moves_loop: // When in check, search starts from here
       // Check extension (~2 Elo)
       else if (    givesCheck
                && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
-          extension = ONE_PLY;
+        {
+          if ((ss-1)->staticEval == VALUE_NONE && ss->ply > 3 && depth < 3 * ONE_PLY)
+          {
+             sync_cout << "Position - " << pos.fen()
+                       << " - " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+                       << " - " << UCI::move(move, pos.is_chess960()) << sync_endl;
+             extension = 2 * ONE_PLY;
+		 }
+          else
+             extension = ONE_PLY;
+		}
 
       // Shuffle extension
       else if(pos.rule50_count() > 14 && ss->ply > 14 && depth < 3 * ONE_PLY && PvNode)
@@ -936,6 +946,10 @@ moves_loop: // When in check, search starts from here
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
+
+      // Perpetual extension
+      //else if (inCheck && (ss-2)->staticEval == VALUE_NONE && ss->ply > 3 && depth < 4 * ONE_PLY)
+      //    extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

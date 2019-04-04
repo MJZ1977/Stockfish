@@ -1009,7 +1009,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction for root nodes
           if (rootNode
-               && depth > 8 * ONE_PLY
+               && depth > 10 * ONE_PLY
                && move == thisThread->rootMoves[1].pv[0])
               r -= ONE_PLY;
 

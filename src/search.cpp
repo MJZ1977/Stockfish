@@ -1011,16 +1011,15 @@ moves_loop: // When in check, search starts from here
           if (rootNode
                && depth > 8 * ONE_PLY)
           {
-			 int nb_mv = 2 + (depth > 12 * ONE_PLY);
              if (std::count(thisThread->rootMoves.begin(),
-                                    thisThread->rootMoves.begin() + nb_mv, move) > 0)
+                                    thisThread->rootMoves.begin() + 4, move) > 0)
              {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 				                                     thisThread->rootMoves.end(), move);
                  //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                  //          << " selDepth - " << rm.selDepth << sync_endl;
-                 if (rm.selDepth > 4)
-                     r -= ONE_PLY;
+                 if (rm.selDepth > 6)
+                     r -= 2 * ONE_PLY;
 			 }
 		  }
 

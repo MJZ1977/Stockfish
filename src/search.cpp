@@ -1017,6 +1017,8 @@ moves_loop: // When in check, search starts from here
                  //          << " selDepth - " << rm.selDepth << sync_endl;
                  if (rm.selDepth > 6)
                      r -= 2 * ONE_PLY;
+                 if (rm.selDepth < -200)
+                     r += ONE_PLY;
 		  }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1119,10 +1121,15 @@ moves_loop: // When in check, search starts from here
                   ++static_cast<MainThread*>(thisThread)->bestMoveChanges;
           }
           else
+          {
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+
+              if (value < alpha - Value(200))
+                 rm.selDepth = int(value - alpha);
+		  }
       }
 
       if (value > bestValue)

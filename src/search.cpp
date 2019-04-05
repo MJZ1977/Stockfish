@@ -1016,7 +1016,7 @@ moves_loop: // When in check, search starts from here
 	      }
 
           // Decrease reduction if position is or has been on the PV
-          else if (ttPv && !rootNode)
+          else if (ttPv)
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

@@ -1011,16 +1011,12 @@ moves_loop: // When in check, search starts from here
           if (rootNode
                && depth > 8 * ONE_PLY)
           {
-             if (std::count(thisThread->rootMoves.begin(),
-                                    thisThread->rootMoves.begin() + 4, move) > 0)
-             {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 				                                     thisThread->rootMoves.end(), move);
                  //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                  //          << " selDepth - " << rm.selDepth << sync_endl;
                  if (rm.selDepth > 6)
                      r -= 2 * ONE_PLY;
-			 }
 		  }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

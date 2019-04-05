@@ -1015,8 +1015,12 @@ moves_loop: // When in check, search starts from here
              if (std::count(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.begin() + nb_mv, move) > 0)
              {
-                 //sync_cout << " - " << UCI::move(move, pos.is_chess960()) << sync_endl;
-                 r -= ONE_PLY;
+                 RootMove& rm = *std::find(thisThread->rootMoves.begin(),
+				                                     thisThread->rootMoves.end(), move);
+                 //sync_cout << " - " << UCI::move(move, pos.is_chess960())
+                 //          << " selDepth - " << rm.selDepth << sync_endl;
+                 if (rm.selDepth > 4)
+                     r -= ONE_PLY;
 			 }
 		  }
 
@@ -1061,6 +1065,8 @@ moves_loop: // When in check, search starts from here
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+      //if (rootNode && thisThread == Threads.main() && Time.elapsed() > 300)
+      //    sync_cout << " Reduction = " << r / ONE_PLY << sync_endl;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

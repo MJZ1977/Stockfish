@@ -148,7 +148,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < 64; ++i)
-      Reductions[i] = int(1024 * std::log(i) / std::sqrt(1.9));
+      Reductions[i] = int(1024 * std::log(i) / std::sqrt(1.95));
 }
 
 

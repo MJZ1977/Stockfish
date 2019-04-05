@@ -1009,9 +1009,13 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction for root nodes
           if (rootNode
-               && depth > 10 * ONE_PLY
-               && move == thisThread->rootMoves[1].pv[0])
+               && depth > 8 * ONE_PLY)
+               if (std::count(thisThread->rootMoves.begin(),
+                                    thisThread->rootMoves.begin() + 3, move) > 0)
+          {
+              //sync_cout << " - " << UCI::move(move, pos.is_chess960()) << sync_endl;
               r -= ONE_PLY;
+		  }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

@@ -1022,7 +1022,7 @@ moves_loop: // When in check, search starts from here
                  //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                  //          << " selDepth - " << rm.selDepth << sync_endl;
                  if (rm.selDepth > 6)
-                     r = std::min(r - 2 * ONE_PLY, ONE_PLY);
+                     r -= 2 * ONE_PLY;
 			 }
 		  }
 

@@ -499,7 +499,9 @@ namespace {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  BordersBB = Rank1BB | Rank8BB | FileABB | FileHBB;
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -593,6 +595,14 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+	
+	// Bonus if King is not blocked in one border
+	if (pos.pieces(Us,KING) & BordersBB)
+    {
+		b = attackedBy[Them][ALL_PIECES] | (pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()));
+		if (attackedBy[Us][KING] & ~b & ~BordersBB)
+			score += make_score( 0, 10);
+	}
 
     if (T)
         Trace::add(THREAT, Us, score);

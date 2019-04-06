@@ -1016,7 +1016,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction for root nodes
           if (rootNode
-               && depth > 7 * ONE_PLY)
+               && depth > 9 * ONE_PLY)
           {
              if (std::count(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.begin() + 4, move) > 0)

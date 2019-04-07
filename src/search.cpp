@@ -1020,12 +1020,12 @@ moves_loop: // When in check, search starts from here
 		  
 		  // Increase reduction for root bad moves
           if (rootNode
-               && depth > 16 * ONE_PLY)
+               && depth > 15 * ONE_PLY)
           {
              {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 				                                     thisThread->rootMoves.end(), move);
-                 if (rm.selDepth < -400)
+                 if (rm.selDepth < -360)
                    //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                    //        << " selDepth - " << rm.selDepth << sync_endl;
                     r += 2 * ONE_PLY;

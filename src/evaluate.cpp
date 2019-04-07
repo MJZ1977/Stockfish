@@ -600,8 +600,8 @@ namespace {
 	if (pos.pieces(Us,KING) & BordersBB)
     {
 		b = attackedBy[Them][ALL_PIECES] | (pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()));
-		if (attackedBy[Us][KING] & ~b & ~BordersBB)
-			score += make_score( 0, 10);
+		if (!(attackedBy[Us][KING] & ~b & ~BordersBB))
+			score -= make_score( 0, 10);
 	}
 
     if (T)

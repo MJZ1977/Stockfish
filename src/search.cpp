@@ -964,9 +964,13 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
-          //if (moveCountPruning && EvalExtension && type_of(movedPiece) == PAWN)
-          //   sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-          moveCountPruning &= !(EvalExtension && type_of(movedPiece) == PAWN);
+          //if (moveCountPruning && EvalExtension && type_of(movedPiece) == PAWN && (*contHist[0])[movedPiece][to_sq(move)] > 5000)
+          //   sync_cout << "Position : " << pos.fen()
+          //             << " - Move = " << UCI::move(move, pos.is_chess960())
+          //             << " - Score = " << (*contHist[0])[movedPiece][to_sq(move)] << sync_endl;
+          moveCountPruning &= !(EvalExtension
+                                && type_of(movedPiece) == PAWN
+                                && (*contHist[0])[movedPiece][to_sq(move)] > 5000);
 
           if (   !captureOrPromotion
               && !givesCheck

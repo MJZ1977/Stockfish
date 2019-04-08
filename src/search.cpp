@@ -539,7 +539,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, EvalExtension;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -551,6 +551,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    EvalExtension = false;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -722,7 +723,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / 512;
+            int bonus = -2 * ((ss-1)->statScore / 1024);
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -740,6 +741,10 @@ namespace {
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
+
+    EvalExtension = (ss->staticEval % 2 == 1) && (ss-1)->currentMove != MOVE_NULL && !excludedMove;
+    //if (EvalExtension && depth < 6 * ONE_PLY && ttPv)
+	//     sync_cout << "Position " << ss->staticEval << " - " << evaluate(pos) << " :  " << pos.fen() << sync_endl;
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
@@ -941,6 +946,13 @@ moves_loop: // When in check, search starts from here
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
+
+      // Eval extension
+      else if (EvalExtension && type_of(movedPiece) == PAWN && depth < 6 * ONE_PLY)
+      {
+		  extension = ONE_PLY;
+		  //sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+	  }
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

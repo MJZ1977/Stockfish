@@ -155,6 +155,8 @@ namespace {
 
 #undef S
 
+  bool NeedExtension;
+
   // Evaluation class computes and stores attacks tables and other working data
   template<Tracing T>
   class Evaluation {
@@ -227,6 +229,8 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
 
     const Square ksq = pos.square<KING>(Us);
+
+    NeedExtension = false;
 
     Bitboard dblAttackByPawn = pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN));
 
@@ -661,6 +665,9 @@ namespace {
                 // assign a smaller bonus if the block square isn't attacked.
                 int k = !unsafeSquares ? 20 : !(unsafeSquares & blockSq) ? 9 : 0;
 
+                if (!(unsafeSquares & blockSq) && pos.side_to_move() == Us)
+                    NeedExtension = true;
+
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
                 if (defendedSquares == squaresToQueen)
@@ -815,7 +822,7 @@ namespace {
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
-    Value v = (mg_value(score) + eg_value(score)) / 2;
+    Value v = 2 * ((mg_value(score) + eg_value(score)) / 4);
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 
@@ -856,8 +863,10 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+    v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;
+    v = (2 * (v / 2)) + NeedExtension;
+    return v;
   }
 
 } // namespace

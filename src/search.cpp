@@ -1026,7 +1026,7 @@ moves_loop: // When in check, search starts from here
              {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 				                                     thisThread->rootMoves.end(), move);
-                 if (rm.selDepth < -280)
+                 if (rm.selDepth < -300)
                    //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                    //        << " selDepth - " << rm.selDepth << sync_endl;
                     r += ONE_PLY;

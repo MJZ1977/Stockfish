@@ -748,7 +748,45 @@ namespace {
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
-    // Step 9. Null move search with verification search (~40 Elo)
+    // Step 9. ProbCut (~10 Elo)
+    // If we have a good enough capture and a reduced search returns a value
+    // much above beta, we can (almost) safely prune the previous move.
+    if (   !PvNode
+        &&  depth >= 5 * ONE_PLY
+        &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
+    {
+        Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
+        MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
+        int probCutCount = 0;
+
+        while (  (move = mp.next_move()) != MOVE_NONE
+               && probCutCount < 2 + 2 * cutNode)
+            if (move != excludedMove && pos.legal(move))
+            {
+                probCutCount++;
+
+                ss->currentMove = move;
+                ss->continuationHistory = &thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)];
+
+                assert(depth >= 5 * ONE_PLY);
+
+                pos.do_move(move, st);
+
+                // Perform a preliminary qsearch to verify that the move holds
+                value = -qsearch<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1);
+
+                // If the qsearch held, perform the regular search
+                if (value >= raisedBeta)
+                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
+
+                pos.undo_move(move);
+
+                if (value >= raisedBeta)
+                    return value;
+            }
+    }
+
+    // Step 10. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 23200
@@ -795,44 +833,6 @@ namespace {
             if (v >= beta)
                 return nullValue;
         }
-    }
-
-    // Step 10. ProbCut (~10 Elo)
-    // If we have a good enough capture and a reduced search returns a value
-    // much above beta, we can (almost) safely prune the previous move.
-    if (   !PvNode
-        &&  depth >= 5 * ONE_PLY
-        &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
-    {
-        Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
-        MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
-        int probCutCount = 0;
-
-        while (  (move = mp.next_move()) != MOVE_NONE
-               && probCutCount < 2 + 2 * cutNode)
-            if (move != excludedMove && pos.legal(move))
-            {
-                probCutCount++;
-
-                ss->currentMove = move;
-                ss->continuationHistory = &thisThread->continuationHistory[pos.moved_piece(move)][to_sq(move)];
-
-                assert(depth >= 5 * ONE_PLY);
-
-                pos.do_move(move, st);
-
-                // Perform a preliminary qsearch to verify that the move holds
-                value = -qsearch<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1);
-
-                // If the qsearch held, perform the regular search
-                if (value >= raisedBeta)
-                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
-
-                pos.undo_move(move);
-
-                if (value >= raisedBeta)
-                    return value;
-            }
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)

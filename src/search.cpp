@@ -1020,7 +1020,7 @@ moves_loop: // When in check, search starts from here
 
 		  // Increase reduction for root bad moves
           if (rootNode
-               && depth > 10 * ONE_PLY)
+               && depth > 9 * ONE_PLY)
           {
              {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),

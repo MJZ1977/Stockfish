@@ -1028,7 +1028,7 @@ moves_loop: // When in check, search starts from here
                  if (rm.selDepth < -300)
                    //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                    //        << " selDepth - " << rm.selDepth << sync_endl;
-                    r += 2 * ONE_PLY;
+                    r += ONE_PLY;
 			 }
 		  }
 

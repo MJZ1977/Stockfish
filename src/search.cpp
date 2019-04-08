@@ -948,11 +948,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Eval extension
-      else if (EvalExtension && type_of(movedPiece) == PAWN && depth < 6 * ONE_PLY)
-      {
-		  extension = ONE_PLY;
-		  //sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-	  }
+      //else if (EvalExtension && type_of(movedPiece) == PAWN && depth < 6 * ONE_PLY)
+      //{
+		//  extension = ONE_PLY;
+		//  sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+	  //}
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -964,6 +964,9 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
+          //if (moveCountPruning && EvalExtension && type_of(movedPiece) == PAWN)
+          //   sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+          moveCountPruning &= !(EvalExtension && type_of(movedPiece) == PAWN);
 
           if (   !captureOrPromotion
               && !givesCheck

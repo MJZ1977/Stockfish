@@ -537,7 +537,7 @@ namespace {
     TTEntry* tte;
     Key posKey;
     Move ttMove, move, excludedMove, bestMove;
-    Depth extension, newDepth;
+    Depth extension, newDepth, searchedDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
@@ -551,6 +551,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    searchedDepth = ONE_PLY;	//just to initialize
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -1066,18 +1067,21 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
           }
 
-          Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
+          searchedDepth = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, searchedDepth, true);
 
-          doFullDepthSearch = (value > alpha && d != newDepth);
+          doFullDepthSearch = (value > alpha && searchedDepth != newDepth);
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
+      {
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+          searchedDepth = newDepth;
+	  }
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
@@ -1088,6 +1092,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+          searchedDepth = newDepth;
       }
 
       // Step 18. Undo move
@@ -1132,7 +1137,7 @@ moves_loop: // When in check, search starts from here
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
 
-			  if (value < alpha - Value(200))
+			  if (value < alpha - Value(200) && searchedDepth > 6 * ONE_PLY)
 				  rm.selDepth = int(value - alpha);
 		  }
       }

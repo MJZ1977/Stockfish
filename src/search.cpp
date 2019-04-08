@@ -539,7 +539,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, EvalExtension, positiveSEE;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, EvalExtension;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -898,7 +898,6 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      positiveSEE = pos.see_ge(move);
 
       // Step 13. Extensions (~70 Elo)
 
@@ -937,7 +936,7 @@ moves_loop: // When in check, search starts from here
 
       // Check extension (~2 Elo)
       else if (    givesCheck
-               && (pos.blockers_for_king(~us) & from_sq(move) || positiveSEE))
+               && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
           extension = ONE_PLY;
 
       // Shuffle extension
@@ -965,9 +964,9 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
-          //if (moveCountPruning && EvalExtension && type_of(movedPiece) == PAWN && positiveSEE)
+          //if (moveCountPruning && EvalExtension && type_of(movedPiece) == PAWN)
           //   sync_cout << "Position : " << pos.fen() << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-          moveCountPruning &= !(EvalExtension && type_of(movedPiece) == PAWN && positiveSEE);
+          moveCountPruning &= !(EvalExtension && type_of(movedPiece) == PAWN);
 
           if (   !captureOrPromotion
               && !givesCheck

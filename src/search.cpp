@@ -1017,15 +1017,15 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
-		  
+
 		  // Increase reduction for root bad moves
           if (rootNode
-               && depth > 15 * ONE_PLY)
+               && depth > 10 * ONE_PLY)
           {
              {
                  RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 				                                     thisThread->rootMoves.end(), move);
-                 if (rm.selDepth < -360)
+                 if (rm.selDepth < -300)
                    //sync_cout << " - " << UCI::move(move, pos.is_chess960())
                    //        << " selDepth - " << rm.selDepth << sync_endl;
                     r += 2 * ONE_PLY;
@@ -1131,7 +1131,7 @@ moves_loop: // When in check, search starts from here
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
-			  
+
 			  if (value < alpha - Value(200))
 				  rm.selDepth = int(value - alpha);
 		  }

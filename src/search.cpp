@@ -1020,7 +1020,7 @@ moves_loop: // When in check, search starts from here
 
           // Increase reduction for first opponent's move
           else if ((ss-1)->moveCount == 1)
-              r += ONE_PLY;
+              r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {

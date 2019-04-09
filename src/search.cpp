@@ -1018,6 +1018,10 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
+          // Increase reduction for first opponent's move
+          else if ((ss-1)->moveCount == 1)
+              r += ONE_PLY;
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)

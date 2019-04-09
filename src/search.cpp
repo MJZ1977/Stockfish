@@ -1019,7 +1019,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Increase reduction for first opponent's move
-          else if ((ss-1)->moveCount == 1)
+          else if ((ss-1)->moveCount == 1 && cutNode)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

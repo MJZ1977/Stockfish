@@ -594,6 +594,11 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Bonus for king supporting pawn majority
+    if (popcount(pos.pieces(Us,PAWN) &  KingFlank[file_of(pos.square<KING>(Us))]) >
+        popcount(pos.pieces(Them,PAWN) &  KingFlank[file_of(pos.square<KING>(Us))]) + 1)
+        score += make_score(0, 6);
+
     if (T)
         Trace::add(THREAT, Us, score);
 

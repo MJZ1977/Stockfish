@@ -501,6 +501,8 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
+    const Square ksq = pos.square<KING>(Us);
+
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
 
@@ -595,8 +597,9 @@ namespace {
     }
 
     // Bonus for king supporting pawn majority
-    if (popcount(pos.pieces(Us,PAWN) &  KingFlank[file_of(pos.square<KING>(Us))]) >
-        popcount(pos.pieces(Them,PAWN) &  KingFlank[file_of(pos.square<KING>(Us))]) + 1)
+    if (relative_rank(Us, ksq) > RANK_2
+		&& (popcount(pos.pieces(Us,PAWN) &  KingFlank[file_of(ksq)]) >
+            popcount(pos.pieces(Them,PAWN) &  KingFlank[file_of(ksq)]) + 1))
         score += make_score(0, 6);
 
     if (T)

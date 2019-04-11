@@ -600,7 +600,7 @@ namespace {
     if (relative_rank(Us, ksq) > RANK_2
 		&& (popcount(pos.pieces(Us,PAWN) &  KingFlank[file_of(ksq)]) >
             popcount(pos.pieces(Them,PAWN) &  KingFlank[file_of(ksq)]) + 1))
-        score += make_score(0, 6);
+        score += make_score(0, 10);
 
     if (T)
         Trace::add(THREAT, Us, score);

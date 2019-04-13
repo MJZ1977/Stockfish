@@ -610,7 +610,7 @@ namespace {
     // If position has been searched at higher depths and we are shuffling, return value_draw
     if (pos.rule50_count() > 36 - 6 * (pos.count<ALL_PIECES>() > 14)
         && ss->ply > 36 - 6 * (pos.count<ALL_PIECES>() > 14)
-        //&& depth < 3 * ONE_PLY
+        && depth < 3 * ONE_PLY
         && ttHit
         && tte->depth() > depth
         && pos.count<PAWN>() > 0)
@@ -941,11 +941,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 	  
 	  // Shuffle extension
-      else if(pos.rule50_count() > 14 
-	          && ss->ply > 14 
+      else if(pos.rule50_count() > 12 
+	          && ss->ply > 12 
 	          && depth < 3 * ONE_PLY 
 			  && PvNode 
-			  && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)	// To avoid infinite loops
+			  && ss->ply < 2 * thisThread->rootDepth / ONE_PLY)	// To avoid infinite loops
           extension = ONE_PLY;
 
       // Passed pawn extension

@@ -148,7 +148,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < 64; ++i)
-      Reductions[i] = int(1024 * std::log(i) / std::sqrt(1.92));
+      Reductions[i] = int(1024 * std::log(i) / std::sqrt(1.94));
 }
 
 
@@ -1007,7 +1007,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // If PvNode and (beta - alpha) is too broad, decrease reduction to avoid instabilities
-          if (beta - alpha > Value(100))
+          if (beta - alpha > Value(72))
               r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

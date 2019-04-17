@@ -1062,7 +1062,7 @@ moves_loop: // When in check, search starts from here
           }
 
           // Decrease reduction for second ttMove
-          if (move == ttMove2 && r > 3 * ONE_PLY)
+          if (move == ttMove2 && r > 2 * ONE_PLY)
               r -= ONE_PLY;
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
@@ -1209,7 +1209,7 @@ moves_loop: // When in check, search starts from here
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, ss->staticEval);
-    else if (bestValue >= beta && depth > 5 * ONE_PLY)
+    else if (bestValue >= beta && depth > 6 * ONE_PLY)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), false,
                   BOUND_LOWER, depth, bestMove, ss->staticEval);
 

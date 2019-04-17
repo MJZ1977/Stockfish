@@ -1188,6 +1188,9 @@ moves_loop: // When in check, search starts from here
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, ss->staticEval);
+    else if (bestValue >= beta)
+        tte->save(posKey, value_to_tt(bestValue, ss->ply), false,
+                  BOUND_LOWER, depth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

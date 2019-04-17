@@ -1027,10 +1027,6 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          // Decrease reduction for second ttMove
-          if (move == ttMove2)
-              r -= ONE_PLY;
-
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
@@ -1064,6 +1060,10 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
           }
+
+          // Decrease reduction for second ttMove
+          if (move == ttMove2 && r > 2 * ONE_PLY)
+              r -= ONE_PLY;
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 

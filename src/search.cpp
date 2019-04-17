@@ -912,6 +912,7 @@ moves_loop: // When in check, search starts from here
           &&  move == ttMove
           && !rootNode
           && !excludedMove // Avoid recursive singular search
+          && !ttMove2
       /*  &&  ttValue != VALUE_NONE Already implicit in the next condition */
           &&  abs(ttValue) < VALUE_KNOWN_WIN
           && (tte->bound() & BOUND_LOWER)

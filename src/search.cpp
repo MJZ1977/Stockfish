@@ -649,7 +649,7 @@ namespace {
                     && thisThread->rootMoves[thisThread->pvIdx + 1].selDepth > 4) ?
                                              thisThread->rootMoves[thisThread->pvIdx + 1].pv[0]
                    : ttHit2   ? tte2->move() : MOVE_NONE;
-        /*if (ttMove2 && rootNode)
+        /*if (ttMove2)
            sync_cout << "Position : " << pos.fen()
                      << " - Move1 : " << UCI::move(ttMove, pos.is_chess960())
                      << " - Move2 : " << UCI::move(ttMove2, pos.is_chess960()) << sync_endl;*/
@@ -1062,7 +1062,7 @@ moves_loop: // When in check, search starts from here
           }
 
           // Decrease reduction for second ttMove
-          if (move == ttMove2 && r > 2 * ONE_PLY)
+          if (move == ttMove2 && r > 3 * ONE_PLY)
               r -= ONE_PLY;
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

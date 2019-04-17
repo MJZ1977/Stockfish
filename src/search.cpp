@@ -535,11 +535,12 @@ namespace {
     Move pv[MAX_PLY+1], capturesSearched[32], quietsSearched[64];
     StateInfo st;
     TTEntry* tte;
+    TTEntry* tte2;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, ttMove2, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttHit2, ttPv, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -637,6 +638,22 @@ namespace {
         }
         return ttValue;
     }
+
+    // Look for second ttMove
+    ttMove2 = MOVE_NONE;
+    if (!excludedMove && ttMove)
+    {
+		tte2 = TT.probe(pos.key() ^ Key(ttMove << 16), ttHit2);
+        ttMove2 =  (rootNode
+                    && thisThread->rootMoves.size() > thisThread->pvIdx
+                    && thisThread->rootMoves[thisThread->pvIdx + 1].selDepth > 4) ?
+                                             thisThread->rootMoves[thisThread->pvIdx + 1].pv[0]
+                   : ttHit2   ? tte2->move() : MOVE_NONE;
+        /*if (ttMove2 && rootNode)
+           sync_cout << "Position : " << pos.fen()
+                     << " - Move1 : " << UCI::move(ttMove, pos.is_chess960())
+                     << " - Move2 : " << UCI::move(ttMove2, pos.is_chess960()) << sync_endl;*/
+	}
 
     // Step 5. Tablebases probe
     if (!rootNode && TB::Cardinality)
@@ -1008,6 +1025,10 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
+              r -= ONE_PLY;
+
+          // Decrease reduction for second ttMove
+          if (move == ttMove2)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

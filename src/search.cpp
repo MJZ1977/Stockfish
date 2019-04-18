@@ -1212,6 +1212,9 @@ moves_loop: // When in check, search starts from here
     else if (bestValue >= beta && depth > 5 * ONE_PLY)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), false,
                   BOUND_LOWER, depth, bestMove, ss->staticEval);
+    else if (ttHit)
+        tte->save(posKey, VALUE_NONE, false,
+                  BOUND_NONE, DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

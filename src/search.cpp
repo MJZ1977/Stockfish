@@ -1062,8 +1062,8 @@ moves_loop: // When in check, search starts from here
           }
 
           // Decrease reduction for second ttMove
-          if (move == ttMove2 && r > 2 * ONE_PLY && PvNode)
-              r -= ONE_PLY;
+          if (move == ttMove2 && PvNode)
+              r = std::min(r, 2 * ONE_PLY);
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 

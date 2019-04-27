@@ -1031,7 +1031,7 @@ moves_loop: // When in check, search starts from here
 		  
 		  // Increase reduction in potentially zugzwang positions
 		  if (zugzwang)
-			  r += ONE_PLY;
+			  r += 2 * ONE_PLY;
 
           if (!captureOrPromotion)
           {

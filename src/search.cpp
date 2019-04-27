@@ -794,7 +794,14 @@ namespace {
             if (v >= beta)
                 return nullValue;
 			else
+			{
+				sync_cout << "Zugzwang : " << pos.fen() 
+				          << " depth = " << (depth-R) / ONE_PLY 
+				          << " beta = " << beta 
+				          << " nullValue = " << nullValue 
+						  << " v = " << v << sync_endl;
 				zugzwang = true;
+			}
         }
     }
 

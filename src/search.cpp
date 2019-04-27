@@ -952,6 +952,13 @@ moves_loop: // When in check, search starts from here
                && pos.advanced_pawn_push(move)
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
+      
+	  // Zugzwang extension
+	  else if (zugzwang && move == ttMove)
+	  {
+		  //sync_cout << "Zugzwang : " << pos.fen() << sync_endl;
+		  extension = ONE_PLY;
+	  }
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -1029,10 +1036,6 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 		  
-		  // Increase reduction in potentially zugzwang positions
-		  if (zugzwang)
-			  r += ONE_PLY;
-
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)

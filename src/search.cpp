@@ -539,7 +539,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, zugzwang;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -551,6 +551,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+	zugzwang = false;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -792,6 +793,8 @@ namespace {
 
             if (v >= beta)
                 return nullValue;
+			else
+				zugzwang = true;
         }
     }
 
@@ -1025,6 +1028,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+		  
+		  // Increase reduction in potentially zugzwang positions
+		  if (zugzwang)
+			  r += ONE_PLY;
 
           if (!captureOrPromotion)
           {

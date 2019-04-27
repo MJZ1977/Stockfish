@@ -793,13 +793,13 @@ namespace {
 
             if (v >= beta)
                 return nullValue;
-			else
+			else if (depth-R > 6 * ONE_PLY)
 			{
-				sync_cout << "Zugzwang : " << pos.fen() 
+				/*sync_cout << "Zugzwang : " << pos.fen() 
 				          << " depth = " << (depth-R) / ONE_PLY 
 				          << " beta = " << beta 
 				          << " nullValue = " << nullValue 
-						  << " v = " << v << sync_endl;
+						  << " v = " << v << sync_endl;*/
 				zugzwang = true;
 			}
         }

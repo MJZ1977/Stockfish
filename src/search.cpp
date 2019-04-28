@@ -1025,6 +1025,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+		  
+		  // Decrease reduction for instable PV
+		  if (beta - alpha > Value(80) || (PvNode && bestValue < alpha))
+			  r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {

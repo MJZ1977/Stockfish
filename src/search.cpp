@@ -107,6 +107,7 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
+  Value SEE_evaluate(Position& pos); 
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -321,6 +322,8 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  //SEE_evaluate(rootPos);
+  
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
          && !Threads.stop
@@ -1249,7 +1252,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
+        return (ss->ply >= MAX_PLY && !inCheck) ? SEE_evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1285,7 +1288,7 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything on values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = evaluate(pos);
+                ss->staticEval = bestValue = SEE_evaluate(pos);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1294,7 +1297,7 @@ moves_loop: // When in check, search starts from here
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
+            (ss-1)->currentMove != MOVE_NULL ? SEE_evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
 
         // Stand pat. Return immediately if static value is at least beta
@@ -1424,6 +1427,30 @@ moves_loop: // When in check, search starts from here
     return bestValue;
   }
 
+  // SEE_evaluate corrects static evaluation according to the number of
+  // positive SEE moves
+  Value SEE_evaluate(Position& pos){
+	  int i = 0;
+	  Value v = evaluate(pos);
+	  if (pos.non_pawn_material() < 8000)
+		  return v;
+	  
+	  Value bonus = -Value(4);
+	  ExtMove moves[MAX_MOVES];
+	  ExtMove* lastMove;
+	  lastMove = generate<QUIETS>(pos, moves);
+	  while (Move(moves[i]) != Move(*lastMove) && bonus < 0)
+	  {
+          if (pos.see_ge(moves[i]) && pos.legal(moves[i]))
+		    {
+		       bonus += Value(2);
+			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;
+		    }
+		  i++;
+	  }
+	  return v + bonus;
+  }
+  
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to
   // "plies to mate from the current position". Non-mate scores are unchanged.

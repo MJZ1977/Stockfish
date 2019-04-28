@@ -1441,7 +1441,8 @@ moves_loop: // When in check, search starts from here
 	  lastMove = generate<QUIETS>(pos, moves);
 	  while (Move(moves[i]) != Move(*lastMove) && bonus < 0)
 	  {
-          if (pos.see_ge(moves[i]) && pos.legal(moves[i]))
+          if (pos.legal(moves[i]))
+			if (pos.see_ge(moves[i]))
 		    {
 		       bonus += Value(2);
 			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;

@@ -107,7 +107,7 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
-  Value SEE_evaluate(Position& pos); 
+  Value SEE_evaluate(Position& pos, Stack* ss); 
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -322,7 +322,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  //SEE_evaluate(rootPos);
+  //SEE_evaluate(rootPos, ss);
   
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -1252,7 +1252,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? SEE_evaluate(pos) : VALUE_DRAW;
+        return (ss->ply >= MAX_PLY && !inCheck) ? SEE_evaluate(pos, ss) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1288,7 +1288,7 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything on values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = SEE_evaluate(pos);
+                ss->staticEval = bestValue = SEE_evaluate(pos, ss);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1297,7 +1297,7 @@ moves_loop: // When in check, search starts from here
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? SEE_evaluate(pos)
+            (ss-1)->currentMove != MOVE_NULL ? SEE_evaluate(pos, ss)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
 
         // Stand pat. Return immediately if static value is at least beta
@@ -1429,26 +1429,35 @@ moves_loop: // When in check, search starts from here
 
   // SEE_evaluate corrects static evaluation according to the number of
   // positive SEE moves
-  Value SEE_evaluate(Position& pos){
-	  int i = 0;
-	  Value v = evaluate(pos);
-	  if (pos.non_pawn_material() < 8000)
-		  return v;
+  Value SEE_evaluate(Position& pos, Stack* ss){
+	int i = 0;
+	Value v = evaluate(pos);
+	if (pos.non_pawn_material() < 8000)
+	  return v;
+	
+	Value bonus = -Value(20);
+	Move move;
 	  
-	  Value bonus = -Value(20);
-	  ExtMove moves[MAX_MOVES];
-	  ExtMove* lastMove;
-	  lastMove = generate<QUIETS>(pos, moves);
-	  while ((moves + i < lastMove) && bonus < 0)
-	  {
-          if (pos.legal(moves[i]))
-			if (pos.see_ge(moves[i]))
-		    {
-		       bonus += Value(10);
-			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;
-		    }
-		  i++;
-	  }
+	const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
+                                          nullptr, (ss-4)->continuationHistory,
+                                          nullptr, (ss-6)->continuationHistory };
+
+    MovePicker mp(pos, MOVE_NONE, ONE_PLY, &(pos.this_thread())->mainHistory,
+                                      &(pos.this_thread())->captureHistory,
+                                      contHist,
+                                      MOVE_NONE,
+                                      ss->killers);
+
+	while (((move = mp.next_move()) != MOVE_NONE) && bonus < 0)
+	{
+        if (pos.legal(move))
+			if (pos.see_ge(move))
+	        {
+	           bonus += Value(10);
+			   //sync_cout << "move " << i << " = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+	        }
+	  i++;
+	}
 	  return v + bonus;
   }
   

@@ -1439,7 +1439,7 @@ moves_loop: // When in check, search starts from here
 	  ExtMove moves[MAX_MOVES];
 	  ExtMove* lastMove;
 	  lastMove = generate<QUIETS>(pos, moves);
-	  while (Move(moves[i]) != Move(*lastMove) && bonus < 0)
+	  while ((moves + i < lastMove) && bonus < 0)
 	  {
           if (pos.legal(moves[i]))
 			if (pos.see_ge(moves[i]))

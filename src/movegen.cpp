@@ -279,7 +279,25 @@ template ExtMove* generate<CAPTURES>(const Position&, ExtMove*);
 template ExtMove* generate<QUIETS>(const Position&, ExtMove*);
 template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*);
 
+/// generate moves by Piece type
+template<PieceType Pt>
+ExtMove* generate(const Position& pos, ExtMove* moveList) {
+	
+  assert(Pt == KNIGHT || Pt == BISHOP || Pt == ROOK || Pt == QUEEN);
+  assert(!pos.checkers());
+  Color us = pos.side_to_move();
 
+  Bitboard target = ~pos.pieces(us);
+
+  return generate_moves<Pt, false>(pos, moveList, us, target);
+}
+
+// Explicit template instantiations
+template ExtMove* generate<KNIGHT>(const Position&, ExtMove*);
+template ExtMove* generate<BISHOP>(const Position&, ExtMove*);
+template ExtMove* generate<ROOK>(const Position&, ExtMove*);
+template ExtMove* generate<QUEEN>(const Position&, ExtMove*);
+  
 /// generate<QUIET_CHECKS> generates all pseudo-legal non-captures and knight
 /// underpromotions that give check. Returns a pointer to the end of the move list.
 template<>

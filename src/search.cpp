@@ -1438,17 +1438,60 @@ moves_loop: // When in check, search starts from here
 	  Value bonus = -Value(20);
 	  ExtMove moves[MAX_MOVES];
 	  ExtMove* lastMove;
-	  lastMove = generate<QUIETS>(pos, moves);
-	  while ((moves + i < lastMove) && bonus < 0)
+	  
+	  lastMove = generate<QUEEN>(pos, moves);
+	  while ((moves + i < lastMove))
 	  {
           if (pos.legal(moves[i]))
 			if (pos.see_ge(moves[i]))
 		    {
 		       bonus += Value(10);
+			   if (bonus >= 0)
+				   return v;
 			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;
 		    }
 		  i++;
 	  }
+	  
+	  lastMove = generate<ROOK>(pos, moves);
+	  while ((moves + i < lastMove))
+	  {
+          if (pos.legal(moves[i]))
+			if (pos.see_ge(moves[i]))
+		    {
+		       bonus += Value(10);
+			   if (bonus >= 0)
+				   return v;
+		    }
+		  i++;
+	  }
+	  
+	  lastMove = generate<KNIGHT>(pos, moves);
+	  while ((moves + i < lastMove))
+	  {
+          if (pos.legal(moves[i]))
+			if (pos.see_ge(moves[i]))
+		    {
+		       bonus += Value(10);
+			   if (bonus >= 0)
+				   return v;
+		    }
+		  i++;
+	  }
+
+	  lastMove = generate<BISHOP>(pos, moves);
+	  while ((moves + i < lastMove))
+	  {
+          if (pos.legal(moves[i]))
+			if (pos.see_ge(moves[i]))
+		    {
+		       bonus += Value(10);
+			   if (bonus >= 0)
+				   return v;
+		    }
+		  i++;
+	  }
+			
 	  return v + bonus;
   }
   

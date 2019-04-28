@@ -1435,7 +1435,7 @@ moves_loop: // When in check, search starts from here
 	  if (pos.non_pawn_material() < 8000)
 		  return v;
 	  
-	  Value bonus = -Value(4);
+	  Value bonus = -Value(20);
 	  ExtMove moves[MAX_MOVES];
 	  ExtMove* lastMove;
 	  lastMove = generate<QUIETS>(pos, moves);
@@ -1444,7 +1444,7 @@ moves_loop: // When in check, search starts from here
           if (pos.legal(moves[i]))
 			if (pos.see_ge(moves[i]))
 		    {
-		       bonus += Value(2);
+		       bonus += Value(10);
 			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;
 		    }
 		  i++;

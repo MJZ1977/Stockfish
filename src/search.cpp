@@ -374,9 +374,10 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
-			  /*sync_cout << "alpha = " << alpha
+			  sync_cout << "alpha = " << alpha
 			            << " beta = " << beta
-			            << " delta = " << delta << sync_endl;*/
+			            << " bestValue = " << bestValue
+			            << " delta = " << delta << sync_endl;
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting

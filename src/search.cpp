@@ -322,7 +322,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  //SEE_evaluate(rootPos);
+  SEE_evaluate(rootPos);
   
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -1252,7 +1252,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? SEE_evaluate(pos) : VALUE_DRAW;
+        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1288,7 +1288,7 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything on values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = SEE_evaluate(pos);
+                ss->staticEval = bestValue = evaluate(pos);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1297,7 +1297,7 @@ moves_loop: // When in check, search starts from here
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? SEE_evaluate(pos)
+            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
 
         // Stand pat. Return immediately if static value is at least beta
@@ -1430,24 +1430,24 @@ moves_loop: // When in check, search starts from here
   // SEE_evaluate corrects static evaluation according to the number of
   // positive SEE moves
   Value SEE_evaluate(Position& pos){
-	  int i = 0;
+	  int i = 1;
 	  Value v = evaluate(pos);
-	  if (pos.non_pawn_material() < 8000)
-		  return v;
+	  //if (pos.non_pawn_material() < 8000)
+		//  return v;
 	  
+	  MovePicker mp(pos);
+	  Move move;
 	  Value bonus = -Value(4);
-	  ExtMove moves[MAX_MOVES];
-	  ExtMove* lastMove;
-	  lastMove = generate<QUIETS>(pos, moves);
-	  while ((moves + i < lastMove) && bonus < 0)
+	  while (((move = mp.next_move(false)) != MOVE_NONE) && bonus < 0 && i < 10)
 	  {
-          if (pos.legal(moves[i]))
-			if (pos.see_ge(moves[i]))
+	   sync_cout << "GO " << sync_endl;
+          //if (pos.legal(move))
+			//if (pos.see_ge(move))
 		    {
 		       bonus += Value(2);
-			   //sync_cout << "move " << i << " = " << UCI::move(moves[i], pos.is_chess960()) << sync_endl;
+			   sync_cout << "move " << i << " = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 		    }
-		  i++;
+		i++;
 	  }
 	  return v + bonus;
   }

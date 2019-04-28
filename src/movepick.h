@@ -127,6 +127,7 @@ public:
                                            const PieceToHistory**,
                                            Move,
                                            Move*);
+  MovePicker(const Position&);
   Move next_move(bool skipQuiets = false);
 
 private:

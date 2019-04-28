@@ -97,6 +97,15 @@ MovePicker::MovePicker(const Position& p, Move ttm, Value th, const CapturePiece
   stage += (ttMove == MOVE_NONE);
 }
 
+/// MovePicker constructor without history moves
+MovePicker::MovePicker(const Position& p):pos(p){
+	
+  stage = pos.checkers() ? EVASION_TT : MAIN_TT;
+  ttMove = MOVE_NONE;
+  stage += 1;
+}
+
+
 /// MovePicker::score() assigns a numerical value to each move in a list, used
 /// for sorting. Captures are ordered by Most Valuable Victim (MVV), preferring
 /// captures with a good history. Quiets moves are ordered using the histories.

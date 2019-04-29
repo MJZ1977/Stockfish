@@ -483,7 +483,7 @@ namespace {
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
 
-    inDanger[Us] = kingDanger > 680;
+    inDanger[Us] = kingDanger > 560;
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

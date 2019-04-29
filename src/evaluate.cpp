@@ -155,6 +155,8 @@ namespace {
 
 #undef S
 
+  bool inDanger[COLOR_NB];
+
   // Evaluation class computes and stores attacks tables and other working data
   template<Tracing T>
   class Evaluation {
@@ -227,6 +229,8 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
 
     const Square ksq = pos.square<KING>(Us);
+
+    inDanger[Us] = false;
 
     Bitboard dblAttackByPawn = pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN));
 
@@ -478,6 +482,8 @@ namespace {
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+
+    inDanger[Us] = kingDanger > 600;
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
@@ -745,12 +751,19 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+    bool steadyAdvantage = !(inDanger[strongSide])
+                         && (pos.non_pawn_material(strongSide) > pos.non_pawn_material(~strongSide) - 100)
+                         && pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1
+                         && !pos.opposite_bishops();
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    + 100 * steadyAdvantage
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

@@ -301,13 +301,14 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        if ((b & mobilityArea[Us] & ~pos.pieces(Us)) || mob == 0)
-           mobility[Us] += MobilityBonus[Pt - 2][mob];
-        else
-           mobility[Us] += MobilityBonus[Pt - 2][mob - 1];
+        mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            // Penality if piece is completely blocked by our own pieces
+            if (!bool(b & mobilityArea[Us] & ~pos.pieces(Us)) && mob > 0)
+                score -= make_score(10, 0);
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)

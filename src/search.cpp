@@ -374,7 +374,20 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
-              bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
+			  
+			  // First check for low fail
+			  if (rootDepth >= 5 * ONE_PLY)
+				while (alpha > VALUE_MATED_IN_MAX_PLY)
+			    {
+			      bestValue = ::search<NonPV>(rootPos, ss, alpha, alpha + 1, adjustedDepth, false);
+				  //sync_cout << "alpha = " << alpha << " bestValue = " << bestValue << sync_endl;
+				  if (bestValue <= alpha)
+				     alpha = std::max(alpha - delta,-VALUE_INFINITE);
+				  else
+					 break;
+				}
+			  
+			  bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
               // is done with a stable algorithm because all the values but the
@@ -881,9 +894,14 @@ moves_loop: // When in check, search starts from here
       ss->moveCount = ++moveCount;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      {
+         /* sync_cout << "alpha " << alpha
+                    << " beta " << beta
+                    << " bestValue " << bestValue << sync_endl;*/
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+	  }
       if (PvNode)
           (ss+1)->pv = nullptr;
 

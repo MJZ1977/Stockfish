@@ -302,6 +302,20 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+        
+        // Extra penalty if piece can only be moved in 2 squares or can't move
+        if (mob > 0)
+        {
+            bb = b & mobilityArea[Us] & ~pos.pieces(Us);
+            if (bb == Bitboard(0))
+                score -= make_score(10,0);
+            else if (!more_than_one(bb))
+            {
+                bb = pos.attacks_from<Pt>(lsb(bb)) & mobilityArea[Us] & ~pos.pieces(Us);
+                if (bb == Bitboard(0))
+                    score -= make_score(10,0);
+            }
+        }
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

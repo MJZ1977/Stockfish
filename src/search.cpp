@@ -611,7 +611,7 @@ namespace {
     if (   pos.rule50_count() > 36 - 6 * (pos.count<ALL_PIECES>() > 14)
         && ss->ply > 36 - 6 * (pos.count<ALL_PIECES>() > 14)
         && ttHit
-        && tte->depth() > depth
+        && depth < std::min(tte->depth(), 6 * ONE_PLY)
         && pos.count<PAWN>() > 0)
            return VALUE_DRAW;
 

@@ -483,7 +483,7 @@ namespace {
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
 
-    inDanger[Us] = kingDanger > 560 && pos.non_pawn_material(Them) >= 2600;
+    inDanger[Us] = kingDanger > 1200 && pos.non_pawn_material(Them) >= 2600;
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
@@ -752,10 +752,6 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
-    bool steadyAdvantage = !(inDanger[strongSide])
-                         && (pos.non_pawn_material(strongSide) > pos.non_pawn_material(~strongSide) - 100)
-                         && pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1
-                         && !pos.opposite_bishops();
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -763,7 +759,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    + 58 * steadyAdvantage
+                    - 10 * inDanger[strongSide]
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

@@ -374,19 +374,19 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
-			  
+
 			  // First check for low fail
 			  if (rootDepth >= 5 * ONE_PLY)
 				while (alpha > VALUE_MATED_IN_MAX_PLY)
 			    {
-			      bestValue = ::search<NonPV>(rootPos, ss, alpha, alpha + 1, adjustedDepth, false);
+			      bestValue = ::search<PV>(rootPos, ss, alpha, alpha + 1, adjustedDepth, false);
 				  //sync_cout << "alpha = " << alpha << " bestValue = " << bestValue << sync_endl;
 				  if (bestValue <= alpha)
 				     alpha = std::max(alpha - delta,-VALUE_INFINITE);
 				  else
 					 break;
 				}
-			  
+
 			  bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting

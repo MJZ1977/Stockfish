@@ -959,7 +959,8 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
+          if (ss->ply > 3)
+			  moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
 
           if (   !captureOrPromotion
               && !givesCheck

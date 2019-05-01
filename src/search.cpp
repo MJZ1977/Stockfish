@@ -958,7 +958,7 @@ moves_loop: // When in check, search starts from here
               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
         {
           int evolution = int(ss->staticEval - (ss-2)->staticEval) * int((ss-2)->staticEval - (ss-4)->staticEval);
-		  if (evolution > 0 && evolution < 1000)
+		  if (evolution > 0 && evolution < 2500)
 		      extension = ONE_PLY;
 		}
 

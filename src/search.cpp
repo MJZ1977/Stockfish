@@ -953,11 +953,14 @@ moves_loop: // When in check, search starts from here
       // Steady PV
       else if ( PvNode
               && ss->ply > 4
-              && int(ss->staticEval - (ss-2)->staticEval) * int((ss-2)->staticEval - (ss-4)->staticEval) > 1000
               && depth < 4 * ONE_PLY
               && move == ttMove
               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
-          extension = ONE_PLY;
+        {
+          int evolution = int(ss->staticEval - (ss-2)->staticEval) * int((ss-2)->staticEval - (ss-4)->staticEval);
+		  if (evolution > 0 && evolution < 1000)
+		      extension = ONE_PLY;
+		}
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

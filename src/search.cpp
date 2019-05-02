@@ -539,7 +539,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, safeCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -891,6 +891,8 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      safeCheck = givesCheck
+               && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move));
 
       // Step 13. Extensions (~70 Elo)
 
@@ -928,8 +930,7 @@ moves_loop: // When in check, search starts from here
       }
 
       // Check extension (~2 Elo)
-      else if (    givesCheck
-               && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
+      else if (safeCheck)
           extension = ONE_PLY;
 
       // Castling extension
@@ -1029,7 +1030,7 @@ moves_loop: // When in check, search starts from here
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
-              if (ttCapture && !givesCheck)
+              if (ttCapture && !safeCheck)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)

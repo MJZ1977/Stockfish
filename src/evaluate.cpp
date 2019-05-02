@@ -501,8 +501,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
-    constexpr Bitboard  ourCamp     = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
-                                                   : Rank5BB | Rank6BB | Rank7BB);
+    constexpr Bitboard  ourCamp     = (Us == WHITE ? Rank3BB | Rank4BB
+                                                   : Rank6BB | Rank7BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -565,10 +565,9 @@ namespace {
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Penalty for enemy pawns strongly protected in our camp
-    score -= make_score(6, 0) * popcount(pos.pieces(Them, PAWN)
+    score -= make_score(4, 0) * popcount(pos.pieces(Them, PAWN)
            & stronglyProtected
-           & ourCamp
-           & ~attackedBy[Us][PAWN]);
+           & ourCamp);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

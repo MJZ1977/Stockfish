@@ -565,7 +565,7 @@ namespace {
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Penalty for enemy pawns strongly protected in our camp
-    score -= make_score(4, 0) * popcount(pos.pieces(Them, PAWN)
+    score -= make_score(6, 0) * popcount(pos.pieces(Them, PAWN)
            & stronglyProtected
            & ourCamp);
 

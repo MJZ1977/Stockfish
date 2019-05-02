@@ -1024,8 +1024,8 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Decrease reduction if move counter threatMove
-          if (threatMove != MOVE_NONE && to_sq(move) == from_sq(threatMove))
-            if (pos.see_ge(move))
+          if (threatMove != MOVE_NONE)
+            if (to_sq(move) == from_sq(threatMove))
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

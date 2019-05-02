@@ -763,7 +763,8 @@ namespace {
         //if (ttPv && depth-R > 8 * ONE_PLY && (ss+1)->currentMove != MOVE_NONE)
         //   sync_cout << "Position = " << pos.fen()
         //             << " Threat = " << UCI::move((ss+1)->currentMove, pos.is_chess960()) << sync_endl;
-        threatMove = (ss+1)->currentMove;
+		if (depth-R > 2 * ONE_PLY)
+            threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 

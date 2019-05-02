@@ -536,7 +536,7 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, threatMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
@@ -551,6 +551,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    threatMove = MOVE_NONE;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -767,6 +768,10 @@ namespace {
         pos.do_null_move(st);
 
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        //if (ttPv && depth-R > 8 * ONE_PLY && (ss+1)->currentMove != MOVE_NONE)
+        //   sync_cout << "Position = " << pos.fen()
+        //             << " Threat = " << UCI::move((ss+1)->currentMove, pos.is_chess960()) << sync_endl;
+        threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -1024,6 +1029,11 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
+              r -= ONE_PLY;
+
+          // Decrease reduction if move counter threatMove
+          if (threatMove != MOVE_NONE)
+            if (to_sq(move) == from_sq(threatMove))
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

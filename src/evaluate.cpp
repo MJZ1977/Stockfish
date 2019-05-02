@@ -568,7 +568,7 @@ namespace {
     score -= make_score(6, 0) * popcount(pos.pieces(Them, PAWN)
            & stronglyProtected
            & ourCamp
-           & KingFlank[file_of(pos.square<KING>(Us))]);
+           & ~pe->pawn_attacks_span(Us));
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

@@ -567,7 +567,8 @@ namespace {
     // Penalty for enemy pawns strongly protected in our camp
     score -= make_score(6, 0) * popcount(pos.pieces(Them, PAWN)
            & stronglyProtected
-           & ourCamp);
+           & ourCamp
+           & KingFlank[file_of(pos.square<KING>(Us))]);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

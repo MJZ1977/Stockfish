@@ -1033,7 +1033,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if move counter threatMove
           if (threatMove != MOVE_NONE)
-            if (to_sq(move) == from_sq(threatMove) || pos.legal(make_move(to_sq(move),to_sq(threatMove))))
+            if (to_sq(move) == from_sq(threatMove) || pos.legal(make_move(to_sq(move),to_sq(threatMove)))) // Doesn't work for pawn
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

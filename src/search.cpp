@@ -540,7 +540,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove, threatMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, positiveSEE;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -762,7 +762,8 @@ namespace {
         (ss+1)->currentMove = MOVE_NONE;
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
 
-        threatMove = (ss+1)->currentMove;
+        if (depth-R > 2 * ONE_PLY)
+            threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -887,6 +888,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      positiveSEE = pos.see_ge(move);
 
       // Step 13. Extensions (~70 Elo)
 
@@ -925,7 +927,7 @@ moves_loop: // When in check, search starts from here
 
       // Check extension (~2 Elo)
       else if (    givesCheck
-               && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
+               && (pos.blockers_for_king(~us) & from_sq(move) || positiveSEE))
           extension = ONE_PLY;
 
       // Castling extension
@@ -1022,7 +1024,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Decrease reduction if move counter threatMove
-          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL)
+          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL && positiveSEE)
             if (to_sq(move) == from_sq(threatMove)
                   || pos.attackers_to(to_sq(threatMove)) & to_sq(move))
           {
@@ -1031,7 +1033,8 @@ moves_loop: // When in check, search starts from here
                   pos.undo_move(move);
                   sync_cout << "Position = " << pos.fen()
                             << " Threat = " << UCI::move(threatMove, pos.is_chess960())
-                            << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                            << " Move = " << UCI::move(move, pos.is_chess960())
+                            << " reduction = " << r / ONE_PLY << sync_endl;
                   pos.do_move(move, st, givesCheck);
 
               }*/

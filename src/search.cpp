@@ -1020,14 +1020,13 @@ moves_loop: // When in check, search starts from here
           // Increase reduction if our queen can be taken in next move
           if (pos.count<QUEEN>(us) == 1
               && pos.count<QUEEN>(~us) == 1
-              && !givesCheck
-              && bool(pos.attackers_to(pos.square<QUEEN>(us)) & (pos.pieces(~us) ^ pos.pieces(~us, QUEEN))))
+              && bool(pos.attackers_to(pos.square<QUEEN>(~us)) & (pos.pieces(us) ^ pos.pieces(us, QUEEN))))
           {
               /*pos.undo_move(move);
               sync_cout << "Position = " << pos.fen()
                         << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
               pos.do_move(move, st, givesCheck);*/
-               r += ONE_PLY;
+               r -= ONE_PLY;
           }
 
 

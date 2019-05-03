@@ -1023,18 +1023,21 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Increase reduction if queen is attacked and move can't prevent it
-          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL && pos.count<QUEEN>(us))
-            if (type_of(attackedPiece) == QUEEN
-              && !givesCheck
-              && bool(pos.attackers_to(pos.square<QUEEN>(us)) & (pos.pieces(~us) ^ pos.pieces(~us, QUEEN))))
-          {
-              /*pos.undo_move(move);
-			  sync_cout << "Position = " << pos.fen()
-			            << " Threat = " << UCI::move(threatMove, pos.is_chess960())
-			            << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-              pos.do_move(move, st, givesCheck);*/
-               r += 2 * ONE_PLY;
-		  }
+          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL && type_of(attackedPiece) == QUEEN)
+            {
+            if (!givesCheck
+              && bool(pos.attackers_to(to_sq(threatMove)) & (pos.pieces(~us) ^ pos.pieces(~us, QUEEN))))
+               {
+                   /*pos.undo_move(move);
+                   sync_cout << "Position = " << pos.fen()
+                             << " Threat = " << UCI::move(threatMove, pos.is_chess960())
+                             << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                   pos.do_move(move, st, givesCheck);*/
+                    r += 2 * ONE_PLY;
+               }
+             else
+                r -= ONE_PLY;
+          }
 
           if (!captureOrPromotion)
           {

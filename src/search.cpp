@@ -1016,6 +1016,20 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+          
+          // Increase reduction if our queen can be taken in next move
+          if (pos.count<QUEEN>(us) == 1
+              && pos.count<QUEEN>(~us) == 1
+              && !givesCheck
+              && bool(pos.attackers_to(pos.square<QUEEN>(us)) & (pos.pieces(~us) ^ pos.pieces(~us, QUEEN))))
+          {
+              /*pos.undo_move(move);
+              sync_cout << "Position = " << pos.fen()
+                        << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+              pos.do_move(move, st, givesCheck);*/
+               r += ONE_PLY;
+          }
+
 
           if (!captureOrPromotion)
           {

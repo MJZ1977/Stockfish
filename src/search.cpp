@@ -537,12 +537,12 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, threatMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
-    Piece movedPiece;
+    Piece movedPiece, attackedPiece;
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
@@ -552,6 +552,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    threatMove = MOVE_NONE;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -758,7 +759,10 @@ namespace {
 
         pos.do_null_move(st);
 
+        (ss+1)->currentMove = MOVE_NONE;
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        if (depth-R > 2 * ONE_PLY)
+            threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -883,6 +887,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      attackedPiece = pos.piece_on(to_sq(threatMove));
 
       // Step 13. Extensions (~70 Elo)
 
@@ -1016,6 +1021,20 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+
+          // Increase reduction if queen is attacked and move can't prevent it
+          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL && pos.count<QUEEN>(us))
+            if (type_of(attackedPiece) == QUEEN
+              && !givesCheck
+              && bool(pos.attackers_to(pos.square<QUEEN>(us)) & (pos.pieces(~us) ^ pos.pieces(~us, QUEEN))))
+          {
+              /*pos.undo_move(move);
+			  sync_cout << "Position = " << pos.fen()
+			            << " Threat = " << UCI::move(threatMove, pos.is_chess960())
+			            << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+              pos.do_move(move, st, givesCheck);*/
+               r += 2 * ONE_PLY;
+		  }
 
           if (!captureOrPromotion)
           {

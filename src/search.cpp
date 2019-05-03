@@ -759,11 +759,11 @@ namespace {
 
         pos.do_null_move(st);
 
+        (ss+1)->currentMove = MOVE_NONE;
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
-        //if (ttPv && depth-R > 8 * ONE_PLY && (ss+1)->currentMove != MOVE_NONE)
-        //   sync_cout << "Position = " << pos.fen()
-        //             << " Threat = " << UCI::move((ss+1)->currentMove, pos.is_chess960()) << sync_endl;
-        threatMove = (ss+1)->currentMove;
+
+        if (depth-R > 2 * ONE_PLY)
+            threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -1023,20 +1023,22 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Decrease reduction if move counter threatMove
-          if (threatMove != MOVE_NONE)
+          if (threatMove != MOVE_NONE && threatMove != MOVE_NULL)
             if (to_sq(move) == from_sq(threatMove)
-                || (type_of(movedPiece) != PAWN
-			         && pos.legal(make_move(to_sq(move),to_sq(threatMove))))
-                || (type_of(movedPiece) == PAWN
-                     && (pos.attacks_from<PAWN>(to_sq(move), us) & to_sq(threatMove))))
+                  || pos.attackers_to(to_sq(threatMove)) & to_sq(move))
           {
-              if (ttPv)
-                         sync_cout << "Position = " << pos.fen()
-			                       << " Threat = " << UCI::move(threatMove, pos.is_chess960())
-			                       << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+              /*if (ttPv)
+              {
+                  pos.undo_move(move);
+                  sync_cout << "Position = " << pos.fen()
+                            << " Threat = " << UCI::move(threatMove, pos.is_chess960())
+                            << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                  pos.do_move(move, st, givesCheck);
+
+              }*/
 
               r -= ONE_PLY;
-		  }
+          }
 
           if (!captureOrPromotion)
           {

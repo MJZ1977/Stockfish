@@ -1024,12 +1024,19 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if move counter threatMove
           if (threatMove != MOVE_NONE)
-            if (to_sq(move) == from_sq(threatMove) 
+            if (to_sq(move) == from_sq(threatMove)
                 || (type_of(movedPiece) != PAWN
 			         && pos.legal(make_move(to_sq(move),to_sq(threatMove))))
                 || (type_of(movedPiece) == PAWN
                      && (pos.attacks_from<PAWN>(to_sq(move), us) & to_sq(threatMove))))
+          {
+              if (ttPv)
+                         sync_cout << "Position = " << pos.fen()
+			                       << " Threat = " << UCI::move(threatMove, pos.is_chess960())
+			                       << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+
               r -= ONE_PLY;
+		  }
 
           if (!captureOrPromotion)
           {

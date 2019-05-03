@@ -149,7 +149,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(752 * std::log(i));
+      Reductions[i] = int(740 * std::log(i));
 }
 
 
@@ -762,8 +762,7 @@ namespace {
         (ss+1)->currentMove = MOVE_NONE;
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
 
-        if (depth-R > 2 * ONE_PLY)
-            threatMove = (ss+1)->currentMove;
+        threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 

@@ -1039,7 +1039,7 @@ moves_loop: // When in check, search starts from here
 
               }*/
 
-              r -= ONE_PLY;
+              r -= 2 * ONE_PLY;
           }
 
           if (!captureOrPromotion)

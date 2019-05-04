@@ -1020,17 +1020,6 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= ONE_PLY;
 
-          if (opponentThreatMV != MOVE_NONE && opponentThreatMV != MOVE_NULL
-		     && to_sq(move) == from_sq(opponentThreatMV))
-		  {
-                  pos.undo_move(move);
-                  sync_cout << "Position = " << pos.fen()
-                            << " Threat = " << UCI::move(opponentThreatMV, pos.is_chess960())
-                            << " Move = " << UCI::move(move, pos.is_chess960())
-                            << " reduction = " << r / ONE_PLY << sync_endl;
-                  pos.do_move(move, st, givesCheck);
-		  }
-
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
@@ -1068,6 +1057,24 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
           }
+		  
+		  // Decrease reduction for pawn moves that control the square of opponent threat move
+		  if (opponentThreatMV != MOVE_NONE 
+		      && opponentThreatMV != MOVE_NULL 
+			  && type_of(movedPiece) == PAWN
+			  && r > 2 * ONE_PLY)
+		     if (PawnAttacks[us][to_sq(move)] & to_sq(opponentThreatMV))
+		  {
+                  /*pos.undo_move(move);
+                  sync_cout << "Position = " << pos.fen()
+                            << " Threat = " << UCI::move(opponentThreatMV, pos.is_chess960())
+                            << " Move = " << UCI::move(move, pos.is_chess960())
+                            << " reduction = " << r / ONE_PLY << sync_endl;
+                  pos.do_move(move, st, givesCheck);*/
+			 r -= ONE_PLY;
+		  }
+
+
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 

@@ -1020,8 +1020,8 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= ONE_PLY;
 
-          if (ttPv && opponentThreatMV != MOVE_NONE && opponentThreatMV != MOVE_NULL
-		     && thisThread->counterMoves[pos.piece_on(from_sq(move))][from_sq(move)] == opponentThreatMV)
+          if (opponentThreatMV != MOVE_NONE && opponentThreatMV != MOVE_NULL
+		     && to_sq(move) == from_sq(opponentThreatMV))
 		  {
                   pos.undo_move(move);
                   sync_cout << "Position = " << pos.fen()

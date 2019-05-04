@@ -537,7 +537,7 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, opponentThreatMV;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
@@ -552,6 +552,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+	opponentThreatMV = MOVE_NONE;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -760,8 +761,11 @@ namespace {
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
 
         pos.do_null_move(st);
+		(ss+1)->currentMove = MOVE_NONE;
 
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+		if (depth-R > 2 * ONE_PLY)
+		   opponentThreatMV = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -1015,6 +1019,17 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= ONE_PLY;
+
+          if (ttPv && opponentThreatMV != MOVE_NONE && opponentThreatMV != MOVE_NULL
+		     && thisThread->counterMoves[pos.piece_on(from_sq(move))][from_sq(move)] == opponentThreatMV)
+		  {
+                  pos.undo_move(move);
+                  sync_cout << "Position = " << pos.fen()
+                            << " Threat = " << UCI::move(opponentThreatMV, pos.is_chess960())
+                            << " Move = " << UCI::move(move, pos.is_chess960())
+                            << " reduction = " << r / ONE_PLY << sync_endl;
+                  pos.do_move(move, st, givesCheck);
+		  }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

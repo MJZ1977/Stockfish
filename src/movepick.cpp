@@ -115,7 +115,8 @@ void MovePicker::score() {
                    + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
-                   + (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)] / 2;
+                   + (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)] / 2
+				   - bool(pos.attacks_from<PAWN>(to_sq(m), pos.side_to_move()) & pos.pieces(~pos.side_to_move(), PAWN)) * 200;
 
       else // Type == EVASIONS
       {

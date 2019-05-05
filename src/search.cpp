@@ -936,8 +936,7 @@ moves_loop: // When in check, search starts from here
                && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
                && ttHit
-               && ttValue < VALUE_KNOWN_WIN
-               && (tte->bound() & BOUND_LOWER)
+               && ttValue < Value(2000)
                && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches
           extension = ONE_PLY;
 

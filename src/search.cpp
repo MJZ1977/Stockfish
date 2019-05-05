@@ -888,7 +888,8 @@ moves_loop: // When in check, search starts from here
       givesCheck = pos.gives_check(move);
 
       // If move is potentially attacking opponent queen, flag it as a candidate move
-      candidateMove = pos.attacks_from(type_of(movedPiece),to_sq(move)) & pos.square<QUEEN>(~us);
+      candidateMove = (pos.attacks_from(type_of(movedPiece),to_sq(move)) & pos.square<QUEEN>(~us))
+	                  && pos.count<QUEEN>(~us) == 1;
       if(candidateMove)     // to limit time spent by SEE
 		  candidateMove &= pos.see_ge(move);
         /*if (candidateMove) 

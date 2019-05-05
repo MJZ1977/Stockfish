@@ -541,7 +541,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, candidateMove;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -887,6 +887,18 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
+      // If move is potentially attacking opponent queen, flag it as a candidate move
+      candidateMove = pos.attacks_from(type_of(movedPiece),to_sq(move)) & pos.square<QUEEN>(~us);
+      if(candidateMove)     // to limit time spent by SEE
+		  candidateMove &= pos.see_ge(move);
+        /*if (candidateMove) 
+		{			
+		  //pos.undo_move(move);
+          sync_cout << "Position = " << pos.fen()
+                    << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+          //pos.do_move(move, st, givesCheck);
+		}*/
+
       // Step 13. Extensions (~70 Elo)
 
       // Singular extension search (~60 Elo). If all moves but one fail low on a
@@ -957,7 +969,8 @@ moves_loop: // When in check, search starts from here
 
           if (   !captureOrPromotion
               && !givesCheck
-              && !pos.advanced_pawn_push(move))
+              && !pos.advanced_pawn_push(move)
+			  && !candidateMove)
           {
               // Move count based pruning (~30 Elo)
               if (moveCountPruning)
@@ -1002,8 +1015,8 @@ moves_loop: // When in check, search starts from here
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
       // Step 15. Make the move
-      pos.do_move(move, st, givesCheck);
-
+      pos.do_move(move, st, givesCheck);	  
+	   
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
@@ -1054,20 +1067,6 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
 
           }
-
-          // Decrease reduction if opponent queen is attacked
-		  if (r > 2 * ONE_PLY)
-            if (pos.count<QUEEN>(us) == 1
-              && pos.count<QUEEN>(~us) == 1
-              && bool(pos.attackers_to(pos.square<QUEEN>(~us)) & (pos.pieces(us) ^ pos.pieces(us, QUEEN))))
-          {
-              /*pos.undo_move(move);
-              sync_cout << "Position = " << pos.fen()
-                        << " Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-              pos.do_move(move, st, givesCheck);*/
-               r -= ONE_PLY;
-          }
-
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 

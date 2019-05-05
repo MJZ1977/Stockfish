@@ -949,6 +949,7 @@ moves_loop: // When in check, search starts from here
 	           && abs(ss->staticEval - alpha) < Value(200)
 			   && depth < 3 * ONE_PLY
 			   && (PvNode || improving)
+			   && move == ttMove
 			   && ss->ply < 2 * thisThread->rootDepth / ONE_PLY)
           extension = ONE_PLY;
 

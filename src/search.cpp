@@ -969,8 +969,7 @@ moves_loop: // When in check, search starts from here
 
           if (   !captureOrPromotion
               && !givesCheck
-              && !pos.advanced_pawn_push(move)
-			  && !candidateMove)
+              && !pos.advanced_pawn_push(move))
           {
               // Move count based pruning (~30 Elo)
               if (moveCountPruning)
@@ -1067,6 +1066,9 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
 
           }
+		  
+		  if (candidateMove && r > ONE_PLY)
+			  r -= ONE_PLY;
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);
 

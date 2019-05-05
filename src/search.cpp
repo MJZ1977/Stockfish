@@ -946,7 +946,7 @@ moves_loop: // When in check, search starts from here
 
       // EG extension
 	  else if (pos.non_pawn_material() < 2000
-	           && abs(ss->staticEval - alpha) < Value(200)
+	           && abs(ss->staticEval - alpha) < Value(240)
 			   && depth < 3 * ONE_PLY
 			   && (PvNode || improving)
 			   && move == ttMove

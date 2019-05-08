@@ -945,7 +945,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // EG extension
-	  else if (pos.non_pawn_material() < 2000
+	  else if (pos.non_pawn_material() < 2500
 	           && abs(ss->staticEval - alpha) < Value(240)
 			   && depth < 3 * ONE_PLY
 			   && (PvNode || improving)

@@ -287,6 +287,9 @@ namespace {
         if (pos.blockers_for_king(Us) & s)
             b &= LineBB[pos.square<KING>(Us)][s];
 
+        if (pos.side_to_move() == Them && (attackedBy[Them][PAWN] & s))
+            score -= make_score(PieceValue[MG][Pt], PieceValue[MG][Pt]) / 2;
+
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;

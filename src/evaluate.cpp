@@ -668,6 +668,9 @@ namespace {
 
                 else if (defendedSquares & blockSq)
                     k += 4;
+				
+				else if (!(unsafeSquares & (~defendedSquares | pos.pieces(Them))))
+					k += 2;
 
                 bonus += make_score(k * w, k * w);
             }

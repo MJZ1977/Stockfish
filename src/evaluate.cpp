@@ -670,7 +670,7 @@ namespace {
                     k += 4;
 				
 				else if (!(unsafeSquares & (~defendedSquares | pos.pieces(Them))))
-					k += 2;
+					k += 3;
 
                 bonus += make_score(k * w, k * w);
             }

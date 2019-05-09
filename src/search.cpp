@@ -1032,13 +1032,7 @@ moves_loop: // When in check, search starts from here
               if (cutNode)
                   r += 2 * ONE_PLY;
 
-              // Decrease reduction for moves that escape a capture. Filter out
-              // castling moves, because they are coded as "king captures rook" and
-              // hence break make_move(). (~5 Elo)
-              else if (    type_of(move) == NORMAL
-                       && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
-                  r -= 2 * ONE_PLY;
-
+              // Increase reduction if to_sq is attacked by an ennemy pawn
               else if (type_of(movedPiece) != PAWN
                        && pos.attacks_from<PAWN>(to_sq(move), us) & pos.pieces(~us, PAWN) & ~pos.blockers_for_king(~us))
                   {
@@ -1049,6 +1043,13 @@ moves_loop: // When in check, search starts from here
                   pos.do_move(move, st, givesCheck);*/
                   r += ONE_PLY;
                   }
+
+              // Decrease reduction for moves that escape a capture. Filter out
+              // castling moves, because they are coded as "king captures rook" and
+              // hence break make_move(). (~5 Elo)
+              else if (    type_of(move) == NORMAL
+                       && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
+                  r -= 2 * ONE_PLY;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]

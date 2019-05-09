@@ -1040,6 +1040,7 @@ moves_loop: // When in check, search starts from here
                   r -= 2 * ONE_PLY;
 
               else if (type_of(movedPiece) != PAWN
+                       && r < 3 * ONE_PLY
                        && pos.attacks_from<PAWN>(to_sq(move), us) & pos.pieces(~us, PAWN) & ~pos.blockers_for_king(~us))
                   {
                   /*pos.undo_move(move);
@@ -1047,7 +1048,7 @@ moves_loop: // When in check, search starts from here
                             << " Move = " << UCI::move(move, pos.is_chess960())
                             << " reduction = " << r / ONE_PLY << sync_endl;
                   pos.do_move(move, st, givesCheck);*/
-                  r += 2 * ONE_PLY;
+                  r += ONE_PLY;
                   }
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]

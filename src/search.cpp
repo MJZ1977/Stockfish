@@ -1040,7 +1040,7 @@ moves_loop: // When in check, search starts from here
                   r -= 2 * ONE_PLY;
 
               else if (type_of(movedPiece) != PAWN
-                       && pos.attacks_from<PAWN>(to_sq(move), us) & pos.pieces(~us, PAWN))
+                       && pos.attacks_from<PAWN>(to_sq(move), us) & pos.pieces(~us, PAWN) & ~pos.blockers_for_king(~us))
                   {
                   /*pos.undo_move(move);
                   sync_cout << "Position = " << pos.fen()

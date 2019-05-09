@@ -287,7 +287,7 @@ namespace {
         if (pos.blockers_for_king(Us) & s)
 		{
             b &= LineBB[pos.square<KING>(Us)][s];
-			score -= make_score(6, 6);
+			score -= make_score(8, 8);
 		}
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;

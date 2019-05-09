@@ -537,7 +537,7 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, ttMove2;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
@@ -552,6 +552,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+	ttMove2 = MOVE_NONE;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -907,6 +908,7 @@ moves_loop: // When in check, search starts from here
           Value singularBeta = ttValue - 2 * depth / ONE_PLY;
           Depth halfDepth = depth / (2 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
           ss->excludedMove = move;
+		  ss->currentMove = MOVE_NONE;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
 
@@ -920,6 +922,9 @@ moves_loop: // When in check, search starts from here
           // the hard beta bound.
           else if (cutNode && singularBeta > beta)
               return beta;
+		  
+		  else if (ss->currentMove != MOVE_NONE)
+			  ttMove2 = ss->currentMove;			  
       }
 
       // Check extension (~2 Elo)
@@ -1008,6 +1013,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 3 * rootNode
+		  && move != ttMove2
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1017,6 +1023,17 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
+		  
+		  /*if (move == ttMove2)
+		  {
+		    pos.undo_move(move);
+			sync_cout << "Position = " << pos.fen()
+                        << " TTmove = " << UCI::move(ttMove, pos.is_chess960())
+                        << " move2 = " << UCI::move(ss->currentMove, pos.is_chess960()) 
+						<< " reduction = " << r / ONE_PLY << sync_endl;
+			pos.do_move(move, st, givesCheck);
+		  }*/
+
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

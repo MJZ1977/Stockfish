@@ -1047,7 +1047,7 @@ moves_loop: // When in check, search starts from here
                             << " Move = " << UCI::move(move, pos.is_chess960())
                             << " reduction = " << r / ONE_PLY << sync_endl;
                   pos.do_move(move, st, givesCheck);*/
-                  r += ONE_PLY;
+                  r += 2 * ONE_PLY;
                   }
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]

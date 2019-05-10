@@ -923,7 +923,7 @@ moves_loop: // When in check, search starts from here
           else if (cutNode && singularBeta > beta)
               return beta;
 
-		  else if (ss->currentMove != MOVE_NONE)
+		  else if (ss->currentMove != MOVE_NONE && value > alpha)
 			  ttMove2 = ss->currentMove;
       }
 

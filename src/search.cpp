@@ -922,9 +922,9 @@ moves_loop: // When in check, search starts from here
           // the hard beta bound.
           else if (cutNode && singularBeta > beta)
               return beta;
-		  
+
 		  else if (ss->currentMove != MOVE_NONE)
-			  ttMove2 = ss->currentMove;			  
+			  ttMove2 = ss->currentMove;
       }
 
       // Check extension (~2 Elo)
@@ -1022,14 +1022,14 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
-		  
+
 		  if (move == ttMove2)
 		  {
-		    r -= ONE_PLY;
+		    r = std::min(r, 2 * ONE_PLY);
 			/*pos.undo_move(move);
 			sync_cout << "Position = " << pos.fen()
                         << " TTmove = " << UCI::move(ttMove, pos.is_chess960())
-                        << " move2 = " << UCI::move(ss->currentMove, pos.is_chess960()) 
+                        << " move2 = " << UCI::move(ss->currentMove, pos.is_chess960())
 						<< " reduction = " << r / ONE_PLY << sync_endl;
 			pos.do_move(move, st, givesCheck);*/
 		  }

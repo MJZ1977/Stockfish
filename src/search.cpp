@@ -1025,7 +1025,7 @@ moves_loop: // When in check, search starts from here
 
 		  if (move == ttMove2)
 		  {
-		    r = std::min(r, ONE_PLY);
+		    r = std::min(r - ONE_PLY, 2 * ONE_PLY);
 			/*pos.undo_move(move);
 			sync_cout << "Position = " << pos.fen()
                         << " TTmove = " << UCI::move(ttMove, pos.is_chess960())

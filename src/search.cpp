@@ -289,6 +289,9 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  TTEntry* tte;
+  bool ttHit;
+  Depth lastSearchDepth = DEPTH_ZERO;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
@@ -321,6 +324,12 @@ void Thread::search() {
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
+  
+  // Retrieve last search depth
+  tte = TT.probe(rootPos.key(), ttHit);
+  if (ttHit)
+	  lastSearchDepth = tte->depth();
+  //sync_cout << "Last search depth = " << lastSearchDepth / ONE_PLY << sync_endl;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -464,7 +473,8 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
+          timeReduction = (lastBestMoveDepth + 10 * ONE_PLY < completedDepth
+                           && completedDepth > lastSearchDepth) ? 1.95 : 1.0;
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move

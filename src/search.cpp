@@ -1195,6 +1195,21 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
+    // If bestValue is below alpha, verify that position can be stored as a lost position in TT
+    if (bestValue <= alpha && depth > 12 * ONE_PLY && !PvNode && !excludedMove)
+    {
+        Value reducedAlpha = alpha - Value(1000);
+        value = search<NonPV>(pos, ss, reducedAlpha-1, reducedAlpha, depth - 2 * ONE_PLY, false);
+        if (value < reducedAlpha)
+		{
+            /*sync_cout << "Position = " << pos.fen()
+                << " TTmove = " << UCI::move(ss->currentMove, pos.is_chess960()) << sync_endl;*/
+            tte->save(posKey, value_to_tt(value, ss->ply), ttPv,
+                  BOUND_UPPER, depth, bestMove, ss->staticEval);
+		    return value;		    
+		}
+    }
+
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :

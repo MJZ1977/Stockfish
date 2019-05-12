@@ -1054,6 +1054,10 @@ moves_loop: // When in check, search starts from here
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
+		  
+		     // Increase reduction if static eval is below alpha for multiple plies
+		     if (std::max(ss->staticEval, (ss-2)->staticEval) < alpha && !givesCheck)
+				 r += ONE_PLY;
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

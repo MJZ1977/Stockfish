@@ -32,7 +32,6 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
@@ -89,8 +88,6 @@ namespace {
         File f = file_of(s);
         Rank r = relative_rank(Us, s);
 
-        e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
         stoppers   = theirPawns & passed_pawn_span(Us, s);
@@ -100,6 +97,12 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+
+        if (opposed)
+           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) & 
+                    ~pawn_attack_span(Us, backmost_sq(Us, theirPawns & forward_file_bb(Us, s))));
+        else
+           e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // A pawn is backward when it is behind all pawns of the same color
         // on the adjacent files and cannot be safely advanced.
@@ -134,7 +137,7 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+            e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !support)
             score -= Doubled;

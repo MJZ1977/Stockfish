@@ -133,6 +133,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score Backward           = S(  9, 24);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
@@ -196,8 +197,8 @@ namespace {
     // if black's king is on g8, kingRing[BLACK] is f8, h8, f7, g7, h7, f6, g6
     // and h6.
     Bitboard kingRing[COLOR_NB];
-	
-	Bitboard blockedPawns[COLOR_NB];
+    
+    Bitboard blockedPawns[COLOR_NB];
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
@@ -261,10 +262,11 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
-	
-	// Initiate blockedPawns BB
-	blockedPawns[Us] = pos.pieces(Us, PAWN) & shift<Down>((pos.pieces() | 
-				    (pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)) & ~attackedBy[Us][PAWN])));
+
+    // Initiate blockedPawns BB
+    blockedPawns[Us] = pos.pieces(Us, PAWN) & shift<Down>((pos.pieces() 
+                    | (attackedBy[Them][PAWN] & ~pe->pawn_attacks_span(Us))
+                    | (pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)) & ~attackedBy[Us][PAWN])));
   }
 
 
@@ -564,6 +566,9 @@ namespace {
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
+
+    // Bonus for enemy backward pawns
+    score += Backward * popcount(blockedPawns[Them] & ~pe->pawn_attacks_span(Them));
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

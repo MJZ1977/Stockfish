@@ -265,7 +265,7 @@ namespace {
 
     // Initiate blockedPawns BB
     blockedPawns[Us] = pos.pieces(Us, PAWN) & shift<Down>((pos.pieces() 
-                    | (attackedBy[Them][PAWN] & ~pe->pawn_attacks_span(Us))
+                    | (pe->pawn_attacks(Them) & ~pe->pawn_attacks_span(Us))
                     | (pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)) & ~attackedBy[Us][PAWN])));
   }
 

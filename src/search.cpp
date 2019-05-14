@@ -945,7 +945,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Winning line extension
-      else if (   PvNode
+      else if (   (PvNode || (ttPv && ss->staticEval + PieceValue[EG][pos.captured_piece()] >= alpha))
                && alpha > Value(400)
                && depth < 4 * ONE_PLY
                && move == ttMove

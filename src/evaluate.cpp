@@ -197,6 +197,8 @@ namespace {
     // and h6.
     Bitboard kingRing[COLOR_NB];
 
+	Bitboard blockedPawns[COLOR_NB];
+
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
     int kingAttackersCount[COLOR_NB];
@@ -259,6 +261,10 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+	
+	// Initiate blockedPawns BB
+	blockedPawns[Us] = pos.pieces(Us, PAWN) & shift<Down>((pos.pieces() | 
+				    (pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)) & ~attackedBy[Us][PAWN])));
   }
 
 
@@ -325,10 +331,8 @@ namespace {
             {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
-                Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
-
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
-                                     * (1 + popcount(blocked & CenterFiles));
+                                     * (1 + popcount(blockedPawns[Us] & CenterFiles));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
@@ -593,6 +597,9 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+	
+	// Penalty for pawns thats cannot be easily supported in the final
+	score -= make_score(0, 3) * popcount(blockedPawns[Us] & ~pe->pawnAttacksSpan[Us]);
 
     if (T)
         Trace::add(THREAT, Us, score);

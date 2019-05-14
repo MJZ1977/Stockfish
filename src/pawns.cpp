@@ -34,7 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward = S( 9, 21);
   constexpr Score Doubled  = S(11, 56);
-  constexpr Score Isolated = S( 5, 12);
+  constexpr Score Isolated = S( 5, 15);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 13, 17, 24, 59, 96, 171 };
@@ -144,9 +144,6 @@ namespace {
             score -= Doubled;
     }
 	
-    // Penalty for pawns thats cannot be easily supported in the final
-	score -= make_score(0, 3) * popcount(ourPawns & ~e->pawnAttacksSpan[Us]);
-
     return score;
   }
 

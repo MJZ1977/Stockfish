@@ -566,7 +566,8 @@ namespace {
 
     // Penalty for enemy pawns strongly protected in our camp
     score -= make_score(4, 0) * popcount(pos.pieces(Them, PAWN)
-           & stronglyProtected
+           & attackedBy[Them][ALL_PIECES]
+           & ~attackedBy2[Us]
            & ourCamp);
 
     // Find squares where our pawns can push on the next move

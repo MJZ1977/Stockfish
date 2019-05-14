@@ -108,6 +108,7 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
+  void playout(Position& pos, Stack* ss, int Nmoves);
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -322,6 +323,8 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  ::playout(rootPos,ss,5);
+  
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
          && !Threads.stop
@@ -594,10 +597,10 @@ namespace {
     // starts with statScore = 0. Later grandchildren start with the last calculated
     // statScore of the previous grandchild. This influences the reduction rules in
     // LMR which are based on the statScore of parent position.
-	if (rootNode)
-		(ss + 4)->statScore = 0;
-	else
-		(ss + 2)->statScore = 0;
+    if (rootNode)
+        (ss + 4)->statScore = 0;
+    else
+        (ss + 2)->statScore = 0;
 
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
@@ -1195,6 +1198,8 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
+    ss->currentMove = bestMove;
+
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :
@@ -1419,7 +1424,44 @@ moves_loop: // When in check, search starts from here
 
     return bestValue;
   }
+  
+  // Playout plays a position for N moves
+  void playout(Position& pos, Stack* ss, int Nmoves) {
+      
+      if (Nmoves <= 0)
+		  exit(0);
+	  
+	  Value lastValue, alpha, beta;
+      Depth searchDepth = 12 * ONE_PLY;
+      Move bestMove;
+	  StateInfo st;
+	  Move pv[MAX_PLY+1];
+	  
+      alpha = -Value(800);
+      beta = Value(800);
+      
+      // Search
+	  lastValue = search<PV>(pos, ss, alpha, beta, searchDepth, false);
+      bestMove = ss->currentMove;
+      sync_cout << "Position = " << pos.fen()
+                  << " TTmove = " << UCI::move(bestMove, pos.is_chess960())
+                  << " Value = " << lastValue << sync_endl;
+	  
+	  // Next move
+	  if (bestMove != MOVE_NONE)
+	  {
+	     assert(0 <= ss->ply && ss->ply < MAX_PLY);
+         (ss+1)->ply = ss->ply + 1;
+		 (ss+1)->pv = nullptr;
+		 (ss+1)->pv = pv;
+         (ss+1)->pv[0] = MOVE_NONE;
 
+         pos.do_move(bestMove, st, pos.gives_check(bestMove));
+	     playout(pos, ss+1, Nmoves-1);
+	     pos.undo_move(bestMove);
+	  }	  
+      
+  }
 
   // value_to_tt() adjusts a mate score from "plies to mate from the root" to
   // "plies to mate from the current position". Non-mate scores are unchanged.

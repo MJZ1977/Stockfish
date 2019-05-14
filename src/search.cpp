@@ -944,6 +944,14 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // Winning line extension
+      else if (   PvNode
+               && alpha > Value(400)
+               && depth < 4 * ONE_PLY
+               && move == ttMove
+               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
+          extension = ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

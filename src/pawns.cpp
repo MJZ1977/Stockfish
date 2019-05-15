@@ -34,7 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
-  constexpr Score Isolated = S( 5, 15);
+  constexpr Score Isolated = S( 6, 14);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 13, 17, 24, 59, 96, 171 };

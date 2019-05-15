@@ -615,6 +615,11 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
+	int bonus1 = 6;
+	int bonus2 = 4;
+	int bonus3 = 2;
+	
+	TUNE(bonus1, bonus2, bonus3);
 
     b = pe->passed_pawns(Us);
 
@@ -664,13 +669,13 @@ namespace {
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
                 if (defendedSquares == squaresToQueen)
-                    k += 6;
+                    k += bonus1;
 
                 else if (defendedSquares & blockSq)
-                    k += 4;
+                    k += bonus2;
 				
 				else if (!(unsafeSquares & (~defendedSquares | pos.pieces(Them))))
-					k += 2;
+					k += bonus3;
 
                 bonus += make_score(k * w, k * w);
             }

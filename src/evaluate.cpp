@@ -85,6 +85,13 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
+  
+  int bonus1 = 6;
+  int bonus2 = 4;
+  int bonus3 = 2;
+
+  TUNE(bonus1, bonus2, bonus3);
+
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -615,11 +622,6 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
-	int bonus1 = 6;
-	int bonus2 = 4;
-	int bonus3 = 2;
-	
-	TUNE(bonus1, bonus2, bonus3);
 
     b = pe->passed_pawns(Us);
 

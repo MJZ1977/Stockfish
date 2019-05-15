@@ -66,6 +66,10 @@ namespace {
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
   }
+  
+  int EvolMin = 20;
+  int EvolMax = 2000;
+  TUNE(SetRange(0, 100),EvolMin,SetRange(1000, 3000),EvolMax)
 
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
@@ -953,7 +957,7 @@ moves_loop: // When in check, search starts from here
               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
         {
           int evolution = int(ss->staticEval - (ss-2)->staticEval) * int((ss-2)->staticEval - (ss-4)->staticEval);
-		  if (evolution > 0 && evolution < 2500)
+		  if (evolution > EvolMin && evolution < EvolMax)
 		      extension = ONE_PLY;
 		}
 

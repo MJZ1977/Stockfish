@@ -535,7 +535,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, secondPV;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -945,7 +945,20 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
-      // Calculate new depth for this move
+      // At root, check if line worth a PV search
+	  secondPV = false;
+	  if (rootNode && moveCount > 1)
+	  {
+		RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
+		if (rm.selDepth > depth / ONE_PLY / 2)
+		{
+			secondPV = true;
+			//sync_cout << " Second PV :  " << UCI::move(move, pos.is_chess960())
+            //               << " selDepth - " << rm.selDepth << sync_endl;
+		}
+	  }
+	  
+	  // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
       // Step 14. Pruning at shallow depth (~170 Elo)
@@ -1009,6 +1022,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 3 * rootNode
+		  && !secondPV
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1066,7 +1080,7 @@ moves_loop: // When in check, search starts from here
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
-          doFullDepthSearch = !PvNode || moveCount > 1;
+          doFullDepthSearch = (!PvNode && !secondPV) || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
@@ -1075,7 +1089,7 @@ moves_loop: // When in check, search starts from here
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
       // parent node fail low with value <= alpha and try another move.
-      if (PvNode && (moveCount == 1 || (value > alpha && (rootNode || value < beta))))
+      if (PvNode && (moveCount == 1 || (value > alpha && (rootNode || value < beta)) || secondPV))
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;

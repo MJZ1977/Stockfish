@@ -69,7 +69,7 @@ namespace {
   
   int EvolMin = 20;
   int EvolMax = 2000;
-  TUNE(SetRange(0, 100),EvolMin,SetRange(1000, 3000),EvolMax)
+  TUNE(SetRange(0, 100),EvolMin,SetRange(1000, 3000),EvolMax);
 
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]

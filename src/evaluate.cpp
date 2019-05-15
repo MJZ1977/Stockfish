@@ -153,8 +153,12 @@ namespace {
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
+  Score WeakPawn = S(1, 6);
 
 #undef S
+
+  
+  TUNE(WeakPawn);
 
   // Evaluation class computes and stores attacks tables and other working data
   template<Tracing T>
@@ -599,7 +603,7 @@ namespace {
     }
 	
 	// Penalty for pawns thats cannot be easily supported in the final
-	score -= make_score(0, 6) 
+	score -= WeakPawn 
 	            * popcount(blockedPawns[Us] & ~pe->pawnAttacksSpan[Us] & attackedBy[Them][ALL_PIECES]);
 
     if (T)

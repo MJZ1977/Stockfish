@@ -154,7 +154,7 @@ namespace {
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
   
-  Score StrongPawn = S( 2, 2);
+  Score StrongPawn = S( 2, 4);
   
   TUNE(StrongPawn);
 

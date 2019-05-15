@@ -599,7 +599,8 @@ namespace {
     }
 	
 	// Penalty for pawns thats cannot be easily supported in the final
-	score -= make_score(0, 3) * popcount(blockedPawns[Us] & ~pe->pawnAttacksSpan[Us]);
+	score -= make_score(0, 6) 
+	            * popcount(blockedPawns[Us] & ~pe->pawnAttacksSpan[Us] & attackedBy[Them][ALL_PIECES]);
 
     if (T)
         Trace::add(THREAT, Us, score);

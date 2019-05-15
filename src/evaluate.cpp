@@ -153,6 +153,10 @@ namespace {
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
+  
+  Score StrongPawn = S( 2, 2);
+  
+  TUNE(StrongPawn);
 
 #undef S
 
@@ -564,7 +568,7 @@ namespace {
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Penalty for enemy pawns strongly protected in our camp
-    score -= make_score(4, 0) * popcount(pos.pieces(Them, PAWN)
+    score -= StrongPawn * popcount(pos.pieces(Them, PAWN)
            & stronglyProtected
            & ourCamp);
 

@@ -640,7 +640,7 @@ namespace {
 
             // Additional bonus if their king can't reach promotion sq before the pawn
             if (distance(PSquare, pos.square<KING>(Them)) > distance(PSquare, s))
-                score += make_score(2, 6);
+                score += make_score(4, 10);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

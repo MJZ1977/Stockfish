@@ -61,9 +61,9 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
-  Value MaxAlpha = Value(300);
-  Value MinAlpha = Value(20);
-  Value MaxEval = Value(400);
+  int MaxAlpha = 300;
+  int MinAlpha = 20;
+  int MaxEval = 400;
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
@@ -952,9 +952,9 @@ moves_loop: // When in check, search starts from here
       // EG extension
       else if (   (PvNode || improving)
                && !pos.non_pawn_material()
-               && abs(alpha) < MaxAlpha
-               && abs(alpha) > MinAlpha
-               && abs(ss->staticEval) < MaxEval
+               && abs(alpha) < Value(MaxAlpha)
+               && abs(alpha) > Value(MinAlpha)
+               && abs(ss->staticEval) < Value(MaxEval)
                && depth < 4 * ONE_PLY
                && move == ttMove
                && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches)

@@ -211,7 +211,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   // Bonus for all pawns depending on distance to our king
   b = pos.pieces(Us, PAWN);
   while (b)
-	  shelter += make_score(0, 2) * (2 - distance(ksq, pop_lsb(&b) - Down));
+	  shelter += make_score(0, 3) * (3 - distance(ksq, pop_lsb(&b) - Down));
   
 }
 

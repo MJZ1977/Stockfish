@@ -950,6 +950,7 @@ moves_loop: // When in check, search starts from here
                && !pos.non_pawn_material()
                && abs(alpha) < Value(300)
                && abs(alpha) > Value(20)
+               && abs(ss->staticEval) < Value(500)
                && depth < 4 * ONE_PLY
                && move == ttMove
                && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches)

@@ -61,9 +61,9 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
-  Value MaxAlpha = 300;
-  Value MinAlpha = 20;
-  Value MaxEval = 400;
+  Value MaxAlpha = Value(300);
+  Value MinAlpha = Value(20);
+  Value MaxEval = Value(400);
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;

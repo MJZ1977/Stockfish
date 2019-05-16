@@ -829,9 +829,14 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
+    score +=  passed< WHITE>() - passed< BLACK>();
+
+    if (!pos.non_pawn_material())
+       return (pos.side_to_move() == WHITE ? eg_value(score) : -eg_value(score)) // Side to move point of view
+           + Eval::Tempo;
+
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));

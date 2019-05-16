@@ -945,6 +945,15 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // EG extension
+      else if (   (PvNode || improving)
+               && !pos.non_pawn_material()
+               && abs(alpha) < Value(300)
+               && abs(alpha) > Value(20)
+               && ss->ply > 4
+               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches)
+           extension = ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

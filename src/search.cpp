@@ -64,6 +64,7 @@ namespace {
   int MaxAlpha = 300;
   int MinAlpha = 20;
   int MaxEval = 400;
+  TUNE(MaxAlpha,MinAlpha,MaxEval);
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;

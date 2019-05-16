@@ -73,6 +73,7 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+	Square ksq = pos.square<KING>(Us);
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -139,6 +140,9 @@ namespace {
 
         if (doubled && !support)
             score -= Doubled;
+		
+		// Bonus depending on distance to our king
+		score += make_score(0, 2) * (2 - distance(ksq, s + Up));
     }
 
     return score;

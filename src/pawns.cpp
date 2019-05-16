@@ -143,6 +143,14 @@ namespace {
 		
 		// Bonus depending on distance to our king
 		score += make_score(0, 2) * (2 - distance(ksq, s + Up));
+		
+		// Bonus for passed pawn outside opponent king range
+		if (e->passedPawns[Us] & s)
+		{
+			Square PSquare = frontmost_sq(Us, forward_file_bb(Us, s));
+			if (distance(PSquare, pos.square<KING>(Them)) > distance(PSquare, s))
+				score += make_score(2, 6);
+		}
     }
 
     return score;

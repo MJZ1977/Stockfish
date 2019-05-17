@@ -85,8 +85,8 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
-  int AA = 5;
-  int BB = 2;
+  int AA = 40;
+  int BB = 16;
   int CC = 2;
   int DD = 6;
   TUNE(AA,BB,CC,DD);
@@ -640,8 +640,8 @@ namespace {
             Square PSquare = frontmost_sq(Us, forward_file_bb(Us, s));
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  king_proximity(Them, blockSq) * AA
-                                    - king_proximity(Us,   blockSq) * BB) * w);
+            bonus += make_score(0, ((  king_proximity(Them, blockSq) * AA
+                                    - king_proximity(Us,   blockSq) * BB) * w) / 8);
 
             // Additional bonus if their king can't reach promotion sq before the pawn
             if (distance(PSquare, pos.square<KING>(Them)) > distance(PSquare, s))

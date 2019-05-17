@@ -85,6 +85,11 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
+  int AA = 5;
+  int BB = 2;
+  int CC = 2;
+  int DD = 6;
+  TUNE(AA,BB,CC,DD);
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -635,12 +640,12 @@ namespace {
             Square PSquare = frontmost_sq(Us, forward_file_bb(Us, s));
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
-                                    - king_proximity(Us,   blockSq) * 2) * w);
+            bonus += make_score(0, (  king_proximity(Them, blockSq) * AA
+                                    - king_proximity(Us,   blockSq) * BB) * w);
 
             // Additional bonus if their king can't reach promotion sq before the pawn
             if (distance(PSquare, pos.square<KING>(Them)) > distance(PSquare, s))
-                score += make_score(4, 10);
+                score += make_score(CC, DD);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

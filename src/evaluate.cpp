@@ -635,12 +635,12 @@ namespace {
             Square PSquare = frontmost_sq(Us, forward_file_bb(Us, s));
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
-                                    - king_proximity(Us,   blockSq) * 2) * w);
+            bonus += make_score(0, (( king_proximity(Them, blockSq) * 40
+                                    - king_proximity(Us,   blockSq) * 17) * w) / 8);
 
             // Additional bonus if their king can't reach promotion sq before the pawn
             if (distance(PSquare, pos.square<KING>(Them)) > distance(PSquare, s))
-                score += make_score(4, 10);
+                score += make_score(1, 6);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

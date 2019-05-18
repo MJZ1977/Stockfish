@@ -391,11 +391,13 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
+	const Rank Rksq = relative_rank(Us,ksq);
 
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
@@ -484,6 +486,13 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+
+	// EG Penalty if our king is blocked in last ranks
+	if (Rksq < RANK_3 && pos.non_pawn_material() < 8000)
+		if (!(shift<Up>(rank_bb(Rksq)) 
+			 & attackedBy[Us][KING] 
+		     & ~(pos.pieces(Us) | attackedBy[Them][ALL_PIECES])))
+			 score -= make_score(0, 8);
 
     if (T)
         Trace::add(KING, Us, score);

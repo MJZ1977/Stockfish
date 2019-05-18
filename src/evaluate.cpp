@@ -488,7 +488,7 @@ namespace {
     score -= FlankAttacks * kingFlankAttacks;
 
 	// EG Penalty if our king is blocked in last ranks
-	if (Rksq < RANK_3 && pos.non_pawn_material() < 8000)
+	if (Rksq < RANK_3 && pos.non_pawn_material() < 6000)
 		if (!(shift<Up>(rank_bb(ksq)) 
 			 & attackedBy[Us][KING] 
 		     & ~(attackedBy[Them][ALL_PIECES] | (pos.pieces(Us, PAWN) & shift<-Up>(pos.pieces(Them))))))

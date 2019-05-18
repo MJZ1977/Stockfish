@@ -33,7 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward = S(12, 36);
-  constexpr Score BackVRank = S( 1, 4);
+  constexpr Score BackVRank = S(1,  4);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
@@ -136,7 +136,7 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward - (BackVRank * r), e->weakUnopposed[Us] += !opposed;
+            score -= Backward - (BackVRank * std::min(r, RANK_4)), e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !support)
             score -= Doubled;

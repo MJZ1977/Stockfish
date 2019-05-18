@@ -750,7 +750,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-					+  5 * pe->weak_unopposed(weakSide)
+					+  6 * pe->weak_unopposed(weakSide) * (abs(eg) > Value(20))
                     -107 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

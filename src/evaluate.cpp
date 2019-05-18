@@ -489,7 +489,7 @@ namespace {
 
 	// EG Penalty if our king is blocked in last ranks
 	if (Rksq < RANK_3 && pos.non_pawn_material() < 8000)
-		if (!(shift<Up>(rank_bb(Rksq)) 
+		if (!(shift<Up>(rank_bb(ksq)) 
 			 & attackedBy[Us][KING] 
 		     & ~(pos.pieces(Us) | attackedBy[Them][ALL_PIECES])))
 			 score -= make_score(0, 8);

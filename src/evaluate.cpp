@@ -152,7 +152,7 @@ namespace {
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
-  constexpr Score WeakUnopposedPawn  = S( 12, 22);
+  constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
 #undef S
 
@@ -750,8 +750,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-					+  7 * pe->weak_unopposed(weakSide)
-                    -109 ;
+					+  8 * pe->weak_unopposed(weakSide)
+                    -111 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

@@ -492,7 +492,7 @@ namespace {
 		if (!(shift<Up>(rank_bb(ksq)) 
 			 & attackedBy[Us][KING] 
 		     & ~(attackedBy[Them][ALL_PIECES] | (pos.pieces(Us, PAWN) & shift<-Up>(pos.pieces(Them))))))
-			 score -= make_score(0, 8);
+			 score -= make_score(0, 12);
 
     if (T)
         Trace::add(KING, Us, score);

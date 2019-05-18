@@ -491,7 +491,7 @@ namespace {
 	if (Rksq < RANK_3 && pos.non_pawn_material() < 8000)
 		if (!(shift<Up>(rank_bb(ksq)) 
 			 & attackedBy[Us][KING] 
-		     & ~(pos.pieces(Us) | attackedBy[Them][ALL_PIECES])))
+		     & ~(attackedBy[Them][ALL_PIECES] | (pos.pieces(Us, PAWN) & shift<-Up>(pos.pieces(Them))))))
 			 score -= make_score(0, 8);
 
     if (T)

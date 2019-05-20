@@ -639,7 +639,7 @@ namespace {
 
             // In late endgame, increase the bonus
             if (pos.non_pawn_material(Them) <= BishopValueMg
-               && pos.non_pawn_material(us) > pos.non_pawn_material(Them) - 100)
+               && pos.non_pawn_material(Us) > pos.non_pawn_material(Them) - Value(100))
                 bonus += bonus / 4;
 
             // If blockSq is not the queening square then consider also a second push

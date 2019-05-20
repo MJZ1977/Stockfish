@@ -637,6 +637,10 @@ namespace {
             bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
                                     - king_proximity(Us,   blockSq) * 2) * w);
 
+            // In late endgame, increase the bonus
+            if (pos.non_pawn_material(Them) <= BishopValueMg)
+                bonus += bonus / 8;
+
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);

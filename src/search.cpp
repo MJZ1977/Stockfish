@@ -609,7 +609,7 @@ namespace {
     if (  !PvNode
         && ttHit
         && (tte->depth() >= depth
-             || (ttValue-beta > 900 && !inCheck && tte->depth() > 6 * ONE_PLY + depth / 2))
+             || (ttValue-beta > 900 && !inCheck && tte->depth() > 4 * ONE_PLY + depth / 2))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -634,8 +634,8 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        //if (ttValue > beta + 900)
-        //   sync_cout << "Lost position = " << pos.fen() << sync_endl;
+        //if (ttValue > beta + 900 && tte->depth() < depth)
+        //   sync_cout << "TT.depth = " << tte->depth() << " - depth = " << depth << " - Lost position = " << pos.fen() << sync_endl;
         return ttValue;
     }
 

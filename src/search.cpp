@@ -819,12 +819,12 @@ namespace {
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
                     value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
-                if (value >= raisedBeta && depth > 12 * ONE_PLY)
+                if (value >= raisedBeta && depth > 8 * ONE_PLY)
                     value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 4 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= winningBeta && depth > 12 * ONE_PLY)
+                if (value >= winningBeta && depth > 8 * ONE_PLY)
                 {
 					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
 					    depth - 4 * ONE_PLY, move, value);

@@ -608,7 +608,7 @@ namespace {
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
-        && tte->depth() >= depth
+        && (tte->depth() >= depth || ttValue-beta > 900)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -793,6 +793,7 @@ namespace {
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
+        Value winningBeta =  std::min(beta + 1000, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 
@@ -815,8 +816,18 @@ namespace {
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
                     value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
+                if (value >= raisedBeta && depth > 12 * ONE_PLY)
+                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 4 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
+
+                if (value >= winningBeta && depth > 12 * ONE_PLY)
+                {
+					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
+					    depth - 4 * ONE_PLY, move, value);
+					// sync_cout << "Lost position = " << pos.fen() << sync_endl;
+					return value;
+				}
 
                 if (value >= raisedBeta)
                     return value;

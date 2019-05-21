@@ -609,7 +609,7 @@ namespace {
     if (  !PvNode
         && ttHit
         && (tte->depth() >= depth
-             || (ttValue-beta > 900 && !inCheck && tte->depth() > (depth*3)/4 - ONE_PLY))
+             || (ttValue-beta > 900 && !inCheck && tte->depth() > 4 * ONE_PLY + depth / 2))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -796,7 +796,7 @@ namespace {
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
-        Value winningBeta =  std::min(beta + 1000, VALUE_INFINITE);
+        Value winningBeta =  std::min(beta + 900, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 

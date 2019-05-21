@@ -609,7 +609,7 @@ namespace {
     if (  !PvNode
         && ttHit
         && (tte->depth() >= depth
-             || (ttValue-beta > 900 && !inCheck && tte->depth() > 12 * ONE_PLY))
+             || (ttValue-beta > 900 && !inCheck && tte->depth() > 4 * ONE_PLY + depth / 2))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -634,8 +634,8 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        //if (ttValue > beta + 900)
-        //   sync_cout << "Lost position = " << pos.fen() << sync_endl;
+        //if (ttValue > beta + 900 && tte->depth() < depth)
+        //   sync_cout << "TT.depth = " << tte->depth() << " - depth = " << depth << " - Lost position = " << pos.fen() << sync_endl;
         return ttValue;
     }
 
@@ -819,15 +819,15 @@ namespace {
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
                     value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
-                if (value >= raisedBeta && depth > 8 * ONE_PLY)
-                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 4 * ONE_PLY, !cutNode);
+                if (value >= raisedBeta && depth > 10 * ONE_PLY)
+                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 6 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= winningBeta && depth > 8 * ONE_PLY)
+                if (value >= winningBeta && depth > 10 * ONE_PLY)
                 {
 					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
-					    depth - 4 * ONE_PLY, move, value);
+					    depth - 6 * ONE_PLY, move, value);
 					// sync_cout << "Lost position = " << pos.fen() << sync_endl;
 					return value;
 				}

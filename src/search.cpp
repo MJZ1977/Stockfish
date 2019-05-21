@@ -829,7 +829,7 @@ namespace {
 
                 pos.undo_move(move);
 
-                if (value >= winningBeta && depth > 8 * ONE_PLY)
+                if (value >= winningBeta && depth > 12 * ONE_PLY)
                 {
 					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
 					    depth - 6 * ONE_PLY, move, ss->staticEval);

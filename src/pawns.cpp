@@ -195,14 +195,20 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
       b = theirPawns & file_bb(f);
       Rank theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
-
+	  
       int d = std::min(f, ~f);
       bonus[MG] += ShelterStrength[d][ourRank];
 
       if (ourRank && (ourRank == theirRank - 1))
           bonus[MG] -= 82 * (theirRank == RANK_3), bonus[EG] -= 82 * (theirRank == RANK_3);
       else
+	  {
           bonus[MG] -= UnblockedStorm[d][theirRank];
+		  // if their pawn is not blocked and can be exchanged, decrease the bonus
+		  if (theirRank > RANK_1
+             && pawn_attack_span(Them, frontmost_sq(Them, b)) & pos.pieces(Us, PAWN))
+			    bonus[MG] -= 6;
+	  }
   }
 
   if (bonus[MG] > mg_value(shelter))

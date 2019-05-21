@@ -609,7 +609,7 @@ namespace {
     if (  !PvNode
         && ttHit
         && (tte->depth() >= depth
-             || (ttValue-beta > 840 && !inCheck
+             || (ttValue-beta > 900 && !inCheck
                  && tte->depth() > 4 * ONE_PLY + depth / 2))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
@@ -797,7 +797,7 @@ namespace {
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         Value raisedBeta = std::min(beta + 216 - 48 * improving, VALUE_INFINITE);
-        Value winningBeta =  std::min(beta + 840, VALUE_INFINITE);
+        Value winningBeta =  std::min(beta + 900, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 
@@ -821,7 +821,11 @@ namespace {
                 if (value >= raisedBeta)
                     value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
                 if (value >= raisedBeta && depth > 10 * ONE_PLY)
-                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 6 * ONE_PLY, !cutNode);
+                {
+                    value = -qsearch<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1);
+                    if (value >= winningBeta)
+                        value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 6 * ONE_PLY, !cutNode);
+				}
 
                 pos.undo_move(move);
 

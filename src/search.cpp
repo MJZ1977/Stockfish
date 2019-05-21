@@ -820,14 +820,14 @@ namespace {
                 if (value >= raisedBeta)
                     value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
                 if (value >= raisedBeta && depth > 10 * ONE_PLY)
-                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 6 * ONE_PLY, !cutNode);
+                    value = -search<NonPV>(pos, ss+1, -winningBeta, -winningBeta+1, depth - 5 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
 
                 if (value >= winningBeta && depth > 10 * ONE_PLY)
                 {
 					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
-					    depth - 6 * ONE_PLY, move, value);
+					    depth - 5 * ONE_PLY, move, value);
 					// sync_cout << "Lost position = " << pos.fen() << sync_endl;
 					return value;
 				}

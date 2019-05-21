@@ -610,7 +610,7 @@ namespace {
         && ttHit
         && (tte->depth() >= depth
              || (ttValue-beta > 900 && !inCheck
-                 && tte->depth() > (depth * 3) / 4))
+                 && tte->depth() > (depth * 3) / 4 + ONE_PLY))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))

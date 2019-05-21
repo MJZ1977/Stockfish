@@ -610,7 +610,7 @@ namespace {
         && ttHit
         && (tte->depth() >= depth
              || (ttValue-beta > 900 && !inCheck
-                 && tte->depth() > (depth * 3) / 4 + ONE_PLY))
+                 && tte->depth() > 4 * ONE_PLY + depth / 2))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -828,7 +828,7 @@ namespace {
                 if (value >= winningBeta && depth > 10 * ONE_PLY)
                 {
 					tte->save(posKey, value_to_tt(value, ss->ply), ttPv, BOUND_LOWER,
-					    depth - 6 * ONE_PLY, move, value);
+					    depth - 6 * ONE_PLY, move, ss->staticEval);
 					// sync_cout << "Lost position = " << pos.fen() << sync_endl;
 					return value;
 				}

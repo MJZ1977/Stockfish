@@ -205,7 +205,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 	  {
           bonus[MG] -= UnblockedStorm[d][theirRank];
 		  // if their pawn is not in our pawns span, increase the bonus
-		  if (!bool(pawn_attack_span(Them, frontmost_sq(Them, b)) & pos.pieces(Us, PAWN)))
+		  if (theirRank > RANK_1 && !bool(pawn_attack_span(Them, frontmost_sq(Them, b)) & pos.pieces(Us, PAWN)))
 			    bonus[MG] += 10;
 	  }
   }

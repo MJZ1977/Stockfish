@@ -85,6 +85,11 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
+  int AA = 6;
+  int BB = 10;
+  int CC = 107;
+  TUNE(AA,BB,CC);
+
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -750,8 +755,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-					+  6 * pe->weak_unopposed(weakSide) * (abs(eg) > Value(20))
-                    -107 ;
+					+ AA * pe->weak_unopposed(weakSide) * (abs(eg) > Value(BB))
+                    - CC ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

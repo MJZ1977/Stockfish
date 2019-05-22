@@ -391,6 +391,8 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+	constexpr Direction Down = (Us == WHITE ? SOUTH   : NORTH);
+
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
@@ -399,6 +401,9 @@ namespace {
 
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
+	
+	// Bonus for blocked storm pawns
+	score += make_score(4, 0) * popcount(KingFlank[file_of(ksq)] & pos.pieces(Them, PAWN) & shift<Down>(pos.pieces(Us)));
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]

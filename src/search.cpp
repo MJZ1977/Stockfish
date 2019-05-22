@@ -1082,7 +1082,7 @@ moves_loop: // When in check, search starts from here
 
           if (alpha > Value(360) 
               && !extension
-              && improving
+              && !improving
               && newDepth < 4 * ONE_PLY
               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
               newDepth += ONE_PLY;

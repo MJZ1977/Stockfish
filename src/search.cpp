@@ -756,7 +756,9 @@ namespace {
 
         pos.do_null_move(st);
 
-        Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        (ss+1)->currentMove = MOVE_NONE;
+		Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+		(ss+1)->killers[0] = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -846,6 +848,11 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers);
+	/*if(ttPv)
+		sync_cout << "Position = " << pos.fen()
+	              << " - TTmove = " << UCI::move(ttMove, pos.is_chess960())
+				  << " - killer 1 = " << UCI::move(ss->killers[0], pos.is_chess960())
+				  << " - killer 2 = " << UCI::move(ss->killers[1], pos.is_chess960()) << sync_endl;*/
 
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;

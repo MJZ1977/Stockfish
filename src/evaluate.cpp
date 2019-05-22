@@ -85,6 +85,10 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
+  
+  int AA = 30;
+  int BB = 6;
+  TUNE(AA, BB);
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -396,9 +400,10 @@ namespace {
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
+	Score score = make_score(0, 0);
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos);
+    Score shelterEval = score = pe->king_safety<Us>(pos) * AA / 32;
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -472,6 +477,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
+				 -  BB * mg_value(shelterEval) / 64
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

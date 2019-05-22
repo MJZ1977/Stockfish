@@ -1080,7 +1080,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
 
-          if (alpha > Value(360) 
+          if (alpha > Value(320) 
               && !extension
               && !improving
               && newDepth < 4 * ONE_PLY

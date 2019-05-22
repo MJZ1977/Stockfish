@@ -1080,10 +1080,10 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
 
-          if (alpha > Value(400) 
+          if (alpha > Value(360) 
               && !extension
               && !improving
-              && newDepth < 4 * ONE_PLY
+              && newDepth < 5 * ONE_PLY
               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
               newDepth += ONE_PLY;
 

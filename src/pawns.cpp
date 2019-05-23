@@ -207,7 +207,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       else if (firstDefRank && (firstDefRank >= ourRank))
           bonus[MG] -= UnblockedStorm[d][theirRank];
       else
-          bonus[MG] -= (UnblockedStorm[d][theirRank] * 7) / 8;
+          bonus[MG] -= (UnblockedStorm[d][theirRank] * 3) / 4;
   }
 
   if (bonus[MG] > mg_value(shelter))

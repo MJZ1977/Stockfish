@@ -758,7 +758,11 @@ namespace {
 
         (ss+1)->currentMove = MOVE_NONE;
 		Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
-		(ss+1)->killers[0] = (ss+1)->currentMove;
+		if ((ss+1)->currentMove != MOVE_NONE)
+		{
+		    (ss+1)->killers[1] = (ss+1)->killers[0];
+		    (ss+1)->killers[0] = (ss+1)->currentMove;
+		}
 
         pos.undo_null_move();
 

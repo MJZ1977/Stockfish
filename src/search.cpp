@@ -1178,7 +1178,7 @@ moves_loop: // When in check, search starts from here
     else if (bestMove)
     {
         // Quiet best move: update move sorting heuristics
-        if (!pos.capture_or_promotion(bestMove))
+        if (!pos.capture_or_promotion(bestMove) && (ss-1)->currentMove != MOVE_NULL)
             update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount,
                                stat_bonus(depth + (bestValue > beta + PawnValueMg ? ONE_PLY : DEPTH_ZERO)));
 

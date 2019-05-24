@@ -593,7 +593,7 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
 
-        score += make_score(2,2)
+        score += -make_score(2,2)
                       * popcount((attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP])
                             & attackedBy[Them][QUEEN]
                             & mobilityArea[Them]);

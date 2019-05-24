@@ -471,6 +471,7 @@ namespace {
                  - 873 * !pos.count<QUEEN>(Them)
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
+                 +  10 * (distance<File>(ksq, pos.square<KING>(Them)) > 2)
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
 

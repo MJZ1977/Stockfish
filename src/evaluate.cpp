@@ -401,7 +401,7 @@ namespace {
     Score score = pe->king_safety<Us>(pos);
 
     if (distance<File>(ksq, pos.square<KING>(Them)) > 2)
-       score += score / 16;
+       score -= score / 16;
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]

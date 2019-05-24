@@ -68,9 +68,9 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
-    Bitboard lever, leverPush;
+    Bitboard lever, leverPush, opposed;
     Square s;
-    bool opposed, backward;
+    bool backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -100,8 +100,8 @@ namespace {
         support    = neighbours & rank_bb(s - Up);
 
         if (opposed)
-           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) & 
-                    ~pawn_attack_span(Us, backmost_sq(Us, theirPawns & forward_file_bb(Us, s))));
+           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) &
+                    ~pawn_attack_span(Us, backmost_sq(Us, opposed)));
         else
            e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 

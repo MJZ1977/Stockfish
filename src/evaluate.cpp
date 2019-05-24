@@ -595,7 +595,8 @@ namespace {
 
         score += make_score(2,2)
                       * popcount((attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP])
-                            & attackedBy[Them][QUEEN]);
+                            & attackedBy[Them][QUEEN]
+                            & mobilityArea[Them]);
     }
 
     if (T)

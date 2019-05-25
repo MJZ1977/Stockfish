@@ -1082,8 +1082,8 @@ moves_loop: // When in check, search starts from here
 
           if (alpha > Value(400) 
               && !extension 
-              && newDepth < 4 * ONE_PLY
-              && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
+              //&& newDepth < 4 * ONE_PLY
+              && ss->ply < thisThread->rootDepth / ONE_PLY / 5)
               newDepth += ONE_PLY;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);

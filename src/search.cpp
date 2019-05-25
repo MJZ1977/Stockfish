@@ -945,6 +945,14 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // Winning line reduction
+      else if (ttPv 
+               && alpha > Value(400) 
+               && depth > 8 * ONE_PLY
+               && move != ttMove)
+          extension = -ONE_PLY;
+
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
@@ -1019,9 +1027,6 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2 * ONE_PLY;
 		  
-		  if (ttPv && alpha > Value(340))
-			  r += ONE_PLY;
-
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;

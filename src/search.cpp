@@ -947,7 +947,7 @@ moves_loop: // When in check, search starts from here
 
       // Winning line reduction
       else if (ttPv 
-               && alpha > Value(380) 
+               && alpha > Value(420) 
                && depth > 8 * ONE_PLY
                && move != ttMove)
           extension = -ONE_PLY;

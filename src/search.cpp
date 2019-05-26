@@ -319,6 +319,7 @@ void Thread::search() {
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
+  //sync_cout << "Optimum time = " << Time.optimum() << " -  Maximum time = " << Time.maximum() << sync_endl;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -462,7 +463,7 @@ void Thread::search() {
 		  if (rootPos.non_pawn_material() > 4000)
               timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
 		  else
-			  timeReduction = lastBestMoveDepth + 12 * ONE_PLY < completedDepth ? 1.80 : 1.0;
+			  timeReduction = lastBestMoveDepth + 14 * ONE_PLY < completedDepth ? 1.50 : 0.9;
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move

@@ -463,7 +463,7 @@ void Thread::search() {
 		  if (rootPos.non_pawn_material() > 4000)
               timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
 		  else
-			  timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 0.9;
+			  timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 0.85;
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move

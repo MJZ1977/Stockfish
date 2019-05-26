@@ -1014,6 +1014,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 3 * rootNode
+		  &&  move != ttMove2
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1024,16 +1025,16 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2 * ONE_PLY;
 
-		  if (move == ttMove2)
+		  /*if (move == ttMove2)
 		  {
 		    r = std::min(r, ONE_PLY);
-			/*pos.undo_move(move);
+			pos.undo_move(move);
 			sync_cout << "Position = " << pos.fen()
                         << " TTmove = " << UCI::move(ttMove, pos.is_chess960())
                         << " move2 = " << UCI::move(ss->currentMove, pos.is_chess960())
 						<< " reduction = " << r / ONE_PLY << sync_endl;
-			pos.do_move(move, st, givesCheck);*/
-		  }
+			pos.do_move(move, st, givesCheck);
+		  }*/
 
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

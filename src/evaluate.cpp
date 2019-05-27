@@ -638,8 +638,8 @@ namespace {
                                     - king_proximity(Us,   blockSq) * 2) * w);
 
             // Adjust bonus based on pawn protection
-            if (attackedBy[Us][PAWN] & s)
-                bonus += make_score(8, 8);
+            if ((attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]) & s)
+                bonus += make_score(6, 6);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

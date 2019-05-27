@@ -639,7 +639,7 @@ namespace {
 
             // Adjust bonus based on pawn protection
             if (attackedBy[Us][PAWN] & s)
-                bonus += make_score(4, 4);
+                bonus += make_score(6, 6);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

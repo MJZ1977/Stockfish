@@ -131,11 +131,11 @@ namespace {
 
             score += make_score(v, v * (r - 2) / 4);
         }
-        else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !opposed;
-
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
+
+        else if (!neighbours)
+            score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !support)
             score -= Doubled;

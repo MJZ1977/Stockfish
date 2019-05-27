@@ -132,10 +132,10 @@ namespace {
             score += make_score(v, v * (r - 2) / 4);
         }
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !(opposed || r >= RANK_5);
+            score -= Isolated, e->weakUnopposed[Us] += (!opposed || r >= RANK_5);
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !(opposed || r >= RANK_5);
+            score -= Backward, e->weakUnopposed[Us] += (!opposed || r >= RANK_5);
 
         if (doubled && !support)
             score -= Doubled;

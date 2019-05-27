@@ -401,9 +401,9 @@ namespace {
 
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
-	
+
 	// Bonus for blocked storm pawns
-	score += make_score(10, 0) * popcount(KingFlank[file_of(ksq)] & pos.pieces(Them, PAWN) & shift<Up>(pos.pieces(Us)));
+	score += make_score(5, 0) * popcount(KingFlank[file_of(ksq)] & pos.pieces(Them, PAWN) & shift<Up>(pos.pieces(Us)));
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]

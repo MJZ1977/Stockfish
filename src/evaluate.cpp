@@ -85,6 +85,9 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
+  int AAA = 256
+  int BBB = 96
+  TUNE(AAA,BBB);
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -555,7 +558,7 @@ namespace {
        & ~stronglyProtected
        &  attackedBy[Us][ALL_PIECES];
 
-    score += RestrictedPiece * (popcount(b) * std::min(256 - int(mg_value(mobility[Them])), 96) / 128);
+	score += RestrictedPiece * (popcount(b) * std::max(AAA - int(mg_value(mobility[Them])), BBB) / 128);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

@@ -555,7 +555,7 @@ namespace {
        & ~stronglyProtected
        &  attackedBy[Us][ALL_PIECES];
 
-    score += RestrictedPiece * popcount(b) * 128 / std::max(int(mg_value(mobility[Them])) + 64, 96);
+    score += RestrictedPiece * (popcount(b) * std::min(256 - int(mg_value(mobility[Them])), 96) / 128);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

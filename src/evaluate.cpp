@@ -85,8 +85,8 @@ namespace {
   constexpr int RookSafeCheck   = 1080;
   constexpr int BishopSafeCheck = 635;
   constexpr int KnightSafeCheck = 790;
-  int AAA = 256
-  int BBB = 96
+  int AAA = 256;
+  int BBB = 96;
   TUNE(AAA,BBB);
 
 #define S(mg, eg) make_score(mg, eg)

@@ -132,10 +132,10 @@ namespace {
             score += make_score(v, v * (r - 2) / 4);
         }
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += std::max(3*int(!opposed), int(r >= RANK_5));
+            score -= Isolated, e->weakUnopposed[Us] += std::max(3*int(!opposed), int(r >= RANK_4));
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += std::max(3*int(!opposed), int(r >= RANK_5));
+            score -= Backward, e->weakUnopposed[Us] += std::max(3*int(!opposed), int(r >= RANK_4));
 
         if (doubled && !support)
             score -= Doubled;

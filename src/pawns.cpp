@@ -106,6 +106,15 @@ namespace {
         backward =  !(ourPawns & pawn_attack_span(Them, s + Up))
                   && (stoppers & (leverPush | (s + Up)));
 
+        if (!backward)
+        {
+            if(opposed)
+                e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) & 
+                    ~pawn_attack_span(Us, backmost_sq(Us, theirPawns & forward_file_bb(Us, s))));
+            else
+                e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+        }
+
         // Passed pawns will be properly scored in evaluation because we need
         // full attack info to evaluate them. Include also not passed pawns
         // which could become passed after one or two pawn pushes when are

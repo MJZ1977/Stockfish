@@ -822,26 +822,34 @@ namespace {
     initialize<BLACK>();
 
     // Pieces should be evaluated first (populate attack tables)
-    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
+	if (pos.non_pawn_material())
+	{
+      score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+      score += mobility[WHITE] - mobility[BLACK];
+	}
+	
+	score += passed< WHITE>() - passed< BLACK>();
 
-    score +=  king<   WHITE>() - king<   BLACK>()
+	if (pos.non_pawn_material())
+	{
+      score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(eg_value(score));
+      score += initiative(eg_value(score));
+      // Interpolate between a middlegame and a (scaled by 'sf') endgame score
+      ScaleFactor sf = scale_factor(eg_value(score));
+      v =  mg_value(score) * int(me->game_phase())
+          + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
-    // Interpolate between a middlegame and a (scaled by 'sf') endgame score
-    ScaleFactor sf = scale_factor(eg_value(score));
-    v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
-
-    v /= PHASE_MIDGAME;
+      v /= PHASE_MIDGAME;
+	}
+	else
+	  v = eg_value(score);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

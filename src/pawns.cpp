@@ -89,8 +89,6 @@ namespace {
         File f = file_of(s);
         Rank r = relative_rank(Us, s);
 
-        e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
         stoppers   = theirPawns & passed_pawn_span(Us, s);

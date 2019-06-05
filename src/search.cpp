@@ -287,6 +287,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  this->lastSavedPos = Bitboard(0);
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
@@ -547,6 +548,20 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+
+    // Save position if rule50 = 10 and return VALUE_DRAW if we are moving only 2 pieces for several successive plies
+    if ((pos.rule50_count() == 10 || (pos.rule50_count() > 10 && rootNode)))
+        //&& thisThread->lastSavedPos == Bitboard(0))
+       thisThread->lastSavedPos = pos.pieces();
+
+    if (pos.rule50_count() >= 40
+        && ss->ply > 30
+        && pos.count<ALL_PIECES>() > 6)
+    {
+		if (popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
+		   return VALUE_DRAW;
+		//sync_cout << "Position 1 = " << pos.fen() << sync_endl;
+	}
 
     // Check for the available remaining time
     if (thisThread == Threads.main())

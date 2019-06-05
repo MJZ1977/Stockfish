@@ -556,7 +556,8 @@ namespace {
 
     if (pos.rule50_count() >= 30
         && ss->ply > 30
-        && pos.count<ALL_PIECES>() > 6)
+        && pos.count<ALL_PIECES>() > 6
+        && depth < 6 * ONE_PLY)
     {
 		if (popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
 		   return VALUE_DRAW;

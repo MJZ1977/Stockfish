@@ -554,7 +554,7 @@ namespace {
         //&& thisThread->lastSavedPos == Bitboard(0))
        thisThread->lastSavedPos = pos.pieces();
 
-    if (pos.rule50_count() >= 40
+    if (pos.rule50_count() >= 30
         && ss->ply > 30
         && pos.count<ALL_PIECES>() > 6)
     {

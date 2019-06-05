@@ -946,8 +946,9 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Winning line reduction
-      else if (ttPv 
-               && alpha > Value(440) 
+      else if (ttPv
+               && ss->ply % 2 == 0
+               && alpha > Value(400)
                && depth > 8 * ONE_PLY
                && move != ttMove)
           extension = -ONE_PLY;
@@ -1026,7 +1027,7 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
-		  
+
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;

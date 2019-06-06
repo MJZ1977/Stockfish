@@ -554,9 +554,9 @@ namespace {
         //&& thisThread->lastSavedPos == Bitboard(0))
        thisThread->lastSavedPos = pos.pieces();
 
-    if (pos.rule50_count() >= 40
-        && ss->ply > 30
-        && pos.count<ALL_PIECES>() > 6)
+    if (pos.rule50_count() > 38
+        && ss->ply > 38
+        && pos.count<ALL_PIECES>() > 8)
     {
 		if (popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
 		   return VALUE_DRAW;

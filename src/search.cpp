@@ -551,17 +551,7 @@ namespace {
 
     // Save position if rule50 = 10 and return VALUE_DRAW if we are moving only 2 pieces for several successive plies
     if ((pos.rule50_count() == 10 || (pos.rule50_count() > 10 && rootNode)))
-        //&& thisThread->lastSavedPos == Bitboard(0))
        thisThread->lastSavedPos = pos.pieces();
-
-    if (pos.rule50_count() > 38
-        && ss->ply > 38
-        && pos.count<ALL_PIECES>() > 8)
-    {
-		if (popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
-		   return VALUE_DRAW;
-		//sync_cout << "Position 1 = " << pos.fen() << sync_endl;
-	}
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -648,7 +638,13 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return ttValue;
+        if (pos.rule50_count() > 28
+		  && ss->ply > 28
+		  && pos.count<ALL_PIECES>() > 8
+		  && popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
+			return ttValue * std::max(0,(std::min(ss->ply, pos.rule50_count()) - 40)) / 16;
+		else
+            return ttValue;
     }
 
     // Step 5. Tablebases probe

@@ -851,6 +851,12 @@ moves_loop: // When in check, search starts from here
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     int singularExtensionLMRmultiplier = 0;
+	Bitboard controlledByEnemy = Bitboard(0);
+	if (depth < 6 * ONE_PLY)
+	{
+		Pawns::Entry* pe = Pawns::probe(pos);
+		controlledByEnemy = pe->pawn_attacks(~us);
+	}
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -965,8 +971,7 @@ moves_loop: // When in check, search starts from here
                   continue;
 
 			  // skip moves if to_sq is controlled by enemy pawn
-			  Pawns::Entry* pe = Pawns::probe(pos);
-			  if ((pe->pawn_attacks(~us) & to_sq(move))
+			  if ((controlledByEnemy & to_sq(move))
 				  && type_of(movedPiece) != PAWN
 			      && depth < 6 * ONE_PLY)
 			  {

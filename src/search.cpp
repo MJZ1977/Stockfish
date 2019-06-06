@@ -1030,12 +1030,6 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if move has been singularly extended
           r -= singularExtensionLMRmultiplier * ONE_PLY;
 
-          // Increase reduction for winning side if we move the same piece for several plies
-          if (alpha > Value(50)
-		      && pos.rule50_count() > 12
-              && popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
-          r += ONE_PLY;
-
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
@@ -1045,6 +1039,18 @@ moves_loop: // When in check, search starts from here
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)
                   r += 2 * ONE_PLY;
+
+              // Increase reduction for winning side we move same pieces in shuffling position
+              if (alpha > Value(50)
+                && pos.rule50_count() > 10
+                && !(thisThread->lastSavedPos & from_sq(move)))
+                {
+                  r += ONE_PLY;
+                  /*pos.undo_move(move);
+                  sync_cout << "Position = " << pos.fen()
+                            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                  pos.do_move(move, st, givesCheck);*/
+                }
 
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and

@@ -191,6 +191,8 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
 
   for (Thread* th : *this)
   {
+      Bitboard lastSavedPos = Bitboard(0);
+      th->lastSavedPos = lastSavedPos;
       th->nodes = th->tbHits = th->nmpMinPly = 0;
       th->rootDepth = th->completedDepth = DEPTH_ZERO;
       th->rootMoves = rootMoves;

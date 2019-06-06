@@ -964,6 +964,17 @@ moves_loop: // When in check, search starts from here
               if (moveCountPruning)
                   continue;
 
+			  // skip moves if to_sq is controlled by enemy pawn
+			  Pawns::Entry* pe = Pawns::probe(pos);
+			  if ((pe->pawn_attacks(~us) & to_sq(move))
+				  && type_of(movedPiece) != PAWN
+			      && depth < 6 * ONE_PLY)
+			  {
+			    /*sync_cout << "Position = " << pos.fen()
+                            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+				continue;
+			  }
+
               // Reduced depth of the next LMR search
               int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), DEPTH_ZERO);
               lmrDepth /= ONE_PLY;

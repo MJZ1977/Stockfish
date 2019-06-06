@@ -550,18 +550,8 @@ namespace {
     maxValue = VALUE_INFINITE;
 
     // Save position if rule50 = 10 and return VALUE_DRAW if we are moving only 2 pieces for several successive plies
-    if ((pos.rule50_count() == 10 || (pos.rule50_count() > 10 && rootNode)))
-        //&& thisThread->lastSavedPos == Bitboard(0))
+    if ((pos.rule50_count() == 4 || (pos.rule50_count() > 4 && rootNode)))
        thisThread->lastSavedPos = pos.pieces();
-
-    if (pos.rule50_count() > 38
-        && ss->ply > 38
-        && pos.count<ALL_PIECES>() > 8)
-    {
-		if (popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
-		   return VALUE_DRAW;
-		//sync_cout << "Position 1 = " << pos.fen() << sync_endl;
-	}
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -1039,6 +1029,12 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
           // Decrease reduction if move has been singularly extended
           r -= singularExtensionLMRmultiplier * ONE_PLY;
+
+          // Increase reduction for winning side if we move the same piece for several plies
+          if (alpha > Value(50)
+		      && pos.rule50_count() > 12
+              && popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
+          r += ONE_PLY;
 
           if (!captureOrPromotion)
           {

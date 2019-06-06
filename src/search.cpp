@@ -642,7 +642,7 @@ namespace {
 		  && ss->ply > 28
 		  && pos.count<ALL_PIECES>() > 8
 		  && popcount(thisThread->lastSavedPos ^ pos.pieces()) <= 6)
-			return ttValue * std::max(0,(std::min(ss->ply, pos.rule50_count()) - 40)) / 16;
+			return ttValue * std::max(0,(40 - std::min(ss->ply, pos.rule50_count()))) / 16;
 		else
             return ttValue;
     }

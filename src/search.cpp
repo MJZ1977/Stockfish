@@ -1236,7 +1236,7 @@ moves_loop: // When in check, search starts from here
     int progrIndex = std::min(ss->ply, pos.rule50_count());
     if (progrIndex > 8)
         progrIndex = progrIndex * 8 / (1 + popcount((ss-progrIndex)->posPieces ^ ss->posPieces));
-    progrIndex = 64 - clamp(progrIndex - 16, 0, 32);
+    progrIndex = 64 - clamp(progrIndex - 14, 0, 36);
 
     if (PvNode)
     {

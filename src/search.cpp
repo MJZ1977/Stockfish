@@ -1131,9 +1131,9 @@ moves_loop: // When in check, search starts from here
 
           if (value > alpha)
           {
-              if (move != bestMove
-                  && !pos.capture_or_promotion(bestMove)
-                  && bestMove != MOVE_NONE)
+              if (!pos.capture_or_promotion(bestMove)
+                  && bestMove
+                  && bestMove != (ss+2)->killers[0])
               {
                 (ss+2)->killers[1] = (ss+2)->killers[0];
                 (ss+2)->killers[0] = bestMove;

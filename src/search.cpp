@@ -1131,6 +1131,12 @@ moves_loop: // When in check, search starts from here
 
           if (value > alpha)
           {
+              if (move != bestMove)
+              {
+                (ss+2)->killers[1] = (ss+2)->killers[0];
+                (ss+2)->killers[0] = bestMove;
+              }
+
               bestMove = move;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case

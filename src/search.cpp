@@ -61,6 +61,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  int AAA = 8;
+  int BBB = 14;
+  int CCC = 32;
+  TUNE(AAA,BBB,CCC);
+
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   Value futility_margin(Depth d, bool improving) {
@@ -1235,8 +1240,8 @@ moves_loop: // When in check, search starts from here
     int moveCount;
     int progrIndex = std::min(ss->ply, pos.rule50_count());
     if (progrIndex > 8)
-        progrIndex = progrIndex * 8 / (1 + popcount((ss-progrIndex)->posPieces ^ ss->posPieces));
-    progrIndex = 64 - clamp(progrIndex - 16, 0, 32);
+        progrIndex = progrIndex * AAA / (1 + popcount((ss-progrIndex)->posPieces ^ ss->posPieces));
+    progrIndex = 64 - clamp(progrIndex - BBB, 0, CCC);
 
     if (PvNode)
     {

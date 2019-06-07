@@ -970,15 +970,6 @@ moves_loop: // When in check, search starts from here
               if (moveCountPruning)
                   continue;
 
-			  // skip moves if to_sq is controlled by enemy pawn
-			  if ((controlledByEnemy & to_sq(move))
-				  && type_of(movedPiece) != PAWN)
-			  {
-			    /*sync_cout << "Position = " << pos.fen()
-                            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
-				continue;
-			  }
-
               // Reduced depth of the next LMR search
               int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), DEPTH_ZERO);
               lmrDepth /= ONE_PLY;
@@ -1072,6 +1063,15 @@ moves_loop: // When in check, search starts from here
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
+
+              // skip moves if to_sq is controlled by enemy pawn
+              if ((controlledByEnemy & to_sq(move))
+                  && type_of(movedPiece) != PAWN)
+              {
+                /*sync_cout << "Position = " << pos.fen()
+                            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+                r += ONE_PLY;
+              }
           }
 
           Depth d = std::max(newDepth - std::max(r, DEPTH_ZERO), ONE_PLY);

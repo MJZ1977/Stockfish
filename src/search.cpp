@@ -1067,7 +1067,7 @@ moves_loop: // When in check, search starts from here
               {
                 /*sync_cout << "Position = " << pos.fen()
                             << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
-                r += ONE_PLY;
+                r += 2 * ONE_PLY;
               }
           }
 

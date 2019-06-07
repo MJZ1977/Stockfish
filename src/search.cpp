@@ -687,6 +687,8 @@ namespace {
         }
     }
 
+    ss->posPieces = pos.pieces();
+
     // Step 6. Static evaluation of the position
     if (inCheck)
     {
@@ -1231,9 +1233,10 @@ moves_loop: // When in check, search starts from here
     Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
     bool ttHit, pvHit, inCheck, givesCheck, evasionPrunable;
     int moveCount;
-    int progression = 64;
-    if (pos.rule50_count() > 12)
-       progression = std::max(0, 70 - std::min(ss->ply, pos.rule50_count()));
+    int progrIndex = 0;
+    if (ss->ply > 8 && pos.rule50_count() > 8)
+        progrIndex = std::min(ss->ply, pos.rule50_count()) * 32 / (1 + popcount((ss-8)->posPieces ^ ss->posPieces));
+    progrIndex = 64 - clamp(progrIndex - 60, 0, 32);
 
     if (PvNode)
     {
@@ -1271,7 +1274,7 @@ moves_loop: // When in check, search starts from here
         && ttHit
         && tte->depth() >= ttDepth
         && ttValue != VALUE_NONE // Only in case of TT access race
-        && progression > 32
+        && progrIndex >= 64
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
         return ttValue;
@@ -1288,17 +1291,17 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything on values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = evaluate(pos) * progression / 64;
+                ss->staticEval = bestValue = evaluate(pos) * progrIndex / 64;
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
                 && (tte->bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER))
-                && progression > 32)
+                && progrIndex >= 64)
                 bestValue = ttValue;
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos) * progression / 64
+            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos) * progrIndex / 64
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
 
         // Stand pat. Return immediately if static value is at least beta

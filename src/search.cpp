@@ -1233,10 +1233,10 @@ moves_loop: // When in check, search starts from here
     Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
     bool ttHit, pvHit, inCheck, givesCheck, evasionPrunable;
     int moveCount;
-    int progrIndex = 0;
-    if (ss->ply > 8 && pos.rule50_count() > 8)
-        progrIndex = std::min(ss->ply, pos.rule50_count()) * 32 / (1 + popcount((ss-8)->posPieces ^ ss->posPieces));
-    progrIndex = 64 - clamp(progrIndex - 60, 0, 32);
+    int progrIndex = std::min(ss->ply, pos.rule50_count()) - 1;
+    if (progrIndex > 8)
+        progrIndex = progrIndex * 8 / (1 + popcount((ss-progrIndex)->posPieces ^ ss->posPieces));
+    progrIndex = 64 - clamp(progrIndex - 16, 0, 32);
 
     if (PvNode)
     {

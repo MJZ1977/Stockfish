@@ -852,7 +852,7 @@ moves_loop: // When in check, search starts from here
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     int singularExtensionLMRmultiplier = 0;
 	Bitboard controlledByEnemy = Bitboard(0);
-	if (depth < 6 * ONE_PLY)
+	if (depth < 4 * ONE_PLY)
 	{
 		Pawns::Entry* pe = Pawns::probe(pos);
 		controlledByEnemy = pe->pawn_attacks(~us);
@@ -972,8 +972,7 @@ moves_loop: // When in check, search starts from here
 
 			  // skip moves if to_sq is controlled by enemy pawn
 			  if ((controlledByEnemy & to_sq(move))
-				  && type_of(movedPiece) != PAWN
-			      && depth < 6 * ONE_PLY)
+				  && type_of(movedPiece) != PAWN)
 			  {
 			    /*sync_cout << "Position = " << pos.fen()
                             << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/

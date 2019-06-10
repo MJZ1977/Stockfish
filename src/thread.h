@@ -62,7 +62,7 @@ public:
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
   Color nmpColor;
-  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+  std::atomic<uint64_t> nodes, tbHits;
 
   Position rootPos;
   Search::RootMoves rootMoves;

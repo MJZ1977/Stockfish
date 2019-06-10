@@ -193,7 +193,6 @@ void MainThread::search() {
   {
       for (Thread* th : Threads)
       {
-          th->bestMoveChanges = 0;
           if (th != this)
               th->start_searching();
       }
@@ -279,7 +278,7 @@ void Thread::search() {
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
+  double timeReduction = 1;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -319,10 +318,6 @@ void Thread::search() {
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth / ONE_PLY > Limits.depth))
   {
-      // Age out PV variability metric
-      if (mainThread)
-          totBestMoveChanges /= 2;
-
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
@@ -450,21 +445,13 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          double reduction = 1 / (0.6 + 1.4 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
+          double reduction = 1 / (0.5 + 1.6 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
           //sync_cout << "Reduction = " << reduction << sync_endl;
           //sync_cout << "Reduction = " << (rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))) << sync_endl;
 
-          // Use part of the gained time from a previous stable move for the current move
-          for (Thread* th : Threads)
-          {
-              totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
-          }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -1108,12 +1095,6 @@ moves_loop: // When in check, search starts from here
 
               for (Move* m = (ss+1)->pv; *m != MOVE_NONE; ++m)
                   rm.pv.push_back(*m);
-
-              // We record how often the best move has been changed in each
-              // iteration. This information is used for time management: When
-              // the best move changes frequently, we allocate some more time.
-              if (moveCount > 1)
-                  ++thisThread->bestMoveChanges;
           }
           else
               // All other moves but the PV are set to the lowest value: this

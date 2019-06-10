@@ -1020,7 +1020,8 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Don't overlook principal move at root
-          if (rootNode && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 7 / 8)
+          if (rootNode
+            && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 3 / 4)
              r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

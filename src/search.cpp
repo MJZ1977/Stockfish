@@ -278,8 +278,6 @@ void Thread::search() {
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
-  Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
@@ -428,12 +426,7 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
-      sync_cout << "Nodes searched for bestMove = " << rootMoves[0].nodesSearched << sync_endl;
-
-      if (rootMoves[0].pv[0] != lastBestMove) {
-         lastBestMove = rootMoves[0].pv[0];
-         lastBestMoveDepth = rootDepth;
-      }
+      //sync_cout << "Nodes searched for bestMove = " << rootMoves[0].nodesSearched << sync_endl;
 
       // Have we found a "mate in x"?
       if (   Limits.mate
@@ -457,8 +450,9 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
-          double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+          double reduction = 1 / (0.65 + 2 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
+          //sync_cout << "Reduction = " << reduction << sync_endl;
+          //sync_cout << "Reduction = " << (rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))) << sync_endl;
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

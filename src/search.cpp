@@ -1020,17 +1020,9 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Don't overlook principal move at root
-          if (rootNode && depth > 4 * ONE_PLY)
-          {
-            RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-            if (rm.nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) / 16
-               && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 3 / 4)
-			   {
-                /*sync_cout << "Position = " << pos.fen()
-				          << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
-				r -= ONE_PLY;
-			   }
-          }
+          if (rootNode
+            && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 3 / 4)
+             r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

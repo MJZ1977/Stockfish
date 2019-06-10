@@ -445,7 +445,7 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          double reduction = 1 / (0.5 + 1.6 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
+          double reduction = 1 / (0.45 + 1.6 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
           //sync_cout << "Reduction = " << reduction << sync_endl;
           //sync_cout << "Reduction = " << (rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))) << sync_endl;
 

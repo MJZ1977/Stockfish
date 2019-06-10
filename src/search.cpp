@@ -540,6 +540,7 @@ namespace {
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+    uint64_t nodesSearched = rootNode ? thisThread->nodes.load(std::memory_order_relaxed) : 0;
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
@@ -1103,6 +1104,8 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+          rm.nodesSearched += thisThread->nodes.load(std::memory_order_relaxed) - nodesSearched;
+          nodesSearched = thisThread->nodes.load(std::memory_order_relaxed);
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

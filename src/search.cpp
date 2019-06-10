@@ -778,7 +778,11 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
+            {
+                if (ss->ply==1 && thisThread == Threads.main() && Time.elapsed() > 300)
+                   sync_cout << "NMP pruned" << sync_endl;
                 return nullValue;
+			}
         }
     }
 
@@ -816,7 +820,11 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
+                {
+                    if (ss->ply==1 && thisThread == Threads.main() && Time.elapsed() > 300)
+                      sync_cout << "Probcut pruned" << sync_endl;
                     return value;
+				}
             }
     }
 

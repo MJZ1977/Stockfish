@@ -428,6 +428,8 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
+      // sync_cout << "Nodes searched for bestMove = " << rootMoves[0].nodesSearched << sync_endl;
+
       if (rootMoves[0].pv[0] != lastBestMove) {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
@@ -1015,6 +1017,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
+
+          // Don't overlook principal move at root
+          if (rootNode && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 7 / 8)
+             r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

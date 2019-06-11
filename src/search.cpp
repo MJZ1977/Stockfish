@@ -1020,10 +1020,10 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Don't overlook principal move at root
-          if (rootNode && depth > 4 * ONE_PLY)
+          if (rootNode)
           {
             RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-            if (rm.nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) / 16
+            if (rm.nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) / 32
                && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 3 / 4)
 			   {
                 /*sync_cout << "Position = " << pos.fen()

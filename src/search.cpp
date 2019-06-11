@@ -1024,7 +1024,7 @@ moves_loop: // When in check, search starts from here
           {
             RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
             if (rm.nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) / 32
-               && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) * 3 / 4)
+               && thisThread->rootMoves[0].nodesSearched > thisThread->nodes.load(std::memory_order_relaxed) / 2)
 			   {
                 /*sync_cout << "Position = " << pos.fen()
 				          << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/

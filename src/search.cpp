@@ -445,7 +445,7 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          double reduction = 1 / (0.36 + 1.5 * pow((rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))), 2.0));
+          double reduction = 1 / (0.36 + 1.1 * (rootMoves[0].nodesSearched / double(1 + mainThread->nodes.load(std::memory_order_relaxed))));
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

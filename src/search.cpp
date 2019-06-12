@@ -531,7 +531,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, skipLMR = false;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, candidateMove = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
@@ -881,8 +881,8 @@ moves_loop: // When in check, search starts from here
       if (rootNode && moveCount > 1 && depth > 4 * ONE_PLY)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-          skipLMR = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / 10);
-          /*if (skipLMR)
+          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / 10);
+          /*if (candidateMove)
             sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
                       << " currmovenumber " << moveCount + thisThread->pvIdx
                       << " Nodes = " << rm.nodesSearched
@@ -1017,7 +1017,6 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          &&  !skipLMR
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1068,6 +1067,9 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
           }
+
+          if (candidateMove)
+             r = std::min(r, ONE_PLY);
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 

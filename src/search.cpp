@@ -428,8 +428,6 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
-      sync_cout << "Nodes searched for bestMove = " << rootMoves[0].nodesSearched << sync_endl;
-
       if (rootMoves[0].pv[0] != lastBestMove) {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
@@ -1022,6 +1020,20 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+
+          // Increase reduction at root if the move has a weak searched nodes counter
+          if (rootNode && depth > 12 * ONE_PLY)
+          {
+             RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
+             if(rm.nodesSearched < (thisThread->rootMoves[0].nodesSearched / 32))
+             {
+              /*sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
+                        << " currmovenumber " << moveCount + thisThread->pvIdx
+                        << " Nodes = " << rm.nodesSearched
+                        << " Nodes 0 = " << thisThread->rootMoves[0].nodesSearched << sync_endl;*/
+              r -= ONE_PLY;
+             }
+          }
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;

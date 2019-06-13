@@ -1022,7 +1022,7 @@ moves_loop: // When in check, search starts from here
               r -= ONE_PLY;
 
           // Increase reduction at root if the move has a weak searched nodes counter
-          if (rootNode && depth > 12 * ONE_PLY)
+          if (rootNode && depth > 16 * ONE_PLY)
           {
              RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
              if(rm.nodesSearched < (thisThread->rootMoves[0].nodesSearched / 32))

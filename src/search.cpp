@@ -539,6 +539,7 @@ namespace {
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+	uint64_t posEvaluated = thisThread->posEvaluated.load(std::memory_order_relaxed);
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
@@ -1171,6 +1172,14 @@ moves_loop: // When in check, search starts from here
 
     assert(moveCount || !inCheck || excludedMove || !MoveList<LEGAL>(pos).size());
 
+    // If after a long search evaluated positions dont progress, it is probably shuffling
+    if (pos.rule50_count() > 10 
+       && ss->ply > 10
+       && ttHit
+       && depth > std::max(tte->depth() + 10 * ONE_PLY, 24 * ONE_PLY)
+       && thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 1)
+         bestValue = VALUE_DRAW;
+
     if (!moveCount)
         bestValue = excludedMove ? alpha
                    :     inCheck ? mated_in(ss->ply) : VALUE_DRAW;
@@ -1602,7 +1611,7 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
   size_t multiPV = std::min((size_t)Options["MultiPV"], rootMoves.size());
   uint64_t nodesSearched = Threads.nodes_searched();
   uint64_t tbHits = Threads.tb_hits() + (TB::RootInTB ? rootMoves.size() : 0);
-  uint64_t nodesEvaluated = Threads.pos_evaluated();
+  //uint64_t nodesEvaluated = Threads.pos_evaluated();
 
   for (size_t i = 0; i < multiPV; ++i)
   {
@@ -1632,8 +1641,8 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
       ss << " nodes "    << nodesSearched
          << " nps "      << nodesSearched * 1000 / elapsed;
 
-      ss << " evals "    << nodesEvaluated
-         << " eps "      << nodesEvaluated * 1000 / elapsed;
+      //ss << " evals "    << nodesEvaluated
+      //   << " eps "      << nodesEvaluated * 1000 / elapsed;
 
       if (elapsed > 1000) // Earlier makes little sense
           ss << " hashfull " << TT.hashfull();

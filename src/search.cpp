@@ -194,6 +194,7 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->posEvaluated = 0;
           if (th != this)
               th->start_searching();
       }
@@ -1601,6 +1602,7 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
   size_t multiPV = std::min((size_t)Options["MultiPV"], rootMoves.size());
   uint64_t nodesSearched = Threads.nodes_searched();
   uint64_t tbHits = Threads.tb_hits() + (TB::RootInTB ? rootMoves.size() : 0);
+  uint64_t nodesEvaluated = Threads.pos_evaluated();
 
   for (size_t i = 0; i < multiPV; ++i)
   {
@@ -1629,6 +1631,9 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
 
       ss << " nodes "    << nodesSearched
          << " nps "      << nodesSearched * 1000 / elapsed;
+
+      ss << " evals "    << nodesEvaluated
+         << " eps "      << nodesEvaluated * 1000 / elapsed;
 
       if (elapsed > 1000) // Earlier makes little sense
           ss << " hashfull " << TT.hashfull();

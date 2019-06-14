@@ -780,7 +780,8 @@ namespace {
   Value Evaluation<T>::value() {
 
     assert(!pos.checkers());
-
+    pos.this_thread()->posEvaluated += 1;
+	
     // Probe the material hash table
     me = Material::probe(pos);
 

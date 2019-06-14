@@ -400,7 +400,7 @@ void Thread::search() {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
-                  failedHighCnt = 0;
+                  failedHighCnt /= 2;
                   if (mainThread)
                       mainThread->stopOnPonderhit = false;
               }

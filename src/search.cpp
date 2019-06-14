@@ -1128,6 +1128,9 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
+		  
+		  //if (PvNode && alpha > Value(200) && value == VALUE_DRAW)
+		  //   break;
 
           if (value > alpha)
           {
@@ -1174,10 +1177,10 @@ moves_loop: // When in check, search starts from here
 
     // If after a long search evaluated positions dont progress, it is probably shuffling
     if (pos.rule50_count() > 10 
-       && ss->ply > 10
+	   && PvNode
        && ttHit
-       && depth > std::max(tte->depth() + 10 * ONE_PLY, 24 * ONE_PLY)
-       && thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 1)
+       && depth > std::max(tte->depth() + 2 * ONE_PLY, 4 * ONE_PLY)
+       && thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 2)
          bestValue = VALUE_DRAW;
 
     if (!moveCount)

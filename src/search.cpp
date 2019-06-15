@@ -1179,7 +1179,7 @@ moves_loop: // When in check, search starts from here
     if (pos.rule50_count() > 10 
 	   && PvNode
        && ttHit
-       && depth > std::max(tte->depth() + 2 * ONE_PLY, 4 * ONE_PLY)
+       && depth > std::max(tte->depth() + 2 * ONE_PLY, 8 * ONE_PLY)
        && thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 2)
          bestValue = VALUE_DRAW;
 

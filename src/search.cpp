@@ -1081,6 +1081,15 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+		  while (thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 10
+		         && value < beta
+				 && newDepth < depth + 4 * ONE_PLY
+				 && depth > tte->depth()
+				 && pos.rule50_count() > 10)
+		{
+			  newDepth += ONE_PLY;
+		      value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+		}
       }
 
       // Step 18. Undo move
@@ -1174,14 +1183,6 @@ moves_loop: // When in check, search starts from here
     // return a fail low score.
 
     assert(moveCount || !inCheck || excludedMove || !MoveList<LEGAL>(pos).size());
-
-    // If after a long search evaluated positions dont progress, it is probably shuffling
-    if (pos.rule50_count() > 10 
-	   && PvNode
-       && ttHit
-       && depth > std::max(tte->depth() + 2 * ONE_PLY, 8 * ONE_PLY)
-       && thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 2)
-         bestValue = VALUE_DRAW;
 
     if (!moveCount)
         bestValue = excludedMove ? alpha

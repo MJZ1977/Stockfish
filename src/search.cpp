@@ -1085,6 +1085,7 @@ moves_loop: // When in check, search starts from here
 		         && value < beta
 				 && newDepth < depth + 2 * ONE_PLY
 				 && depth > tte->depth()
+				 && ttHit
 				 && pos.rule50_count() > 14)
 		{
 			  newDepth += ONE_PLY;

@@ -1081,14 +1081,19 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
-		  while (thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 6
+		  while (thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated < 2
 		         && value < beta
-				 && newDepth < depth + 6 * ONE_PLY
+				 && newDepth < depth + 2 * ONE_PLY
 				 && depth > tte->depth()
 				 && pos.rule50_count() > 14)
 		{
 			  newDepth += ONE_PLY;
 		      value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+			  /*sync_cout << "Position = " << pos.fen()
+			            << " - depth = " << newDepth / ONE_PLY
+						<< " - Nodes = " << thisThread->nodes.load(std::memory_order_relaxed) - nodesSearched
+						<< " - Evals = " << thisThread->posEvaluated.load(std::memory_order_relaxed) - posEvaluated
+						<< " - rule50 = " << pos.rule50_count() << sync_endl;*/
 		}
       }
 

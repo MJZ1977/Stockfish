@@ -597,6 +597,13 @@ namespace {
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+    if (std::min(pos.rule50_count(),ss->ply) > 24
+        && pos.count<ALL_PIECES>() >= 8)
+    {
+        int shuffle_reduc = clamp(56 - std::min(pos.rule50_count(),ss->ply), 1, 32);
+        ttValue = ttValue * shuffle_reduc / 32;
+    }
+    
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
@@ -932,6 +939,9 @@ moves_loop: // When in check, search starts from here
       else if (   PvNode
                && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
+               && ttValue
+               && ttValue >= alpha
+               && ttValue <= beta
                && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches
           extension = ONE_PLY;
 

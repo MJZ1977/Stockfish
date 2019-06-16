@@ -1085,7 +1085,7 @@ moves_loop: // When in check, search starts from here
 		         && value < beta
 				 && newDepth < depth + 6 * ONE_PLY
 				 && depth > tte->depth()
-				 && pos.rule50_count() > 6)
+				 && pos.rule50_count() > 14)
 		{
 			  newDepth += ONE_PLY;
 		      value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);

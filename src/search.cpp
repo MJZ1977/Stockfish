@@ -599,7 +599,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     if (std::min(pos.rule50_count(),ss->ply) > 28
         && pos.count<ALL_PIECES>() >= 8
-        && ttValue)
+        && ttValue != VALUE_NONE)
     {
         int shuffle_reduc = clamp(44 - std::min(pos.rule50_count(),ss->ply), 1, 16);
         ttValue = ttValue * shuffle_reduc / 16;
@@ -940,7 +940,7 @@ moves_loop: // When in check, search starts from here
       else if (   PvNode
                && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
-               && ttValue
+               && ttValue != VALUE_NONE
                && ttValue >= alpha
                && ttValue < beta
                && ss->ply < 3 * thisThread->rootDepth / ONE_PLY) // To avoid too deep searches

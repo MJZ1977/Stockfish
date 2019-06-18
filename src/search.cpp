@@ -599,7 +599,7 @@ namespace {
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     if (std::min(pos.rule50_count(),ss->ply) > 28
         && pos.count<ALL_PIECES>() >= 8
-        && ttValue != VALUE_NONE)
+        && abs(ttValue) < VALUE_KNOWN_WIN)
     {
         int shuffle_reduc = clamp(44 - std::min(pos.rule50_count(),ss->ply), 1, 16);
         ttValue = ttValue * shuffle_reduc / 16;

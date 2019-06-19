@@ -597,11 +597,11 @@ namespace {
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
-    if (std::min(pos.rule50_count(),ss->ply) > 28
+    if (std::min(pos.rule50_count(),ss->ply) > 34
         && pos.count<ALL_PIECES>() >= 8
         && abs(ttValue) < VALUE_KNOWN_WIN)
     {
-        int shuffle_reduc = clamp(44 - std::min(pos.rule50_count(),ss->ply), 1, 16);
+        int shuffle_reduc = clamp(50 - std::min(pos.rule50_count(),ss->ply), 1, 16);
         ttValue = ttValue * shuffle_reduc / 16;
     }
 

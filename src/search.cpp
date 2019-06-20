@@ -1026,7 +1026,7 @@ moves_loop: // When in check, search starts from here
           if (rootNode && depth > 16 * ONE_PLY)
           {
              RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-             if(rm.nodesSearched < (thisThread->rootMoves[0].nodesSearched / 32))
+             if(rm.nodesSearched < (thisThread->rootMoves[0].nodesSearched / 24))
              {
               /*sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
                         << " currmovenumber " << moveCount + thisThread->pvIdx

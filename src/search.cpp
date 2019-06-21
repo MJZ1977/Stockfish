@@ -1080,6 +1080,14 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+		  
+		  if (value > alpha && value < beta && depth < 3 * ONE_PLY && ss->ply < thisThread->rootDepth / ONE_PLY)
+		  {
+              (ss+1)->pv = pv;
+              (ss+1)->pv[0] = MOVE_NONE;
+			  newDepth += ONE_PLY;
+			  value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+		  }
       }
 
       // Step 18. Undo move

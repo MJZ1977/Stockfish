@@ -930,11 +930,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Shuffle extension
-      else if (   PvNode
+      /*else if (   PvNode
                && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
-          extension = ONE_PLY;
+          extension = ONE_PLY;*/
 
       // Passed pawn extension
       else if (   move == ss->killers[0]

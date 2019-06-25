@@ -60,6 +60,7 @@ void Thread::clear() {
   counterMoves.fill(MOVE_NONE);
   mainHistory.fill(0);
   captureHistory.fill(0);
+  dynPSQT.fill(0);
 
   for (auto& to : continuationHistory)
       for (auto& h : to)

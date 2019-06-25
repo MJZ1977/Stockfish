@@ -312,7 +312,7 @@ namespace {
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (maxDynPSQT - minDynPSQT > 0 && maxDynPSQT - minDynPSQT < 100000)
-           score += make_score(1, 1) * (1 * (int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]) - (minDynPSQT + maxDynPSQT) / 2) / (maxDynPSQT - minDynPSQT));
+           score += make_score(1, 1) * (1 * (int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]) - (minDynPSQT + maxDynPSQT) / 2) / (maxDynPSQT - minDynPSQT)) / 8;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

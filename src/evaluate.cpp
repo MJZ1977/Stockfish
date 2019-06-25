@@ -261,14 +261,16 @@ namespace {
     kingRing[Us] &= ~dblAttackByPawn;
 
     //minDynPSQT and maxDynPSQT
-    b = pos.pieces(Us) & ~pos.pieces(Us, PAWN, KING);
+	maxDynPSQT = 100;
+	minDynPSQT = 20;
+    /*b = pos.pieces(Us) & ~pos.pieces(Us, PAWN, KING);
     while (b)
 	{
 	    Square s = pop_lsb(&b);
 	    int dynPSQT = int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]);
 	    maxDynPSQT = std::max(maxDynPSQT,dynPSQT);
 	    minDynPSQT = std::min(minDynPSQT,dynPSQT);
-    }
+    }*/
   }
 
   // Evaluation::pieces() scores pieces of a given color and type

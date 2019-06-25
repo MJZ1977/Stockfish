@@ -1209,8 +1209,8 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-    if (pos.capture_or_promotion(bestMove))
-       thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 1;
+    if (PvNode && depth > 6 * ONE_PLY)
+       thisThread->dynPSQT[pos.moved_piece(bestMove)][to_sq(bestMove)] << 1;
 
     return bestValue;
   }

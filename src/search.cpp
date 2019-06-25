@@ -815,10 +815,7 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
-                {
-					thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << 1;
                     return value;
-				}
             }
     }
 
@@ -1212,8 +1209,8 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-   // if (pos.capture_or_promotion(bestMove))
-   //    thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 1;
+    if (pos.capture_or_promotion(bestMove))
+       thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 1;
 
     return bestValue;
   }

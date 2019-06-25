@@ -1065,7 +1065,7 @@ moves_loop: // When in check, search starts from here
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
-
+		  
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
@@ -1088,6 +1088,14 @@ moves_loop: // When in check, search starts from here
 
       // Step 18. Undo move
       pos.undo_move(move);
+
+	  if (PvNode && depth > 6 * ONE_PLY && !pos.capture_or_promotion(move))
+	  {
+	      if (value < alpha - Value(50))
+		    thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << -1;
+	      else
+		    thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << 1;
+	  }
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
@@ -1209,8 +1217,11 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-    if (PvNode && depth > 6 * ONE_PLY)
-       thisThread->dynPSQT[pos.moved_piece(bestMove)][to_sq(bestMove)] << 1;
+    if (PvNode && depth > 6 * ONE_PLY && !pos.capture_or_promotion(bestMove))
+	{
+       thisThread->dynPSQT[pos.moved_piece(bestMove)][to_sq(bestMove)] << 10;
+	   thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 4;
+	}
 
     return bestValue;
   }

@@ -211,8 +211,8 @@ namespace {
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
 
-    int maxDynPSQT = 0;
-    int minDynPSQT = 100000;
+    //int maxDynPSQT = 0;
+    //int minDynPSQT = 100000;
   };
 
 
@@ -261,8 +261,8 @@ namespace {
     kingRing[Us] &= ~dblAttackByPawn;
 
     //minDynPSQT and maxDynPSQT
-	maxDynPSQT = 100;
-	minDynPSQT = 20;
+	//maxDynPSQT = 100;
+	//minDynPSQT = 20;
     /*b = pos.pieces(Us) & ~pos.pieces(Us, PAWN, KING);
     while (b)
 	{
@@ -312,9 +312,16 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
-
-        if (maxDynPSQT - minDynPSQT > 0 && maxDynPSQT - minDynPSQT < 100000)
-           score += make_score(1, 1) * (1 * (int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]) - (minDynPSQT + maxDynPSQT) / 2) / (maxDynPSQT - minDynPSQT)) / 8;
+		
+		int dynPSQT = int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]); 
+        if (dynPSQT > 400)
+			score += make_score(4,4);
+        else if (dynPSQT > 60)
+			score += make_score(2,2);
+        else if (dynPSQT < -60)
+			score -= make_score(2,2);
+        else if (dynPSQT < -400)
+			score -= make_score(4,4);
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

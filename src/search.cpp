@@ -599,7 +599,7 @@ namespace {
 		thisThread->shuffleSearch = false;
 		if (v == VALUE_DRAW)
 		{
-			sync_cout << "Shuffle : " << pos.fen() << sync_endl;
+			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
 			return v;
 		}
 	}

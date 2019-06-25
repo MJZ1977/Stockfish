@@ -210,6 +210,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    int maxDynPSQT = 0;
+    int minDynPSQT = 100000;
   };
 
 
@@ -256,8 +259,17 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
-  }
 
+    //minDynPSQT and maxDynPSQT
+    b = pos.pieces(Us) & ~pos.pieces(Us, PAWN, KING);
+    while (b)
+	{
+	    Square s = pop_lsb(&b);
+	    int dynPSQT = int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]);
+	    maxDynPSQT = std::max(maxDynPSQT,dynPSQT);
+	    minDynPSQT = std::min(minDynPSQT,dynPSQT);
+    }
+  }
 
   // Evaluation::pieces() scores pieces of a given color and type
   template<Tracing T> template<Color Us, PieceType Pt>
@@ -298,6 +310,9 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+
+        if (maxDynPSQT - minDynPSQT > 0 && maxDynPSQT - minDynPSQT < 100000)
+           score += make_score(1, 1) * (4 * (int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]) - (minDynPSQT + maxDynPSQT) / 2) / (maxDynPSQT - minDynPSQT));
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

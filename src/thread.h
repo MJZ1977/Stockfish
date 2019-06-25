@@ -71,6 +71,7 @@ public:
   ButterflyHistory mainHistory;
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory;
+  PieceToHistory dynPSQT;
   Score contempt;
 };
 

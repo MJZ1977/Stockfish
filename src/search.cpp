@@ -878,6 +878,10 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
+      /*if (rootNode)
+          sync_cout << " currmove " << UCI::move(move, pos.is_chess960())
+                    << " ContHist " << thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << sync_endl;*/
+
       // Step 13. Extensions (~70 Elo)
 
       // Singular extension search (~60 Elo). If all moves but one fail low on a
@@ -1204,6 +1208,9 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+
+    if (pos.capture_or_promotion(bestMove))
+       thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 1;
 
     return bestValue;
   }

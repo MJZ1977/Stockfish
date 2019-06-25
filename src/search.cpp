@@ -518,10 +518,11 @@ namespace {
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
 	{
-		if(thisThread->shuffleSearch && pos.rule50_count() > 38)
-			return VALUE_DRAW;
+		Value v = qsearch<NT>(pos, ss, alpha, beta);
+		if(thisThread->shuffleSearch && pos.rule50_count() > 42)
+			return std::min(v, VALUE_DRAW);
 		else
-            return qsearch<NT>(pos, ss, alpha, beta);
+            return v;
 	}
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
@@ -586,18 +587,21 @@ namespace {
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // In case of high rule50 counter, enter in shuffle search mode
-    if (std::min(pos.rule50_count(),ss->ply) > 28 
-	    && depth > 10 * ONE_PLY 
-		&& !thisThread->shuffleSearch 
-		&& pos.count<ALL_PIECES>() >= 8 
+    if (   std::min(pos.rule50_count(), ss->ply) > 28
+	    && depth < 12 * ONE_PLY
+		&& !thisThread->shuffleSearch
+		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(100))
 	{
 		thisThread->shuffleSearch = true;
 		Value shuffle_v = VALUE_DRAW;
 		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
-		if (v == VALUE_DRAW)
-			return v;
 		thisThread->shuffleSearch = false;
+		if (v == VALUE_DRAW)
+		{
+			sync_cout << "Shuffle : " << pos.fen() << sync_endl;
+			return v;
+		}
 	}
 
     // Initialize statScore to zero for the grandchildren of the current position.
@@ -649,7 +653,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return thisThread->shuffleSearch? VALUE_DRAW : ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > 28)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -907,6 +911,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin then we will extend the ttMove.
       if (    depth >= 8 * ONE_PLY
           &&  move == ttMove
+          && !thisThread->shuffleSearch
           && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1040,6 +1045,14 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+
+          /*if (thisThread->shuffleSearch)
+          {
+			  if (ss->staticEval > 0)
+			     r -= ONE_PLY;
+			  else
+			     r += 3 * ONE_PLY;
+		  }*/
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;

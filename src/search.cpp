@@ -1090,12 +1090,20 @@ moves_loop: // When in check, search starts from here
       // Step 18. Undo move
       pos.undo_move(move);
 
-	  if (PvNode && depth > 6 * ONE_PLY && !pos.capture_or_promotion(move))
+	  if (PvNode 
+	      && depth > 6 * ONE_PLY 
+		  && !pos.capture_or_promotion(move) 
+		  && ss->staticEval != VALUE_NONE
+		  && (ss+1)->staticEval != VALUE_NONE)
 	  {
-	      if (value < alpha - Value(50))
-		    thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << -1;
-	      else
-		    thisThread->dynPSQT[pos.moved_piece(move)][from_sq(move)] << 1;
+	      if (ss->staticEval < -(ss+1)->staticEval + Value(50))
+		  {
+		    thisThread->dynPSQT[pos.moved_piece(move)][to_sq(move)] << -1;
+		  }
+	      else if (ss->staticEval > -(ss+1)->staticEval + Value(80))
+		  {
+		    thisThread->dynPSQT[pos.moved_piece(move)][to_sq(move)] << 1;
+		  }
 	  }
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
@@ -1217,12 +1225,6 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
-
-    if (PvNode && depth > 6 * ONE_PLY && !pos.capture_or_promotion(bestMove))
-	{
-       thisThread->dynPSQT[pos.moved_piece(bestMove)][to_sq(bestMove)] << 10;
-	   thisThread->dynPSQT[pos.moved_piece(bestMove)][from_sq(bestMove)] << 4;
-	}
 
     return bestValue;
   }

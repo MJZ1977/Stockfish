@@ -314,14 +314,7 @@ namespace {
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 		
 		int dynPSQT = int(pos.this_thread()->dynPSQT[pos.piece_on(s)][s]); 
-        if (dynPSQT > 400)
-			score += make_score(4,4);
-        else if (dynPSQT > 60)
-			score += make_score(2,2);
-        else if (dynPSQT < -60)
-			score -= make_score(2,2);
-        else if (dynPSQT < -400)
-			score -= make_score(4,4);
+	    score += make_score(1,1) * clamp(dynPSQT / 100, -4 , 4);
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

@@ -1130,7 +1130,8 @@ bool Position::see_ge(Move m, Value threshold) const {
 
 bool Position::is_draw(int ply) const {
 
-  if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
+  int shuffleLimit = count<ALL_PIECES>() >= 8 ? 39 : 99;
+  if ((st->rule50 > 99 || std::min(ply, st->rule50) > shuffleLimit) && (!checkers() || MoveList<LEGAL>(*this).size()))
       return true;
 
   // Return a draw score if a position repeats once earlier but strictly

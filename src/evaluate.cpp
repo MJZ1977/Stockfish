@@ -832,7 +832,7 @@ namespace {
     ScaleFactor sf = scale_factor(eg_value(score));
     int gamePhase = int(me->game_phase());
     if (abs(eg_value(score)) > abs(mg_value(score)) + Value(100))
-       gamePhase = std::max(gamePhase - 1, 0);
+       gamePhase = std::max(gamePhase - (abs(eg_value(score)) - abs(mg_value(score))) / 100, 0);
     v =  mg_value(score) * gamePhase
        + eg_value(score) * (int(PHASE_MIDGAME) - gamePhase) * sf / SCALE_FACTOR_NORMAL;
 

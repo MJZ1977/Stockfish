@@ -589,17 +589,23 @@ namespace {
     // Bonus for pawn majority far from opponent king
     if (pos.non_pawn_material() < 8000)
     {
-        Bitboard TheirCamp = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB | Rank7BB
-                                          : Rank2BB | Rank3BB | Rank4BB | Rank5BB);
+        Bitboard bb;
         if (file_of(pos.square<KING>(Them)) < FILE_C)
+        {
            b = FileGBB | FileHBB;
+           bb = b | FileFBB;
+        }
         else if (file_of(pos.square<KING>(Them)) > FILE_F)
+        {
            b = FileABB | FileBBB;
+           bb = b | FileCBB;
+        }
         else
            b = Bitboard(0);
 
-        if (popcount(b & pos.pieces(Us,PAWN) & TheirCamp) > popcount(b & pos.pieces(Them,PAWN)) + 1)
-          score += make_score(0, 6);
+        if (b)
+          if (popcount(b & pos.pieces(Us,PAWN)) > popcount(bb & pos.pieces(Them,PAWN)) + 1)
+            score += make_score(0, 6);
     }
 
     if (T)

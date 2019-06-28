@@ -586,6 +586,20 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Bonus for pawn majority far from opponent king
+    if (pos.non_pawn_material() < 8000)
+    {
+        if (file_of(pos.square<KING>(Them)) < FILE_D)
+           b = FileGBB | FileHBB;
+        else if (file_of(pos.square<KING>(Them)) > FILE_E)
+           b = FileABB | FileBBB;
+        else
+           b = Bitboard(0);
+
+        if (popcount(b & pos.pieces(Us,PAWN)) > popcount(b & pos.pieces(Them,PAWN)) + 1)
+          score += make_score(0, 10);
+    }
+
     if (T)
         Trace::add(THREAT, Us, score);
 

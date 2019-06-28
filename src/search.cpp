@@ -587,8 +587,8 @@ namespace {
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // In case of high rule50 counter, enter in shuffle search mode
-    if (   std::min(pos.rule50_count(), ss->ply) > 28
-	    && depth < 12 * ONE_PLY
+    if (   std::min(pos.rule50_count(), ss->ply) > 20
+	    && depth < 20 * ONE_PLY
 		&& !thisThread->shuffleSearch
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(100))
@@ -653,7 +653,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return (thisThread->shuffleSearch && pos.rule50_count() > 28)? std::min(ttValue, VALUE_DRAW) : ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > 20)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -955,11 +955,11 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Shuffle extension
-      /*else if (   PvNode
+      else if (   PvNode
                && pos.rule50_count() > 18
-               && depth < 3 * ONE_PLY
-               && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
-          extension = ONE_PLY;*/
+               && depth < 3 * ONE_PLY)
+               //&& ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
+          extension = ONE_PLY;
 
       // Passed pawn extension
       else if (   move == ss->killers[0]

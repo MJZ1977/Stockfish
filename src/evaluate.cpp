@@ -587,7 +587,7 @@ namespace {
     }
 
     // Bonus for pawn majority far from opponent king
-    if (pos.non_pawn_material() < 8000)
+    if (pos.non_pawn_material() < 6000)
     {
         Bitboard bb;
         if (file_of(pos.square<KING>(Them)) < FILE_C)
@@ -605,7 +605,7 @@ namespace {
 
         if (b)
           if (popcount(b & pos.pieces(Us,PAWN)) > popcount(bb & pos.pieces(Them,PAWN)) + 1)
-            score += make_score(0, 10);
+            score += make_score(0, 6);
     }
 
     if (T)

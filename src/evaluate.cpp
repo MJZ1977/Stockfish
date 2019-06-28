@@ -587,7 +587,7 @@ namespace {
     }
 
     // Bonus for pawn majority far from opponent king
-    if (pos.non_pawn_material() < 8000)
+    if (pos.non_pawn_material() < 6000)
     {
         Bitboard bb;
         if (file_of(pos.square<KING>(Them)) < FILE_C)

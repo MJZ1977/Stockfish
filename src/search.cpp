@@ -63,6 +63,7 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
+  constexpr int shuffleLimit = 16;
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
   }
@@ -519,7 +520,7 @@ namespace {
     if (depth < ONE_PLY)
 	{
 		Value v = qsearch<NT>(pos, ss, alpha, beta);
-		if(thisThread->shuffleSearch && pos.rule50_count() > 42)
+		if(thisThread->shuffleSearch && pos.rule50_count() > 38)
 			return std::min(v, VALUE_DRAW);
 		else
             return v;
@@ -587,15 +588,15 @@ namespace {
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // In case of high rule50 counter, enter in shuffle search mode
-    if (   std::min(pos.rule50_count(), ss->ply) > 20
-	    && depth < 20 * ONE_PLY
+    if (   std::min(pos.rule50_count(), ss->ply) > shuffleLimit
+	    && depth < 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
 		&& !thisThread->shuffleSearch
 		&& pos.count<ALL_PIECES>() >= 8
-		&& alpha > Value(100))
+		&& alpha > Value(10))
 	{
 		thisThread->shuffleSearch = true;
 		Value shuffle_v = VALUE_DRAW;
-		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
+		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth, cutNode);
 		thisThread->shuffleSearch = false;
 		if (v == VALUE_DRAW)
 		{
@@ -653,7 +654,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return (thisThread->shuffleSearch && pos.rule50_count() > 20)? std::min(ttValue, VALUE_DRAW) : ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -962,7 +963,7 @@ moves_loop: // When in check, search starts from here
 
       // Shuffle extension
       else if (   PvNode
-               && pos.rule50_count() > 18
+               && pos.rule50_count() > shuffleLimit
                && depth < 3 * ONE_PLY
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
           extension = ONE_PLY;
@@ -1052,13 +1053,13 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          /*if (thisThread->shuffleSearch)
+          if (thisThread->shuffleSearch)
           {
 			  if (ss->staticEval > 0)
 			     r -= ONE_PLY;
 			  else
 			     r += 3 * ONE_PLY;
-		  }*/
+		  }
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
@@ -1308,7 +1309,7 @@ moves_loop: // When in check, search starts from here
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
-        return ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
 
     // Evaluate the position statically
     if (inCheck)
@@ -1341,7 +1342,7 @@ moves_loop: // When in check, search starts from here
                 tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit, BOUND_LOWER,
                           DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
-            return bestValue;
+            return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(bestValue, VALUE_DRAW) : bestValue;
         }
 
         if (PvNode && bestValue > alpha)

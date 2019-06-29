@@ -736,6 +736,7 @@ namespace {
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 23200
+		&& (ss-1)->moveCount > 1
         &&  eval >= beta
         &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
         && !excludedMove

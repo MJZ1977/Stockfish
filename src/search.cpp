@@ -767,7 +767,7 @@ namespace {
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
 			
-			if ((ss-1)->moveCount > 8)
+			if ((ss-1)->moveCount > 12)
 				R += ONE_PLY;
 
             // Do verification search at high depths, with null move pruning disabled

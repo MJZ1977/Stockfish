@@ -63,6 +63,7 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
+  constexpr int shuffleLimit = 26;
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
   }
@@ -501,6 +502,7 @@ namespace {
 
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
+    Thread* thisThread = pos.this_thread();
 
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
@@ -516,7 +518,13 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return qsearch<NT>(pos, ss, alpha, beta);
+	{
+		Value v = qsearch<NT>(pos, ss, alpha, beta);
+		if(thisThread->shuffleSearch && pos.rule50_count() > 38)
+			return std::min(v, VALUE_DRAW);
+		else
+            return v;
+	}
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -537,7 +545,6 @@ namespace {
     int moveCount, captureCount, quietCount, singularLMR;
 
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
@@ -579,6 +586,24 @@ namespace {
     (ss+1)->excludedMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
+
+    // In case of high rule50 counter, enter in shuffle search mode
+    if (   std::min(pos.rule50_count(), ss->ply) > shuffleLimit
+	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
+		&& !thisThread->shuffleSearch
+		&& pos.count<ALL_PIECES>() >= 8
+		&& alpha > Value(10))
+	{
+		thisThread->shuffleSearch = true;
+		Value shuffle_v = VALUE_DRAW;
+		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth, cutNode);
+		thisThread->shuffleSearch = false;
+		if (v == VALUE_DRAW)
+		{
+			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
+			return v;
+		}
+	}
 
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
@@ -629,7 +654,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -684,7 +709,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck)
+    if (inCheck || thisThread->shuffleSearch)
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
@@ -893,6 +918,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin then we will extend the ttMove.
       if (    depth >= 8 * ONE_PLY
           &&  move == ttMove
+          && !thisThread->shuffleSearch
           && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1026,6 +1052,14 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+
+          if (thisThread->shuffleSearch)
+          {
+			  if (ss->staticEval > 0)
+			     r -= ONE_PLY;
+			  else
+			     r += 3 * ONE_PLY;
+		  }
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
@@ -1275,7 +1309,7 @@ moves_loop: // When in check, search starts from here
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
-        return ttValue;
+        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
 
     // Evaluate the position statically
     if (inCheck)
@@ -1308,7 +1342,7 @@ moves_loop: // When in check, search starts from here
                 tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit, BOUND_LOWER,
                           DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
-            return bestValue;
+            return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(bestValue, VALUE_DRAW) : bestValue;
         }
 
         if (PvNode && bestValue > alpha)

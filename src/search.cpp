@@ -63,7 +63,7 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
-  constexpr int shuffleLimit = 16;
+  constexpr int shuffleLimit = 24;
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
   }
@@ -589,7 +589,7 @@ namespace {
 
     // In case of high rule50 counter, enter in shuffle search mode
     if (   std::min(pos.rule50_count(), ss->ply) > shuffleLimit
-	    && depth < 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
+	    && depth > 8 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
 		&& !thisThread->shuffleSearch
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
@@ -963,7 +963,7 @@ moves_loop: // When in check, search starts from here
 
       // Shuffle extension
       else if (   PvNode
-               && pos.rule50_count() > shuffleLimit
+               && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
           extension = ONE_PLY;

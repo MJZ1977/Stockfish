@@ -644,10 +644,10 @@ namespace {
 		Value shuffle_v = VALUE_DRAW;
 		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
 		thisThread->shuffleLimit = 0;
-		if (v == VALUE_DRAW)
+		if (v <= VALUE_DRAW)
 		{
 			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
-			return v;
+			return VALUE_DRAW;
 		}
 	}
 

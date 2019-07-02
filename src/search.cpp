@@ -635,12 +635,12 @@ namespace {
 
     // In case of high rule50 counter, enter in shuffle search mode
     if (   std::min(pos.rule50_count(), ss->ply) > 24
-	    && depth > 8 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
+	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
 		&& thisThread->shuffleLimit == 0
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
 	{
-		thisThread->shuffleLimit = clamp(18 + depth / ONE_PLY, 25, 49);
+		thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY, 25, 41);
 		Value shuffle_v = VALUE_DRAW;
 		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
 		thisThread->shuffleLimit = 0;

@@ -648,10 +648,13 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
 
+    // Mark this node as being searched.
+    ThreadHolding th(thisThread, posKey, ss->ply);
+
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
-        && tte->depth() >= depth
+        && tte->depth() >= (depth - (th.marked() ? ONE_PLY : DEPTH_ZERO))
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
@@ -893,9 +896,6 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-
-    // Mark this node as being searched.
-    ThreadHolding th(thisThread, posKey, ss->ply);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

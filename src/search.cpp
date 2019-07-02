@@ -63,7 +63,6 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
-  constexpr int shuffleLimit = 26;
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
   }
@@ -520,7 +519,7 @@ namespace {
     if (depth < ONE_PLY)
 	{
 		Value v = qsearch<NT>(pos, ss, alpha, beta);
-		if(thisThread->shuffleSearch && pos.rule50_count() > 38)
+		if(thisThread->shuffleLimit && pos.rule50_count() > 38)
 			return std::min(v, VALUE_DRAW);
 		else
             return v;
@@ -588,16 +587,16 @@ namespace {
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // In case of high rule50 counter, enter in shuffle search mode
-    if (   std::min(pos.rule50_count(), ss->ply) > shuffleLimit
+    if (   std::min(pos.rule50_count(), ss->ply) > 24
 	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
 		&& !thisThread->shuffleSearch
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
 	{
-		thisThread->shuffleSearch = true;
+		thisThread->shuffleLimit = std::min(pos.rule50_count() + depth / ONE_PLY - 2, 41);
 		Value shuffle_v = VALUE_DRAW;
-		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth, cutNode);
-		thisThread->shuffleSearch = false;
+		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
+		thisThread->shuffleLimit = 0;
 		if (v == VALUE_DRAW)
 		{
 			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;

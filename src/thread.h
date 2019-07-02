@@ -62,7 +62,7 @@ public:
   size_t pvIdx, multiPV, pvLast, shuffleExts;
   int selDepth, nmpMinPly;
   Color nmpColor;
-  bool shuffleSearch;
+  int shuffleLimit;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 
   Position rootPos;

@@ -636,7 +636,7 @@ namespace {
     // In case of high rule50 counter, enter in shuffle search mode
     if (   std::min(pos.rule50_count(), ss->ply) > 24
 	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
-		&& !thisThread->shuffleSearch
+		&& thisThread->shuffleLimit == 0
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
 	{
@@ -700,7 +700,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
+        return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -755,7 +755,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck || thisThread->shuffleSearch)
+    if (inCheck || thisThread->shuffleLimit > 0)
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
@@ -967,7 +967,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin then we will extend the ttMove.
       if (    depth >= 8 * ONE_PLY
           &&  move == ttMove
-          && !thisThread->shuffleSearch
+          && thisThread->shuffleLimit > 0
           && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1106,7 +1106,7 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          if (thisThread->shuffleSearch)
+          if (thisThread->shuffleLimit > 0)
           {
 			  if (ss->staticEval > 0)
 			     r -= ONE_PLY;
@@ -1362,7 +1362,7 @@ moves_loop: // When in check, search starts from here
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
-        return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
+        return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
 
     // Evaluate the position statically
     if (inCheck)
@@ -1395,7 +1395,7 @@ moves_loop: // When in check, search starts from here
                 tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit, BOUND_LOWER,
                           DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
-            return (thisThread->shuffleSearch && pos.rule50_count() > shuffleLimit)? std::min(bestValue, VALUE_DRAW) : bestValue;
+            return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(bestValue, VALUE_DRAW) : bestValue;
         }
 
         if (PvNode && bestValue > alpha)

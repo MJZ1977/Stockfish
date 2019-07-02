@@ -566,7 +566,7 @@ namespace {
     if (depth < ONE_PLY)
 	{
 		Value v = qsearch<NT>(pos, ss, alpha, beta);
-		if(thisThread->shuffleLimit && pos.rule50_count() > 38)
+		if(thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)
 			return std::min(v, VALUE_DRAW);
 		else
             return v;
@@ -635,12 +635,12 @@ namespace {
 
     // In case of high rule50 counter, enter in shuffle search mode
     if (   std::min(pos.rule50_count(), ss->ply) > 24
-	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
+	    && depth > 8 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
 		&& thisThread->shuffleLimit == 0
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
 	{
-		thisThread->shuffleLimit = std::min(pos.rule50_count() + depth / ONE_PLY - 2, 41);
+		thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY, 25, 49);
 		Value shuffle_v = VALUE_DRAW;
 		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
 		thisThread->shuffleLimit = 0;
@@ -967,7 +967,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin then we will extend the ttMove.
       if (    depth >= 8 * ONE_PLY
           &&  move == ttMove
-          && thisThread->shuffleLimit > 0
+          && thisThread->shuffleLimit == 0
           && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */

@@ -640,7 +640,7 @@ namespace {
 		&& pos.count<ALL_PIECES>() >= 8
 		&& alpha > Value(10))
 	{
-		thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY, 25, 49);
+		thisThread->shuffleLimit = clamp(18 + depth / ONE_PLY, 25, 49);
 		Value shuffle_v = VALUE_DRAW;
 		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
 		thisThread->shuffleLimit = 0;

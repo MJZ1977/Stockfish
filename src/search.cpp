@@ -649,6 +649,7 @@ namespace {
 			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
 			return VALUE_DRAW;
 		}
+		//sync_cout << "Shuffle negative : " << pos.fen() << sync_endl;
 	}
 
     // Initialize statScore to zero for the grandchildren of the current position.

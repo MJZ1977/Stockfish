@@ -1008,7 +1008,7 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= (futility_move_count(improving, depth / ONE_PLY)
-                                          + (improved ? -1 : 1));
+                                          + (improved ? 0 : 1));
 
           if (   !captureOrPromotion
               && !givesCheck

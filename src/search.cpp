@@ -1007,7 +1007,8 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = improved && (moveCount >= futility_move_count(improving, depth / ONE_PLY));
+          moveCountPruning = moveCount >= (futility_move_count(improving, depth / ONE_PLY)
+                                          + (improved ? -1 : 1));
 
           if (   !captureOrPromotion
               && !givesCheck
@@ -1143,7 +1144,7 @@ moves_loop: // When in check, search starts from here
       }
 
       if ((ss+1)->staticEval != VALUE_NONE)
-         improved |= (ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(200);
+         improved |= (ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(100);
       else
          improved = true;
 

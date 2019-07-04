@@ -1144,7 +1144,7 @@ moves_loop: // When in check, search starts from here
       }
 
       if ((ss+1)->staticEval != VALUE_NONE)
-         improved |= (ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(100);
+         improved |= ((ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(100) && !captureOrPromotion);
       else
          improved = true;
 

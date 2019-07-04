@@ -1143,13 +1143,13 @@ moves_loop: // When in check, search starts from here
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
 
-      if ((ss+1)->staticEval != VALUE_NONE)
-         improved |= ((ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(100) && !captureOrPromotion);
-      else
-         improved = true;
-
       // Step 18. Undo move
       pos.undo_move(move);
+
+      if ((ss+1)->staticEval != VALUE_NONE)
+         improved |= ((ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo + Value(100) && !pos.capture(move));
+      else
+         improved = true;
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 

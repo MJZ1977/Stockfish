@@ -585,7 +585,7 @@ namespace {
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
-    inCheck = pos.checkers();
+    improved = inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
@@ -1142,8 +1142,10 @@ moves_loop: // When in check, search starts from here
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
       }
 
-      if ((ss+1)->staticEval != VALUE_NONE && ss->staticEval != VALUE_NONE)
+      if ((ss+1)->staticEval != VALUE_NONE)
          improved |= (ss+1)->staticEval <= -(ss->staticEval) + 2 * Eval::Tempo;
+      else
+         improved = true;
 
       // Step 18. Undo move
       pos.undo_move(move);
@@ -1218,6 +1220,13 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+
+    /*if (!improved && moveCountPruning)
+       sync_cout << "Position = " << pos.fen()
+                 << " Best move = " << UCI::move(bestMove, pos.is_chess960())
+                 << " move count = " << moveCount
+                 << " ss = " << ss->staticEval
+                 << " ss+1 = " << (ss+1)->staticEval << sync_endl;*/
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

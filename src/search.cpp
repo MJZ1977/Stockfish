@@ -994,7 +994,7 @@ moves_loop: // When in check, search starts from here
 
       // Extend first plies of PV line for winning side_to_move
       else if (   PvNode
-               && alpha > Value(320)
+               && alpha > Value(360)
                && ss->ply < thisThread->rootDepth / ONE_PLY / 4
                && move == ttMove)
           extension = ONE_PLY;

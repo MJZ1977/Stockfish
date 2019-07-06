@@ -146,7 +146,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-
+	
     return score;
   }
 
@@ -170,6 +170,8 @@ Entry* probe(const Position& pos) {
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
+  e->Outposts[WHITE] = 	(Rank4BB | Rank5BB | Rank6BB) & e->pawnAttacks[WHITE] & ~e->pawn_attacks_span(BLACK);
+  e->Outposts[BLACK] = 	(Rank5BB | Rank4BB | Rank3BB) & e->pawnAttacks[BLACK] & ~e->pawn_attacks_span(WHITE);
 
   return e;
 }

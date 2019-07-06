@@ -309,6 +309,9 @@ namespace {
 
             else if (bb & b & ~pos.pieces(Us))
                 score += Outpost / (Pt == KNIGHT ? 1 : 2);
+			
+			else if (attackedBy[Us][PAWN] & s)
+				score += make_score(2, 2);
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

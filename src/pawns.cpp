@@ -146,7 +146,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-	
+
     return score;
   }
 

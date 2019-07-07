@@ -780,7 +780,7 @@ namespace {
         return eval;
 
     // Random  beta cutoff if ttValue and staticEval much higher than beta
-    //if (Limits.use_time_management() && Time.elapsed() < Time.optimum() / 2)
+    if (Limits.use_time_management() && Time.elapsed() < Time.optimum() / 2)
 	  if (  !PvNode
         && ttHit
         && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)

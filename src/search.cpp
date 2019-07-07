@@ -787,7 +787,7 @@ namespace {
         && ttValue >= beta + Value(240)
         && ss->staticEval > beta + Value(240)
         && (tte->bound() & BOUND_LOWER))
-            if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
+            if (thisThread->nodes.load(std::memory_order_relaxed) % 4 == 3)
                 return ttValue;
 
     // Step 9. Null move search with verification search (~40 Elo)

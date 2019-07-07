@@ -780,13 +780,12 @@ namespace {
         return eval;
 
     // Random  beta cutoff if ttValue and staticEval much higher than beta
-    //if (Limits.use_time_management() && Time.elapsed() < Time.optimum() / 2)
-	  if (  !PvNode
+	if (  !PvNode
         && ttHit
         && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)
         && ttValue != VALUE_NONE // Possible in case of TT access race
-        && ttValue >= beta + Value(200)
-        && ss->staticEval > beta + Value(200)
+        && ttValue >= beta + Value(160)
+        && ss->staticEval > beta + Value(160)
         && (tte->bound() & BOUND_LOWER))
             if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
                 return ttValue;

@@ -784,8 +784,8 @@ namespace {
         && ttHit
         && tte->depth() >= std::max(depth - 2 * ONE_PLY, 8 * ONE_PLY)
         && ttValue != VALUE_NONE // Possible in case of TT access race
-        && ttValue >= beta + Value(160)
-        && ss->staticEval > beta + Value(160)
+        && ttValue >= beta + Value(240)
+        && ss->staticEval > beta + Value(240)
         && (tte->bound() & BOUND_LOWER))
             if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
                 return ttValue;

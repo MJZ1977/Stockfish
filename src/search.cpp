@@ -762,7 +762,7 @@ namespace {
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
-	
+
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2 * ONE_PLY
@@ -787,7 +787,7 @@ namespace {
         && ttValue >= beta + Value(280)
         && ss->staticEval > beta + Value(280)
         && (tte->bound() & BOUND_LOWER))
-            if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
+            if (thisThread->nodes.load(std::memory_order_relaxed) % 10 == 3)
                 return ttValue;
 
     // Step 9. Null move search with verification search (~40 Elo)
@@ -873,7 +873,12 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
+                {
+                    if (!excludedMove)
+                        tte->save(posKey, value_to_tt(value, ss->ply), ttPv,
+                             BOUND_LOWER, depth - 4 * ONE_PLY, move, ss->staticEval);
                     return value;
+                }
             }
     }
 

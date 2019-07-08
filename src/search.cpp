@@ -762,7 +762,7 @@ namespace {
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
-	
+
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2 * ONE_PLY
@@ -784,10 +784,10 @@ namespace {
         && ttHit
         && tte->depth() >= std::max(depth - 2 * ONE_PLY, 6 * ONE_PLY)
         && ttValue != VALUE_NONE // Possible in case of TT access race
-        && ttValue >= beta + Value(240)
-        && ss->staticEval > beta + Value(240)
+        && ttValue >= beta + Value(280)
+        && ss->staticEval > beta + Value(280)
         && (tte->bound() & BOUND_LOWER))
-            if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
+            if (thisThread->nodes.load(std::memory_order_relaxed) % 6 == 3)
                 return ttValue;
 
     // Step 9. Null move search with verification search (~40 Elo)

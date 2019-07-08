@@ -782,12 +782,12 @@ namespace {
     // Random  beta cutoff if ttValue and staticEval much higher than beta
 	if (  !PvNode
         && ttHit
-        && tte->depth() >= std::max(depth - 2 * ONE_PLY, 6 * ONE_PLY)
+        && tte->depth() >= std::max(depth - ONE_PLY, 6 * ONE_PLY)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && ttValue >= beta + Value(280)
         && ss->staticEval > beta + Value(280)
         && (tte->bound() & BOUND_LOWER))
-            if (thisThread->nodes.load(std::memory_order_relaxed) % 10 == 3)
+            if (thisThread->nodes.load(std::memory_order_relaxed) % 8 == 3)
                 return ttValue;
 
     // Step 9. Null move search with verification search (~40 Elo)

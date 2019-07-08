@@ -934,7 +934,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY)
+      if (rootNode && moveCount > 2 && depth > 4 * ONE_PLY)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
           candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (6 + depth / ONE_PLY / 4));
@@ -1073,7 +1073,7 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
-          &&  moveCount > 1 + 3 * rootNode
+          &&  moveCount > 1 + rootNode
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))

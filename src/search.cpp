@@ -782,7 +782,7 @@ namespace {
     // Random  beta cutoff if ttValue and staticEval much higher than beta
 	if (  !PvNode
         && ttHit
-        && tte->depth() >= std::max(depth - ONE_PLY, 6 * ONE_PLY)
+        && tte->depth() >= std::max(depth - 3 * ONE_PLY, 6 * ONE_PLY)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && ttValue >= beta + Value(280)
         && ss->staticEval > beta + Value(280)

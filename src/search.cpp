@@ -924,6 +924,14 @@ moves_loop: // When in check, search starts from here
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
 
+      // For debug
+      if (rootNode)
+      {
+        RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
+        sync_cout << "currmove = " << UCI::move(move, pos.is_chess960())
+			      << " - Nodes searched = " << rm.nodesSearched << sync_endl;
+      }
+
       // In MultiPV mode also skip moves which will be searched later as PV moves
       if (rootNode && std::count(thisThread->rootMoves.begin() + thisThread->pvIdx + 1,
                                  thisThread->rootMoves.begin() + thisThread->multiPV, move))

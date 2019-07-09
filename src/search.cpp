@@ -934,10 +934,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY)
+      if (rootNode && moveCount > 1)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (6 + depth / ONE_PLY / 4));
+          candidateMove = rm.nodesSearched > (10 + thisThread->rootMoves[0].nodesSearched / (4 + depth / ONE_PLY / 4));
           /*if (candidateMove)
             sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
                       << " currmovenumber " << moveCount + thisThread->pvIdx
@@ -1074,6 +1074,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 3 * rootNode
+          &&  !candidateMove
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1129,9 +1130,6 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 20000 * ONE_PLY;
           }
 
-          if (candidateMove)
-             r = std::min(r, ONE_PLY);
-
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
@@ -1142,13 +1140,13 @@ moves_loop: // When in check, search starts from here
           doFullDepthSearch = !PvNode || moveCount > 1;
 
       // Step 17. Full depth search when LMR is skipped or fails high
-      if (doFullDepthSearch)
+      if (doFullDepthSearch && !candidateMove)
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the
       // parent node fail low with value <= alpha and try another move.
-      if (PvNode && (moveCount == 1 || (value > alpha && (rootNode || value < beta))))
+      if (PvNode && (moveCount == 1 || candidateMove || (value > alpha && (rootNode || value < beta))))
       {
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;

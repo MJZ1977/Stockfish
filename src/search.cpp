@@ -730,6 +730,18 @@ namespace {
         }
     }
 
+    if (  !PvNode
+        && ttHit
+        && tte->depth() >= depth - 2 * ONE_PLY
+        && ttValue != VALUE_NONE // Possible in case of TT access race
+        && abs(ttValue - beta) > Value(1000)
+        && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
+                            : (tte->bound() & BOUND_UPPER)))
+    {
+        //sync_cout << "Position = " << pos.fen() << sync_endl;
+        return ttValue;
+    }
+
     // Step 6. Static evaluation of the position
     if (inCheck)
     {

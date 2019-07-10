@@ -732,7 +732,7 @@ namespace {
 
     if (  !PvNode
         && ttHit
-        && tte->depth() >= clamp(depth - 2 * ONE_PLY, 2 * ONE_PLY, 12 * ONE_PLY + depth / 4)
+        && tte->depth() >= clamp(depth - 2 * ONE_PLY, 3 * ONE_PLY, 7 * ONE_PLY + depth / 2)
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && abs(ttValue - beta) > Value(1000)
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)

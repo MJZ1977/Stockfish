@@ -1142,7 +1142,8 @@ moves_loop: // When in check, search starts from here
 
           if (value < alpha - Value(320)
               //&& depth > 5 * ONE_PLY
-              && (ss-1)->currentMove == MOVE_NULL
+              && (ss-1)->currentMove != MOVE_NULL
+			  && (ss-1)->moveCount == 1
               && !ttCapture)
           {
 			     /*pos.undo_move(move);

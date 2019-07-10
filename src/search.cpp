@@ -1140,7 +1140,7 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (value < alpha - Value(320)
+          if (value < bestValue - Value(320)
               //&& depth > 5 * ONE_PLY
               && (ss-1)->currentMove != MOVE_NULL
 			  && (ss-1)->moveCount == 1

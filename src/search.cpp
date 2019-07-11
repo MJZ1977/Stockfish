@@ -956,6 +956,9 @@ moves_loop: // When in check, search starts from here
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
 
+          if (rootNode && value >= singularBeta)
+          sync_cout << "Second Move = " << UCI::move(ss->currentMove, pos.is_chess960()) << sync_endl;
+
           if (value < singularBeta)
           {
               extension = ONE_PLY;

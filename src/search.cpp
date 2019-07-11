@@ -581,7 +581,7 @@ namespace {
     bool ttHit, ttPv, inCheck, givesCheck, improving, candidateMove = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount, singularLMR, candidateCount = 1;
+    int moveCount, captureCount, quietCount, singularLMR;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -934,19 +934,16 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY && candidateCount <= 3)
+      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (5 + depth / ONE_PLY / 3));
-          candidateCount += candidateMove;
+          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (6 + depth / ONE_PLY / 3));
           /*if (candidateMove)
             sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
                       << " currmovenumber " << moveCount + thisThread->pvIdx
                       << " Nodes = " << rm.nodesSearched
                       << " Nodes 0 = " << thisThread->rootMoves[0].nodesSearched << sync_endl;*/
       }
-      else
-          candidateMove = false;
 
       // Step 13. Extensions (~70 Elo)
 

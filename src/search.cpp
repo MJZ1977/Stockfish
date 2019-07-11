@@ -937,7 +937,7 @@ moves_loop: // When in check, search starts from here
       if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (6 + depth / ONE_PLY / 4));
+          candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (5 + depth / ONE_PLY / 3));
           /*if (candidateMove)
             sync_cout << "Move = " << UCI::move(move, pos.is_chess960())
                       << " currmovenumber " << moveCount + thisThread->pvIdx
@@ -1074,7 +1074,6 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 3 * rootNode
-          && !candidateMove
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1129,6 +1128,9 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 20000 * ONE_PLY;
           }
+
+          if (candidateMove)
+             r = std::min(r, ONE_PLY);
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 

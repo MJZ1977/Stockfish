@@ -934,7 +934,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY && candidateCount <= 3)
+      if (rootNode && moveCount > 4 && depth > 4 * ONE_PLY && candidateCount <= 5)
       {
 		  RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
           candidateMove = rm.nodesSearched > (4 + thisThread->rootMoves[0].nodesSearched / (5 + depth / ONE_PLY / 3));

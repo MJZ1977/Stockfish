@@ -605,7 +605,7 @@ namespace {
 
         if (b)
           if (popcount(b & pos.pieces(Us,PAWN)) > popcount(bb & pos.pieces(Them,PAWN)) + 1)
-            score += make_score(0, 10);
+            score += make_score(0, 3) * (int(relative_rank(Us, frontmost_sq(Us, b & pos.pieces(Us,PAWN)))) - 1);
     }
 
     if (T)

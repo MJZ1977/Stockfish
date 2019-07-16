@@ -1520,12 +1520,12 @@ moves_loop: // When in check, search starts from here
 	     return ss0;
 
       Value ss1, ss2, ss3, correction;
-      ss1 = clamp(-(ss-1)->staticEval, ss0 - Value(200), ss0 + Value(200));
-      ss2 = clamp((ss-2)->staticEval, ss0 - Value(200), ss0 + Value(200));
-      ss3 = clamp(-(ss-3)->staticEval, ss0 - Value(200), ss0 + Value(200));
+      ss1 = clamp(-(ss-1)->staticEval, ss0 - Value(300), ss0 + Value(300));
+      ss2 = clamp((ss-2)->staticEval, ss0 - Value(300), ss0 + Value(300));
+      ss3 = clamp(-(ss-3)->staticEval, ss0 - Value(300), ss0 + Value(300));
       correction = ss0 - ss1/2 - ss2/3 - ss3/6;
 
-	  return ss0 + correction / 16;
+	  return ss0 + correction / 8;
   }
 
 

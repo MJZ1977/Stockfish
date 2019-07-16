@@ -1525,7 +1525,7 @@ moves_loop: // When in check, search starts from here
       ss3 = clamp(-(ss-3)->staticEval, ss0 - Value(200), ss0 + Value(200));
       correction = ss0 - ss1/2 - ss2/3 - ss3/6;
 
-	  return ss0 + correction / 16;
+	  return ss0 + correction / 8;
   }
 
 

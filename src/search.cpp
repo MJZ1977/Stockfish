@@ -614,7 +614,7 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? correct_static(pos, ss)
+            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
                                                     : value_draw(depth, pos.this_thread());
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -751,7 +751,7 @@ namespace {
         // Never assume anything about values stored in TT
         ss->staticEval = eval = tte->eval();
         if (eval == VALUE_NONE)
-            ss->staticEval = eval = correct_static(pos, ss);
+            ss->staticEval = eval = evaluate(pos);
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE
@@ -764,7 +764,7 @@ namespace {
         {
             int bonus = -(ss-1)->statScore / 512;
 
-            ss->staticEval = eval = correct_static(pos, ss) + bonus;
+            ss->staticEval = eval = evaluate(pos) + bonus;
         }
         else
             ss->staticEval = eval = -(ss-1)->staticEval + 2 * Eval::Tempo;
@@ -1365,7 +1365,10 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything about values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = correct_static(pos, ss);
+            {
+                ss->staticEval = evaluate(pos);
+                bestValue = correct_static(pos, ss);
+			}
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1373,9 +1376,13 @@ moves_loop: // When in check, search starts from here
                 bestValue = ttValue;
         }
         else
-            ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? correct_static(pos, ss)
+        {
+            ss->staticEval =
+            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
+            bestValue = correct_static(pos, ss);
+		}
+
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
@@ -1508,7 +1515,7 @@ moves_loop: // When in check, search starts from here
   // correct_static return a corrected static value depending on progress in
   // the last plies
   Value correct_static(Position& pos, Stack* ss){
-	  Value ss0 = evaluate(pos);
+	  Value ss0 = ss->staticEval;
 	  if (ss0 == VALUE_NONE || ss->ply <=4 )
 	     return ss0;
 

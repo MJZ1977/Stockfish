@@ -1531,7 +1531,7 @@ moves_loop: // When in check, search starts from here
          ss3 = ss0;
       correction = ss0 - ss1/2 - ss2/3 - ss3/6;
 
-	  return ss0 + correction / 8;
+	  return ss0 + correction / 4;
   }
 
 

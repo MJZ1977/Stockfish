@@ -1520,14 +1520,14 @@ moves_loop: // When in check, search starts from here
 	     return ss0;
 
       Value ss1, ss2, ss3, correction;
-      ss1 = -(ss-1)->staticEval;
+      ss1 = -(ss-1)->staticEval + 2 * Eval::Tempo ;
       ss2 = (ss-2)->staticEval;
-      ss3 = -(ss-3)->staticEval;
-      if (abs(ss1-ss0) > Value(180))
+      ss3 = -(ss-3)->staticEval + 2 * Eval::Tempo ;
+      if (abs(ss1-ss0) > Value(160))
          ss1 = ss0;
-      if (abs(ss2-ss0) > Value(180))
+      if (abs(ss2-ss0) > Value(160))
          ss2 = ss0;
-      if (abs(ss3-ss0) > Value(180))
+      if (abs(ss3-ss0) > Value(160))
          ss3 = ss0;
       correction = ss0 - ss1/2 - ss2/3 - ss3/6;
 

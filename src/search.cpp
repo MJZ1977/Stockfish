@@ -150,7 +150,7 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
-  Value correct_static(Position& pos, Stack* ss);
+  Value correct_static(Stack* ss);
 
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
@@ -1367,7 +1367,7 @@ moves_loop: // When in check, search starts from here
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
             {
                 ss->staticEval = evaluate(pos);
-                bestValue = correct_static(pos, ss);
+                bestValue = correct_static(ss);
             }
 
             // Can ttValue be used as a better position evaluation?
@@ -1380,7 +1380,7 @@ moves_loop: // When in check, search starts from here
             ss->staticEval =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
-            bestValue = correct_static(pos, ss);
+            bestValue = correct_static(ss);
         }
 
 
@@ -1514,7 +1514,7 @@ moves_loop: // When in check, search starts from here
 
   // correct_static return a corrected static value depending on progress in
   // the last plies
-  Value correct_static(Position& pos, Stack* ss){
+  Value correct_static(Stack* ss){
 	  Value ss0 = ss->staticEval;
 	  if (ss0 == VALUE_NONE || ss->ply <=4 )
 	     return ss0;

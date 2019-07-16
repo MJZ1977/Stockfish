@@ -150,6 +150,8 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
+  Value correct_static(Position& pos, Stack* ss);
+
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
@@ -612,7 +614,7 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
+            return (ss->ply >= MAX_PLY && !inCheck) ? correct_static(pos, ss)
                                                     : value_draw(depth, pos.this_thread());
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -749,7 +751,7 @@ namespace {
         // Never assume anything about values stored in TT
         ss->staticEval = eval = tte->eval();
         if (eval == VALUE_NONE)
-            ss->staticEval = eval = evaluate(pos);
+            ss->staticEval = eval = correct_static(pos, ss);
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE
@@ -762,7 +764,7 @@ namespace {
         {
             int bonus = -(ss-1)->statScore / 512;
 
-            ss->staticEval = eval = evaluate(pos) + bonus;
+            ss->staticEval = eval = correct_static(pos, ss) + bonus;
         }
         else
             ss->staticEval = eval = -(ss-1)->staticEval + 2 * Eval::Tempo;
@@ -1157,6 +1159,9 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+          /*if (depth <= ONE_PLY)
+            for (int i = ss->ply; i >= 0; i--)
+              sync_cout << "Eval " << (ss-i)->ply << " = " << (ss-i)->staticEval << sync_endl;*/
       }
 
       // Step 18. Undo move
@@ -1324,7 +1329,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
+        return (ss->ply >= MAX_PLY && !inCheck) ? correct_static(pos, ss) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1360,7 +1365,7 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything about values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = evaluate(pos);
+                ss->staticEval = bestValue = correct_static(pos, ss);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1369,7 +1374,7 @@ moves_loop: // When in check, search starts from here
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
+            (ss-1)->currentMove != MOVE_NULL ? correct_static(pos, ss)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
 
         // Stand pat. Return immediately if static value is at least beta
@@ -1498,6 +1503,22 @@ moves_loop: // When in check, search starts from here
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
     return bestValue;
+  }
+
+  // correct_static return a corrected static value depending on progress in
+  // the last plies
+  Value correct_static(Position& pos, Stack* ss){
+	  Value ss0 = evaluate(pos);
+	  if (ss0 == VALUE_NONE || ss->ply <=4 )
+	     return ss0;
+
+      Value ss1, ss2, ss3, correction;
+      ss1 = clamp(-(ss-1)->staticEval, ss0 - Value(200), ss0 + Value(200));
+      ss2 = clamp((ss-2)->staticEval, ss0 - Value(200), ss0 + Value(200));
+      ss3 = clamp(-(ss-3)->staticEval, ss0 - Value(200), ss0 + Value(200));
+      correction = ss0 - ss1/2 - ss2/3 - ss3/6;
+
+	  return ss0 + correction / 16;
   }
 
 

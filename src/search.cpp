@@ -1523,11 +1523,11 @@ moves_loop: // When in check, search starts from here
       ss1 = -(ss-1)->staticEval;
       ss2 = (ss-2)->staticEval;
       ss3 = -(ss-3)->staticEval;
-      if (abs(ss1-ss0) > Value(240))
+      if (abs(ss1-ss0) > Value(160))
          ss1 = ss0;
-      if (abs(ss2-ss0) > Value(240))
+      if (abs(ss2-ss0) > Value(160))
          ss2 = ss0;
-      if (abs(ss3-ss0) > Value(240))
+      if (abs(ss3-ss0) > Value(160))
          ss3 = ss0;
       correction = ss0 - ss1/2 - ss2/3 - ss3/6;
 

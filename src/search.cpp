@@ -1329,7 +1329,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? correct_static(pos, ss) : VALUE_DRAW;
+        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1368,7 +1368,7 @@ moves_loop: // When in check, search starts from here
             {
                 ss->staticEval = evaluate(pos);
                 bestValue = correct_static(pos, ss);
-			}
+            }
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1381,7 +1381,7 @@ moves_loop: // When in check, search starts from here
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
             bestValue = correct_static(pos, ss);
-		}
+        }
 
 
         // Stand pat. Return immediately if static value is at least beta

@@ -1515,23 +1515,31 @@ moves_loop: // When in check, search starts from here
   // correct_static return a corrected static value depending on progress in
   // the last plies
   Value correct_static(Stack* ss){
-	  Value ss0 = ss->staticEval;
-	  if (ss0 == VALUE_NONE || ss->ply <=4 )
-	     return ss0;
 
-      Value ss1, ss2, ss3, correction;
-      ss1 = -(ss-1)->staticEval + 2 * Eval::Tempo ;
-      ss2 = (ss-2)->staticEval;
-      ss3 = -(ss-3)->staticEval + 2 * Eval::Tempo ;
-      if (abs(ss1-ss0) > Value(160))
-         ss1 = ss0;
-      if (abs(ss2-ss0) > Value(160))
-         ss2 = ss0;
-      if (abs(ss3-ss0) > Value(160))
-         ss3 = ss0;
-      correction = ss0 - ss1/2 - ss2/3 - ss3/6;
+	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 )
+	     return ss->staticEval;
 
-	  return ss0 + correction / 8;
+      Value stEval[5];
+      Value sum_y = Value(0), sum_xy = Value(0);
+      for (int i=0; i < 5; i++)
+      {
+		  if (i % 2 == 0)
+		     stEval[i] = (ss-i)->staticEval;
+		  else
+		     stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
+
+		  if (i > 0 && abs(stEval[i] - stEval[i-1]) > Value(160))
+		     stEval[i] = stEval[i-1];
+
+          sum_y += stEval[i];
+          sum_xy += i * stEval[i];
+	  }
+      /*correction = (sum_xy - 2 * sum_y) / 10;
+      sync_cout << stEval[0] << " , " << stEval[1] << " , "
+                << stEval[2] << " , " << stEval[3] << " , "
+                << stEval[4] << " , correction = " << correction << sync_endl;*/
+
+	  return stEval[0] + (2 * sum_y - sum_xy) / 64;
   }
 
 

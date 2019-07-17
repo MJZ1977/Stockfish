@@ -1516,7 +1516,9 @@ moves_loop: // When in check, search starts from here
   // the last plies
   Value correct_static(Stack* ss){
 
-	  if (ss->staticEval == VALUE_NONE || ss->ply <=6 )
+	  if (ss->staticEval == VALUE_NONE ||
+	      (ss-2)->staticEval == VALUE_NONE
+	      || ss->ply <=6 )
 	     return ss->staticEval;
 
       Value stEval[5];

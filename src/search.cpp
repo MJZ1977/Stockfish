@@ -1517,7 +1517,7 @@ moves_loop: // When in check, search starts from here
   Value correct_static(Stack* ss){
 
 	  if ((ss-2)->staticEval == VALUE_NONE || ss->ply <=6 )
-	     return (ss-2)->staticEval;
+	     return ss->staticEval;
 
       Value stEval[5];
       Value sum_y = Value(0), sum_xy = Value(0);
@@ -1539,7 +1539,7 @@ moves_loop: // When in check, search starts from here
                 << stEval[4] << " , correction = "
                 << (2 * sum_y - sum_xy) / 10 << sync_endl;*/
 
-	  return stEval[0] + (2 * sum_y - sum_xy) / 64;
+	  return ss->staticEval + (2 * sum_y - sum_xy) / 64;
   }
 
 

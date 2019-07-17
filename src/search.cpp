@@ -1516,17 +1516,14 @@ moves_loop: // When in check, search starts from here
   // the last plies
   Value correct_static(Stack* ss){
 
-	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 )
+	  if (ss->staticEval == VALUE_NONE || ss->ply <=8 )
 	     return ss->staticEval;
 
       Value stEval[5];
       Value sum_y = Value(0), sum_xy = Value(0);
       for (int i=0; i < 5; i++)
       {
-		  if (i % 2 == 0)
-		     stEval[i] = (ss-i)->staticEval;
-		  else
-		     stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
+		  stEval[i] = (ss-2*i)->staticEval;
 
 		  if (i > 0 && abs(stEval[i] - stEval[i-1]) > Value(160))
 		     stEval[i] = stEval[i-1];

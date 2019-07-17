@@ -1528,16 +1528,16 @@ moves_loop: // When in check, search starts from here
 		  else
 		     stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
 
-		  if (i > 0 && abs(stEval[i] - stEval[i-1]) > Value(160))
+		  if (i > 0 && abs(stEval[i] - stEval[i-1]) > Value(180))
 		     stEval[i] = stEval[i-1];
 
           sum_y += stEval[i];
           sum_xy += i * stEval[i];
 	  }
-      /*correction = (sum_xy - 2 * sum_y) / 10;
-      sync_cout << stEval[0] << " , " << stEval[1] << " , "
+      /*sync_cout << stEval[0] << " , " << stEval[1] << " , "
                 << stEval[2] << " , " << stEval[3] << " , "
-                << stEval[4] << " , correction = " << correction << sync_endl;*/
+                << stEval[4] << " , correction = "
+                << (2 * sum_y - sum_xy) / 10 << sync_endl;*/
 
 	  return stEval[0] + (2 * sum_y - sum_xy) / 64;
   }

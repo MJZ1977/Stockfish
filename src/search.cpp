@@ -150,7 +150,7 @@ namespace {
   template <NodeType NT>
   Value qsearch(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth = DEPTH_ZERO);
 
-  Value correct_static(Stack* ss);
+  Value correct_static(Stack* ss, Value beta);
 
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
@@ -1367,7 +1367,7 @@ moves_loop: // When in check, search starts from here
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
             {
                 ss->staticEval = evaluate(pos);
-                bestValue = correct_static(ss);
+                bestValue = correct_static(ss, beta);
             }
 
             // Can ttValue be used as a better position evaluation?
@@ -1380,7 +1380,7 @@ moves_loop: // When in check, search starts from here
             ss->staticEval =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
-            bestValue = correct_static(ss);
+            bestValue = correct_static(ss, beta);
         }
 
 
@@ -1514,9 +1514,9 @@ moves_loop: // When in check, search starts from here
 
   // correct_static return a corrected static value depending on progress in
   // the last plies
-  Value correct_static(Stack* ss){
+  Value correct_static(Stack* ss, Value beta){
 
-	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 )
+	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 || ss->staticEval > beta + Value(50))
 	     return ss->staticEval;
 
       Value stEval[5];
@@ -1524,22 +1524,18 @@ moves_loop: // When in check, search starts from here
       for (int i=0; i < 5; i++)
       {
 		  if (i % 2 == 0)
-		     stEval[i] = (ss-i)->staticEval;
+		     stEval[i] = clamp((ss-i)->staticEval, beta - Value(200), beta + Value(200));
 		  else
-		     stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
-
-		  if (i > 0 && abs(stEval[i] - stEval[i-1]) > Value(160))
-		     stEval[i] = stEval[i-1];
+		     stEval[i] = clamp(-(ss-i)->staticEval + 2 * Eval::Tempo, beta - Value(200), beta + Value(200));
 
           sum_y += stEval[i];
           sum_xy += i * stEval[i];
 	  }
-      /*correction = (sum_xy - 2 * sum_y) / 10;
-      sync_cout << stEval[0] << " , " << stEval[1] << " , "
+      /*sync_cout << stEval[0] << " , " << stEval[1] << " , "
                 << stEval[2] << " , " << stEval[3] << " , "
-                << stEval[4] << " , correction = " << correction << sync_endl;*/
+                << stEval[4] << " , correction = " << (sum_xy - 2 * sum_y) / 10 << sync_endl;*/
 
-	  return stEval[0] + (2 * sum_y - sum_xy) / 64;
+	  return ss->staticEval + (2 * sum_y - sum_xy) / 128;
   }
 
 

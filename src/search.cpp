@@ -817,7 +817,7 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN 
-			       && depth < (11 + (ss-2)->moveCount / 12) * ONE_PLY))
+			       && depth < (12 + (ss-2)->moveCount / 8) * ONE_PLY))
                 return nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed

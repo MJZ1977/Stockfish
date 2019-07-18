@@ -570,7 +570,21 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return qsearch<NT>(pos, ss, alpha, beta);
+	{
+        bool impr = ss->ply > 4 
+		       && (ss-2)->staticEval >= (ss-4)->staticEval  
+			   && (ss-2)->staticEval != VALUE_NONE;
+		if (!impr)
+			return qsearch<NT>(pos, ss, alpha - impr, beta);
+		else
+		{
+			Value value = qsearch<NT>(pos, ss, alpha - Value(4), beta - Value(4));
+			if (value >= beta - Value(4))
+				return std::min(value, beta);
+			else
+				return value;
+		}
+	}
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));

@@ -1516,7 +1516,7 @@ moves_loop: // When in check, search starts from here
   // the last plies
   Value correct_static(Stack* ss, Value beta){
 
-	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 || ss->staticEval > beta + Value(50))
+	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 || abs(ss->staticEval - beta) > Value(30))
 	     return ss->staticEval;
 
       Value stEval[5];
@@ -1533,7 +1533,8 @@ moves_loop: // When in check, search starts from here
 	  }
       /*sync_cout << stEval[0] << " , " << stEval[1] << " , "
                 << stEval[2] << " , " << stEval[3] << " , "
-                << stEval[4] << " , correction = " << (sum_xy - 2 * sum_y) / 10 << sync_endl;*/
+                << stEval[4] << " , beta = " << beta 
+                << " , correction = " << (2 * sum_y - sum_xy) / 64 << sync_endl;*/
 
 	  return ss->staticEval + (2 * sum_y - sum_xy) / 64;
   }

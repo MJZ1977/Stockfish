@@ -1559,7 +1559,7 @@ moves_loop: // When in check, search starts from here
       // Step 2 : remove extreme values (captures) and assess tendancy
       for (int i=0; i < 5; i++)
       {
-          if (abs(stEval[i] - average) > Value(140))
+          if (abs(stEval[i] - average) > Value(100))
              stEval[i] = average;
 
           sum_y += stEval[i];

@@ -1559,7 +1559,7 @@ moves_loop: // When in check, search starts from here
       // Step 2 : remove extreme values (captures) and assess tendancy
       for (int i=0; i < 5; i++)
       {
-          if (abs(stEval[i] - average) > Value(120))
+          if (abs(stEval[i] - average) > Value(140))
              stEval[i] = average;
 
           sum_y += stEval[i];
@@ -1570,7 +1570,7 @@ moves_loop: // When in check, search starts from here
                 << stEval[2] << " , " << stEval[3] << " , "
                 << stEval[4] << " , correction = " << (2 * sum_y - sum_xy) / 64 << sync_endl;*/
 
-      return ss->staticEval + (2 * sum_y - sum_xy) / 16;
+      return ss->staticEval + (2 * sum_y - sum_xy) / 32;
   }
 
 

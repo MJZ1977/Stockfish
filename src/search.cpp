@@ -1570,7 +1570,7 @@ moves_loop: // When in check, search starts from here
                 << stEval[2] << " , " << stEval[3] << " , "
                 << stEval[4] << " , correction = " << (2 * sum_y - sum_xy) / 64 << sync_endl;*/
 
-	  return ss->staticEval + (2 * sum_y - sum_xy) / 32;
+	  return ss->staticEval + (2 * sum_y - sum_xy) / 64;
   }
 
 

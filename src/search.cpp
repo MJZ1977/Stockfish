@@ -1384,7 +1384,10 @@ moves_loop: // When in check, search starts from here
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
             {
                 ss->staticEval = evaluate(pos);
-                bestValue = correct_static(ss);
+                if (abs(ss->staticEval - beta) > Value(200))
+                    bestValue = ss->staticEval;
+                else
+                    bestValue = correct_static(ss);
             }
 
             // Can ttValue be used as a better position evaluation?
@@ -1397,7 +1400,10 @@ moves_loop: // When in check, search starts from here
             ss->staticEval =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval + 2 * Eval::Tempo;
-            bestValue = correct_static(ss);
+            if (abs(ss->staticEval - beta) > Value(200))
+                bestValue = ss->staticEval;
+            else
+                bestValue = correct_static(ss);
         }
 
 
@@ -1533,44 +1539,44 @@ moves_loop: // When in check, search starts from here
   // the last plies
   Value correct_static(Stack* ss){
 
-	  if (ss->staticEval == VALUE_NONE || ss->ply <=4 )
-	     return ss->staticEval;
+      if (ss->staticEval == VALUE_NONE || ss->ply <=4 )
+         return ss->staticEval;
 
       Value stEval[5];
       Value sum_y = Value(0), sum_xy = Value(0), average = Value(0);
-	  
-	  // Step 1 : average value
-	  for (int i=0; i < 5; i++)
+      
+      // Step 1 : average value
+      for (int i=0; i < 5; i++)
       {
-		  if ((ss-i)->staticEval == VALUE_NONE)
-			 stEval[i] = ss->staticEval;
-		  else if (i % 2 == 0)
-		     stEval[i] = (ss-i)->staticEval;
-		  else
-		     stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
+          if ((ss-i)->staticEval == VALUE_NONE)
+             stEval[i] = ss->staticEval;
+          else if (i % 2 == 0)
+             stEval[i] = (ss-i)->staticEval;
+          else
+             stEval[i] = -(ss-i)->staticEval + 2 * Eval::Tempo ;
 
           average += stEval[i];
-	  }
-	  average /= 5;
+      }
+      average /= 5;
       /*sync_cout << stEval[0] << " , " << stEval[1] << " , "
                 << stEval[2] << " , " << stEval[3] << " , "
                 << stEval[4] << " , average = " << average << sync_endl;*/
-	  
-	  // Step 2 : remove extreme values (captures) and assess tendancy
-	  for (int i=0; i < 5; i++)
+      
+      // Step 2 : remove extreme values (captures) and assess tendancy
+      for (int i=0; i < 5; i++)
       {
-		  if (abs(stEval[i] - average) > Value(120))
-		     stEval[i] = average;
+          if (abs(stEval[i] - average) > Value(120))
+             stEval[i] = average;
 
           sum_y += stEval[i];
           sum_xy += i * stEval[i];
-	  }
-	  
+      }
+      
       /*sync_cout << stEval[0] << " , " << stEval[1] << " , "
                 << stEval[2] << " , " << stEval[3] << " , "
                 << stEval[4] << " , correction = " << (2 * sum_y - sum_xy) / 64 << sync_endl;*/
 
-	  return ss->staticEval + (2 * sum_y - sum_xy) / 64;
+      return ss->staticEval + (2 * sum_y - sum_xy) / 32;
   }
 
 

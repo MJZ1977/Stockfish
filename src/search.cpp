@@ -1014,7 +1014,7 @@ moves_loop: // When in check, search starts from here
 
       // Winning line extension
       else if (   PvNode
-               && alpha > Value(200)
+               && alpha > Value(230)
                && depth > 10 * ONE_PLY
                && move == ttMove
                && ss->ply <= 1 + thisThread->rootDepth / ONE_PLY / 8)

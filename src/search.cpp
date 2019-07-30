@@ -830,6 +830,7 @@ namespace {
 
             // Do verification search at high depths, with null move pruning disabled
             // for us, until ply exceeds nmpMinPly.
+            R += (thisThread->nodes.load(std::memory_order_relaxed) % 4 == 1) * ONE_PLY;
             thisThread->nmpMinPly = ss->ply + 3 * (depth-R) / (4 * ONE_PLY);
             thisThread->nmpColor = us;
 

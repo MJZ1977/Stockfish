@@ -824,7 +824,7 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN
-			    && depth < (4 + 8 * (pos.non_pawn_material() > 2 * BishopValueMg)) * ONE_PLY))
+			    && depth < (4 + 9 * (pos.non_pawn_material() > 2 * BishopValueMg)) * ONE_PLY))
                 return nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed

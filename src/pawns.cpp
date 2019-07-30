@@ -71,9 +71,9 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
     Bitboard neighbours, stoppers, doubled, support, phalanx;
-    Bitboard lever, leverPush;
+    Bitboard lever, leverPush, opposed;
     Square s;
-    bool opposed, backward, passed;
+    bool backward, passed;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -93,9 +93,6 @@ namespace {
 
         Rank r = relative_rank(Us, s);
 
-        e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-
-        // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
         stoppers   = theirPawns & passed_pawn_span(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
@@ -111,6 +108,13 @@ namespace {
         backward =  !(neighbours & forward_ranks_bb(Them, s))
                   && (stoppers & (leverPush | (s + Up)));
 
+        if (opposed)
+           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) &
+                    ~pawn_attack_span(Us, frontmost_sq(Them, opposed)));
+        else
+           e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+
+        // Flag the pawn
         // A pawn is passed if one of the three following conditions is true:
         // (a) there is no stoppers except some levers
         // (b) the only stoppers are the leverPush, but we outnumber them

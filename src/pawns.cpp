@@ -156,7 +156,7 @@ namespace {
             score -= Backward + WeakUnopposed * int(!opposed);
         
         else if (!(e->pawnAttacksSpan[Us] & s))
-            score -= make_score(0, 4);
+            score -= make_score(2, 6);
 
         if (doubled && !support)
             score -= Doubled;

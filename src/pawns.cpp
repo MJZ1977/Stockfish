@@ -155,7 +155,7 @@ namespace {
         else if (backward)
             score -= Backward + WeakUnopposed * int(!opposed);
         
-        else if (!(e->pawnAttacksSpan[Us] & s))
+        else if (!(e->pawnAttacksSpan[Us] & s) && r >= RANK_5)
             score -= make_score(2, 6);
 
         if (doubled && !support)

@@ -86,7 +86,20 @@ namespace {
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = pawn_attacks_bb<Us>(ourPawns);
 
-    // Loop through all pawns of the current color and score each pawn
+    // Prelimineray loop to calculate pawnAttackspan BB
+    while ((s = *pl++) != SQ_NONE)
+    {
+        assert(pos.piece_on(s) == make_piece(Us, PAWN));
+        opposed    = theirPawns & forward_file_bb(Us, s);
+
+        if (opposed)
+           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) &
+                    ~pawn_attack_span(Us, frontmost_sq(Them, opposed)));
+        else
+           e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+	}	
+	
+	// Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
     {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
@@ -108,11 +121,6 @@ namespace {
         backward =  !(neighbours & forward_ranks_bb(Them, s))
                   && (stoppers & (leverPush | (s + Up)));
 
-        if (opposed)
-           e->pawnAttacksSpan[Us] |= (pawn_attack_span(Us, s) &
-                    ~pawn_attack_span(Us, frontmost_sq(Them, opposed)));
-        else
-           e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // Flag the pawn
         // A pawn is passed if one of the three following conditions is true:

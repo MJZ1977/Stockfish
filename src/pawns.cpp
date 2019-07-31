@@ -97,9 +97,11 @@ namespace {
                     ~pawn_attack_span(Us, frontmost_sq(Them, opposed)));
         else
            e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-	}	
-	
-	// Loop through all pawns of the current color and score each pawn
+    }    
+    
+    pl = pos.squares<PAWN>(Us);
+    
+    // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
     {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
@@ -152,6 +154,9 @@ namespace {
 
         else if (backward)
             score -= Backward + WeakUnopposed * int(!opposed);
+        
+        else if (!(e->pawnAttacksSpan[Us] & s))
+            score -= make_score(0, 4);
 
         if (doubled && !support)
             score -= Doubled;

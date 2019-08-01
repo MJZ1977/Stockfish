@@ -61,6 +61,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  int AA = 33;
+  int BB = 299;
+  int CC = 160;
+  TUNE (AA, BB, CC);
+
   // Razor and futility margins
   constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
@@ -794,10 +799,6 @@ namespace {
         return eval;
 
     // Step 9. Null move search with verification search (~40 Elo)
-    int AA = 33;
-    int BB = 299;
-    int CC = 160;
-    TUNE (AA, BB, CC);
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 22661

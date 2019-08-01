@@ -798,7 +798,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 22661
         &&  eval >= beta
-        &&  ss->staticEval >= beta
+        &&  ss->staticEval >= beta + std::max(225 - 36 * depth / ONE_PLY, 0)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

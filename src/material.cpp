@@ -206,13 +206,18 @@ Entry* probe(const Position& pos) {
   // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
   // for the bishop pair "extended piece", which allows us to be more flexible
   // in defining bishop pair bonuses.
-  const int pieceCount[COLOR_NB][PIECE_TYPE_NB] = {
-  { pos.count<BISHOP>(WHITE) > 1, pos.count<PAWN>(WHITE), pos.count<KNIGHT>(WHITE),
-    pos.count<BISHOP>(WHITE)    , pos.count<ROOK>(WHITE), pos.count<QUEEN >(WHITE) },
-  { pos.count<BISHOP>(BLACK) > 1, pos.count<PAWN>(BLACK), pos.count<KNIGHT>(BLACK),
-    pos.count<BISHOP>(BLACK)    , pos.count<ROOK>(BLACK), pos.count<QUEEN >(BLACK) } };
+  if (npm_w == npm_b)
+      e->value = 0;
+  else
+  {
+      const int pieceCount[COLOR_NB][PIECE_TYPE_NB] = {
+      { pos.count<BISHOP>(WHITE) > 1, pos.count<PAWN>(WHITE), pos.count<KNIGHT>(WHITE),
+        pos.count<BISHOP>(WHITE)    , pos.count<ROOK>(WHITE), pos.count<QUEEN >(WHITE) },
+      { pos.count<BISHOP>(BLACK) > 1, pos.count<PAWN>(BLACK), pos.count<KNIGHT>(BLACK),
+        pos.count<BISHOP>(BLACK)    , pos.count<ROOK>(BLACK), pos.count<QUEEN >(BLACK) } };
 
-  e->value = int16_t((imbalance<WHITE>(pieceCount) - imbalance<BLACK>(pieceCount)) / 16);
+      e->value = int16_t((imbalance<WHITE>(pieceCount) - imbalance<BLACK>(pieceCount)) / 16);
+  }
   return e;
 }
 

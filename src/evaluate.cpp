@@ -107,7 +107,13 @@ namespace {
   };
   
   // BlocknessBonus[PieceType-2] contains multipliers for blockness index
-  Score BlocknessBonus[] = {S(2,2), S(-1,-1), S(-1,-1), S(1,1)};
+  Score NBlock = S(8, 8);
+  Score BBlock = S(-8, -8);
+  Score RBlock = S(-8, -8);
+  Score QBlock = S(-8, -8);
+  TUNE(NBlock, BBlock, RBlock, QBlock);
+  
+  Score BlocknessBonus[] = {NBlock, BBlock, RBlock, QBlock};
   
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
@@ -298,7 +304,7 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        mobility[Us] += MobilityBonus[Pt - 2][mob] + BlocknessBonus[Pt - 2] * (blockness - 12);
+        mobility[Us] += MobilityBonus[Pt - 2][mob] + (BlocknessBonus[Pt - 2] * (blockness - 12)) / 8;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

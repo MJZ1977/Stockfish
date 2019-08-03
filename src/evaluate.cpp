@@ -107,7 +107,7 @@ namespace {
   };
   
   // BlocknessBonus[PieceType-2] contains multipliers for blockness index
-  Score BlocknessBonus[] = {S(0,12), S(-1,-3), S(-7,-6), S(-7,-9)};
+  Score BlocknessBonus[] = {S(0,12), S(-1,-4), S(-7,-6), S(-7,-9)};
   
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is

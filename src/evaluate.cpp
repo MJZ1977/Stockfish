@@ -105,6 +105,10 @@ namespace {
       S( 79,140), S( 88,143), S( 88,148), S( 99,166), S(102,170), S(102,175),
       S(106,184), S(109,191), S(113,206), S(116,212) }
   };
+  
+  // BlocknessBonus[PieceType-2] contains multipliers for blockness index
+  Score BlocknessBonus[] = {S(2,2), S(-1,-1), S(-1,-1), S(1,1)};
+  
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
@@ -205,6 +209,8 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+	
+	int blockness = 0;
   };
 
 
@@ -292,7 +298,7 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        mobility[Us] += MobilityBonus[Pt - 2][mob];
+        mobility[Us] += MobilityBonus[Pt - 2][mob] + BlocknessBonus[Pt - 2] * (blockness - 12);
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
@@ -800,6 +806,8 @@ namespace {
 
     // Main evaluation begins here
 
+    Bitboard blocked_pawns = pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN));
+    blockness = pos.count<PAWN>() + 2 * popcount(blocked_pawns) + 4 * popcount(blocked_pawns & CenterFiles);
     initialize<WHITE>();
     initialize<BLACK>();
 

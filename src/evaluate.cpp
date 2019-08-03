@@ -107,14 +107,8 @@ namespace {
   };
   
   // BlocknessBonus[PieceType-2] contains multipliers for blockness index
-  Score NBlock = S(8, 8);
-  Score BBlock = S(-8, -8);
-  Score RBlock = S(-8, -8);
-  Score QBlock = S(-8, -8);
-  TUNE(NBlock, BBlock, RBlock, QBlock);
-  
-  Score BlocknessBonus[] = {NBlock, BBlock, RBlock, QBlock};
-  
+  Score BlocknessBonus[] = {S(8, 8), S(-8, -8), S(-8, -8), S(-8, -8)};
+  TUNE(SetRange(-20, 20), BlocknessBonus);  
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.

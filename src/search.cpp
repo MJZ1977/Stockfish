@@ -60,6 +60,13 @@ namespace {
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
+  
+    int AA = 33;
+    int BB = 180;
+    int CC = 32;
+    int DD = 160;
+    TUNE (AA, BB, CC, DD);
+
 
   // Razor and futility margins
   constexpr int RazorMargin = 661;
@@ -798,7 +805,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 22661
         &&  eval >= beta
-        &&  ss->staticEval >= std::min(beta - 33 * depth / ONE_PLY + 180 + ss->ply * 4, -(ss-1)->staticEval + 160)
+        &&  ss->staticEval >= std::min(beta - AA * depth / ONE_PLY + BB + (ss->ply * CC) / 8, -(ss-1)->staticEval + DD)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

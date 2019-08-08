@@ -1090,7 +1090,7 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          if (!lastCapture && ss->staticEval < -(ss-1)->staticEval + 160)
+          if (!lastCapture && ss->staticEval > -(ss-1)->staticEval + 160)
           {
               r -= ONE_PLY;
 			  /*pos.undo_move(move);

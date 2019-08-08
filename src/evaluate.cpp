@@ -568,16 +568,21 @@ namespace {
     if (pos.count<QUEEN>(Them) == 1)
     {
         Square s = pos.square<QUEEN>(Them);
-        safe = mobilityArea[Us] & ~stronglyProtected;
+        if ((attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP] | attackedBy[Us][ROOK]) & s)
+            score += make_score(50, 50);
+        else
+        {
+            safe = mobilityArea[Us] & ~stronglyProtected;
 
-        b = attackedBy[Us][KNIGHT] & pos.attacks_from<KNIGHT>(s);
+            b = attackedBy[Us][KNIGHT] & pos.attacks_from<KNIGHT>(s);
 
-        score += KnightOnQueen * popcount(b & safe);
+            score += KnightOnQueen * popcount(b & safe);
 
-        b =  (attackedBy[Us][BISHOP] & pos.attacks_from<BISHOP>(s))
-           | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
+            b =  (attackedBy[Us][BISHOP] & pos.attacks_from<BISHOP>(s))
+               | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
-        score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+            score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+        }
     }
 
     if (T)

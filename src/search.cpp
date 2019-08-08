@@ -592,7 +592,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, doLMR;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, doLMR, lastCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
@@ -941,6 +941,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      lastCapture = !rootNode && (pos.captured_piece() != NO_PIECE);
 
       // Step 13. Extensions (~70 Elo)
 
@@ -1088,6 +1089,15 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
+
+          if (!lastCapture && ss->staticEval < -(ss-1)->staticEval + 160)
+          {
+              r -= ONE_PLY;
+			  /*pos.undo_move(move);
+              sync_cout << "Position : " << pos.fen()
+                        << " - last move : " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+              pos.do_move(move, st, givesCheck);*/
+          }
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;

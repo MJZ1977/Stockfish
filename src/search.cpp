@@ -1090,13 +1090,13 @@ moves_loop: // When in check, search starts from here
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
-          // Increase reduction if opponent move seems weak
-          if (!lastCapture && ss->staticEval > -(ss-1)->staticEval + 160 && (ss-1)->staticEval != VALUE_NONE)
+          // Decrease reduction if opponent move seems good
+          if (!lastCapture && ss->staticEval < -(ss-1)->staticEval - 160)
           {
-              r += ONE_PLY;
+              r -= ONE_PLY;
 			  /*pos.undo_move(move);
               sync_cout << "Position : " << pos.fen()
-                        << " - last move : " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+                        << " - last move : " << UCI::move((ss-1)->currentMove, pos.is_chess960()) 
 						<< " ss " << ss->staticEval << " ss-1 " << (ss-1)->staticEval << sync_endl;
               pos.do_move(move, st, givesCheck);*/
           }

@@ -1491,7 +1491,13 @@ moves_loop: // When in check, search starts from here
               if (PvNode && value < beta) // Update alpha here!
                   alpha = value;
               else
+              {
+                  ss->staticEval = -(ss+1)->staticEval + 2 * Eval::Tempo;
+                  /*sync_cout << "Position : " << pos.fen()
+                            << " - move : " << UCI::move(move, pos.is_chess960())
+                            << " ss " << ss->staticEval << " ss+1 " << (ss+1)->staticEval << sync_endl;*/
                   break; // Fail high
+			  }
           }
        }
     }

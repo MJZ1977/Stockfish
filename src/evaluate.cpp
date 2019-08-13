@@ -542,8 +542,7 @@ namespace {
 
         if (pos.count<QUEEN>(Us))
         {
-           b = pos.pieces(Them) & ~pos.pieces(QUEEN);
-           b &= ~attackedBy[Them][ALL_PIECES] | (attackedBy[Us][ALL_PIECES] & ~attackedBy2[Them]);
+           b = pos.pieces(Them) & ~pos.pieces(QUEEN) & ~attackedBy[Them][ALL_PIECES];
            score += WeakPiece * popcount(b);
         }
     }

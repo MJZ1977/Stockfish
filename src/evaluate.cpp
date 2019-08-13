@@ -147,6 +147,7 @@ namespace {
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
+  constexpr Score WeakPiece          = S(  5,  5);
 
 #undef S
 
@@ -538,6 +539,13 @@ namespace {
         b =  ~attackedBy[Them][ALL_PIECES]
            | (nonPawnEnemies & attackedBy2[Us]);
         score += Hanging * popcount(weak & b);
+
+        if (pos.count<QUEEN>(Us))
+        {
+           b = pos.pieces(Them) & ~pos.pieces(QUEEN);
+           b &= ~attackedBy[Them][ALL_PIECES] | (attackedBy[Us][ALL_PIECES] & ~attackedBy2[Them]);
+           score += WeakPiece * popcount(b);
+        }
     }
 
     // Bonus for restricting their piece moves

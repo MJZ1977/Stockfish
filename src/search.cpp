@@ -1286,9 +1286,12 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
-    if (!excludedMove && !PvNode && abs(ttValue - bestValue) < Value(50) &&
-	    (((tte->bound() & BOUND_LOWER) && bestValue < beta) ||
-		 ((tte->bound() & BOUND_UPPER) && bestValue >= beta)))
+    if (!excludedMove && !PvNode 
+	    && abs(ttValue - bestValue) < Value(50) 
+		&& depth > 6 * ONE_PLY
+		&& tte->depth() > 6 * ONE_PLY
+	    && (((tte->bound() & BOUND_LOWER) && bestValue < beta) ||
+		    ((tte->bound() & BOUND_UPPER) && bestValue >= beta)))
 		 {
 		 ttPv = true;
 		 /*sync_cout << "Position = " << pos.fen()

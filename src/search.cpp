@@ -1042,6 +1042,11 @@ moves_loop: // When in check, search starts from here
                   && ss->staticEval + 250 + 211 * lmrDepth <= alpha)
                   continue;
 
+              // Skip move it TTmove is a capture
+              if (   ttCapture
+                  && lmrDepth < 4)
+                  continue;
+
               // Prune moves with negative SEE (~10 Elo)
               if (!pos.see_ge(move, Value(-(31 - std::min(lmrDepth, 18)) * lmrDepth * lmrDepth)))
                   continue;

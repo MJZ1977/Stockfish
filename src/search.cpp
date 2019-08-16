@@ -194,8 +194,8 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
   {
-      Reductions1[i] = int(23.6 * std::log(i));
-      Reductions2[i] = int(23.2 * std::log(i));
+      Reductions1[i] = int(23.0 * std::log(i));
+      Reductions2[i] = int(23.8 * std::log(i));
   }
 }
 

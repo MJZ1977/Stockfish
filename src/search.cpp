@@ -1044,7 +1044,8 @@ moves_loop: // When in check, search starts from here
 
               // Skip move it TTmove is a capture
               if (   ttCapture
-                  && lmrDepth < 4)
+                  && lmrDepth < 4
+                  && ss->staticEval < alpha - Value(200))
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)

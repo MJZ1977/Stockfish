@@ -341,7 +341,7 @@ namespace {
             if (   Pt == KNIGHT
                 && pos.non_pawn_material(Us) == KnightValueMg
                 && pos.non_pawn_material(Them) == RookValueMg
-				&& pos.count<PAWN>() < 10 
+				&& pos.count<PAWN>() > 5 
                 && (pos.pieces(PAWN) & (FileABB | FileBBB))
                 && (pos.pieces(PAWN) & (FileGBB | FileHBB)))
                     score -= make_score(0, 20);

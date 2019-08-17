@@ -340,6 +340,7 @@ namespace {
             }
             if (   Pt == KNIGHT
                 && pos.non_pawn_material(Us) == KnightValueMg
+                && pos.non_pawn_material(Them) == RookValueMg
                 && (pos.pieces(PAWN) & (FileABB | FileBBB))
                 && (pos.pieces(PAWN) & (FileGBB | FileHBB)))
                     score -= make_score(0, 10);

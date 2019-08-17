@@ -338,6 +338,11 @@ namespace {
                             : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2
                                                                               : CorneredBishop;
             }
+            if (   Pt == KNIGHT
+                && pos.non_pawn_material(Us) == KnightValueMg
+                && (pos.pieces(PAWN) & (FileABB | FileBBB))
+                && (pos.pieces(PAWN) & (FileGBB | FileHBB)))
+                    score -= make_score(0, 10);
         }
 
         if (Pt == ROOK)

@@ -70,6 +70,11 @@ namespace {
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
+   Value AA = Value(400);
+   int BB = 24;
+   int CC = 4;
+   TUNE(AA, BB, CC);
+
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
     return ((r + 520) / 1024 + (!i && r > 999)) * ONE_PLY;
@@ -1009,10 +1014,10 @@ moves_loop: // When in check, search starts from here
 
       // Winning line extension
       else if (   PvNode
-               && alpha > Value(400)
-               && depth < 3 * ONE_PLY
+               && alpha > AA
+               && depth < CC * ONE_PLY
                && move == ttMove
-               && ss->ply < 3 * thisThread->rootDepth / ONE_PLY)
+               && ss->ply < (BB * thisThread->rootDepth) / ONE_PLY / 8)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

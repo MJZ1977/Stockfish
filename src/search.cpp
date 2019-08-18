@@ -1088,9 +1088,9 @@ moves_loop: // When in check, search starts from here
 
           // If PvNode and we have already a winning variation, increase reduction for other lines
           if (PvNode 
-              && alpha > Value(300) 
+              && alpha > Value(280) 
               && bestValue >= alpha 
-              && depth > 4 * ONE_PLY)
+              && depth > 6 * ONE_PLY)
               r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

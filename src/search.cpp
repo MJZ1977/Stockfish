@@ -1090,7 +1090,7 @@ moves_loop: // When in check, search starts from here
           if (PvNode 
               && alpha > Value(300) 
               && bestValue >= alpha 
-              && depth > 7 * ONE_PLY)
+              && depth > 4 * ONE_PLY)
               r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

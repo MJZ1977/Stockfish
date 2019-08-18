@@ -1088,7 +1088,7 @@ moves_loop: // When in check, search starts from here
 
           // If PvNode and we have already a winning variation, increase reduction for other lines
           if (PvNode 
-              && alpha > Value(280) 
+              && alpha > Value(320) 
               && bestValue >= alpha 
               && depth > 6 * ONE_PLY)
               r += ONE_PLY;

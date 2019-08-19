@@ -1088,9 +1088,9 @@ moves_loop: // When in check, search starts from here
 
           // If PvNode and we have already a winning variation, increase reduction for other lines
           if (PvNode
-              && alpha > Value(270)
+              && alpha > Value(260)
               && bestValue >= std::min(alpha, beta - Value(10))
-              && depth > 5 * ONE_PLY)
+              && depth > 8 * ONE_PLY)
               r += ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

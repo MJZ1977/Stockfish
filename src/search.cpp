@@ -1090,8 +1090,8 @@ moves_loop: // When in check, search starts from here
           if (PvNode
               && alpha > Value(260)
               && bestValue >= std::min(alpha, beta - Value(10))
-              && depth > 8 * ONE_PLY)
-              r += ONE_PLY;
+              && depth > 6 * ONE_PLY)
+              r += depth / 6;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

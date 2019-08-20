@@ -1068,6 +1068,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+      ss->ttPv = ttPv;
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
@@ -1147,9 +1148,7 @@ moves_loop: // When in check, search starts from here
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
-          ss->ttPv = ttPv;
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
-          ss->ttPv = false;
 
           if (doLMR && !captureOrPromotion)
           {
@@ -1176,6 +1175,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 18. Undo move
       pos.undo_move(move);
+      ss->ttPv = false;
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 

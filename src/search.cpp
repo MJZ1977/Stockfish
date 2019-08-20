@@ -605,6 +605,7 @@ namespace {
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    ss->ttPv = false;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -1146,7 +1147,9 @@ moves_loop: // When in check, search starts from here
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
+          ss->ttPv = ttPv;
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+          ss->ttPv = false;
 
           if (doLMR && !captureOrPromotion)
           {
@@ -1285,6 +1288,10 @@ moves_loop: // When in check, search starts from here
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
+
+    //if (!ttPv && (ss-1)->ttPv && bestValue <= alpha && depth > 4 * ONE_PLY)
+    //   sync_cout << "Position = " << pos.fen() << " - LastMove = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+    ttPv |= (ss-1)->ttPv && bestValue <= alpha && depth > 5 * ONE_PLY;
 
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

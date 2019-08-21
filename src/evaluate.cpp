@@ -784,8 +784,6 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score();
-    if (pos.non_pawn_material() == 0)
-       score += score / 4;
     score += me->imbalance() + pos.this_thread()->contempt;
 
     // Probe the pawn hash table
@@ -823,6 +821,8 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
+    if (pos.non_pawn_material() == 0)
+       v += v / 4;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

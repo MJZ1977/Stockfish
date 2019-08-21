@@ -589,11 +589,12 @@ namespace {
     Move pv[MAX_PLY+1], capturesSearched[32], quietsSearched[64];
     StateInfo st;
     TTEntry* tte;
+    TTEntry* tte2;
     Key posKey;
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, doLMR;
+    bool ttHit, ttHit2, ttPv, ttPv2, inCheck, givesCheck, improving, doLMR;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
@@ -1067,6 +1068,8 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+      tte2 = TT.probe(pos.key(), ttHit2);
+      ttPv2 = ttHit2 && tte2->is_pv();
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
@@ -1084,7 +1087,7 @@ moves_loop: // When in check, search starts from here
               r += ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
-          if (ttPv)
+          if (PvNode || ttPv2)
               r -= 2 * ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

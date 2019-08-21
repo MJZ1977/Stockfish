@@ -1295,7 +1295,7 @@ moves_loop: // When in check, search starts from here
 
     //if (!ttPv && (ss-1)->ttPv && bestValue <= alpha && depth > 4 * ONE_PLY)
     //   sync_cout << "Position = " << pos.fen() << " - LastMove = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
-    ttPv |= (ss-1)->ttPv && bestValue <= alpha && depth > 5 * ONE_PLY;
+    ttPv |= (ss-1)->ttPv && bestValue <= alpha && depth > 6 * ONE_PLY;
 
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

@@ -1377,11 +1377,10 @@ moves_loop: // When in check, search starts from here
         if (ttHit)
         {
             // Never assume anything about values stored in TT
-            if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-            {
+            if ((ss->staticEval = tte->eval()) == VALUE_NONE)
                 ss->staticEval = evaluate(pos);
-                bestValue = correct_static(ss);
-            }
+            
+            bestValue = correct_static(ss);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE

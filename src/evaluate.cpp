@@ -822,7 +822,7 @@ namespace {
 
     v /= PHASE_MIDGAME;
     if (pos.non_pawn_material() == 0)
-       v += v / 4;
+       v += v / 2;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

@@ -821,7 +821,7 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
-    if (pos.non_pawn_material() == 0)
+    if (pos.non_pawn_material() == 0 && abs(v) > Value(100))
        v += v / 2;
 
     // In case of tracing add all remaining individual evaluation terms

@@ -783,8 +783,7 @@ namespace {
     // Initialize score by reading the incrementally updated scores included in
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
-    Score score = pos.psq_score();
-    score += me->imbalance() + pos.this_thread()->contempt;
+    Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
@@ -821,8 +820,8 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
-    if (pos.non_pawn_material() == 0 && abs(v) > Value(120))
-       v += v / 2;
+    if (pos.non_pawn_material() == 0 && abs(v) > Value(80))
+       v += v * std::min(abs(v), 512) / 256;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

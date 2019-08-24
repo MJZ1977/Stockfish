@@ -1001,6 +1001,15 @@ moves_loop: // When in check, search starts from here
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
           extension = ONE_PLY;
 
+      // EG extension
+      else if (   PvNode
+               && move == ttMove
+               && depth < 5 * ONE_PLY
+               && abs(alpha - ss->staticEval) < 400
+               && pos.non_pawn_material() < 2000
+               && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
+          extension = ONE_PLY;
+
       // Passed pawn extension
       else if (   move == ss->killers[0]
                && pos.advanced_pawn_push(move)

@@ -1287,6 +1287,13 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
+    if (depth < tte->depth())
+       sync_cout << "Position = " << pos.fen()
+                 << " - ttValue = " << ttValue << " @" << tte->depth() / ONE_PLY
+                 << " move " << UCI::move(ttMove, pos.is_chess960())
+                 << " - bestValue = " << bestValue << " @" << depth / ONE_PLY
+                 << " move " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;
+
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :

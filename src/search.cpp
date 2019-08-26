@@ -523,7 +523,8 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
-          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
+          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction)
+                                * std::max((130 - checkIndex), 50) / 100;
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -1094,10 +1095,6 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
-
-          // Decrease reduction for tactical positions
-          if (thisThread->checkIndex < 15)
-              r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

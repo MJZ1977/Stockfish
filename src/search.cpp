@@ -475,6 +475,8 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+          checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
+          //sync_cout << "CheckIndex = " << checkIndex << sync_endl;
       }
 
       if (!Threads.stop)
@@ -771,7 +773,8 @@ namespace {
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
-        goto moves_loop;
+        thisThread->checkCount += 1;
+        goto moves_loop;  // Skip early pruning when in check
     }
     else if (ss->ttHit)
     {
@@ -1174,6 +1177,10 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if opponent's move count is high (~5 Elo)
           if ((ss-1)->moveCount > 13)
+              r--;
+
+          // Decrease reduction for tactical positions
+          if (thisThread->checkIndex < 15)
               r--;
 
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)

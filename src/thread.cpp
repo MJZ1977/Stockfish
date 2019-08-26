@@ -198,7 +198,8 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
   // since they are read-only.
   for (Thread* th : *this)
   {
-      th->nodes = th->tbHits = th->nmpMinPly = th->bestMoveChanges = 0;
+      th->checkCount = th->nodes = th->tbHits = th->nmpMinPly = th->bestMoveChanges = 0;
+      th->checkIndex = 100;
       th->rootDepth = th->completedDepth = 0;
       th->rootMoves = rootMoves;
       th->rootPos.set(pos.fen(), pos.is_chess960(), &th->rootState, th);

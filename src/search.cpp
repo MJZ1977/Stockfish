@@ -333,6 +333,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  int checkIndex = 100;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)

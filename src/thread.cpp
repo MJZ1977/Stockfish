@@ -201,7 +201,6 @@ void ThreadPool::start_thinking(Position& pos, StateListPtr& states,
   for (Thread* th : *this)
   {
       th->checkCount = th->shuffleExts = th->nodes = th->tbHits = th->nmpMinPly = 0;
-      th->checkIndex = 100;
       th->rootDepth = th->completedDepth = DEPTH_ZERO;
       th->rootMoves = rootMoves;
       th->rootPos.set(pos.fen(), pos.is_chess960(), &setupStates->back(), th);

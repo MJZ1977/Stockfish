@@ -489,7 +489,8 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
-          checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
+          checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1)
+                        + (rootPos.count<QUEEN>() == 0) * 10;
           //sync_cout << "CheckIndex = " << checkIndex << sync_endl;
       }
 
@@ -525,7 +526,7 @@ void Thread::search() {
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction)
-                                * std::max((98 - checkIndex), 32) / 64;
+                                * std::max((102 - checkIndex), 32) / 64;
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

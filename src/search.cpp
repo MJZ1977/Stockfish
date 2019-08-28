@@ -61,6 +61,17 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  int AA1 = 197;
+  int AA2 =  98;
+  int BB1 = 136;
+  int BB2 = 229;
+  int CC1 = 88;
+  int CC2 = 20;
+  int CC3 = 5;
+  TUNE(AA1, AA2);
+  TUNE(BB1, BB2);
+  TUNE(CC1, CC2, CC3);
+
   // Razor and futility margins
   constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
@@ -523,9 +534,9 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
-          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
-          reduction *= 0.88 + 20 / (checkIndex + 5);
+          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? double(AA1) / 100 : double(AA2) / 100;
+          double reduction = (double(BB1) / 100 + mainThread->previousTimeReduction) / (BB2 * timeReduction / 100);
+          reduction *= double(CC1) / 100 + double(CC2) / (checkIndex + CC3);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

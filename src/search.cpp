@@ -755,7 +755,7 @@ namespace {
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
-        thisThread->checkCount += 1;
+        thisThread->checkCount += bool(pos.checkers() & pos.pieces(~us, QUEEN));
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ttHit)
@@ -1023,7 +1023,8 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
+          moveCountPruning = moveCount >= (futility_move_count(improving, depth / ONE_PLY)
+                                           * (8 + bool(thisThread->checkIndex < 30))) / 8;
 
           if (   !captureOrPromotion
               && !givesCheck
@@ -1094,10 +1095,6 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
-
-          // Decrease reduction for tactical positions
-          if (thisThread->checkIndex < 15)
-              r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

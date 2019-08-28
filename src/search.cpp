@@ -524,8 +524,9 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
-          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction)
-                                * std::max((130 - checkIndex), 50) / 100;
+          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
+          if (checkIndex < 20)
+             reduction *= 1.2;
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -539,6 +540,8 @@ void Thread::search() {
           if (   rootMoves.size() == 1
               || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
           {
+              //sync_cout << "fE = " << fallingEval << " - red = " << reduction
+              //          << " - bMI = " << bestMoveInstability << sync_endl;
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
               if (mainThread->ponder)
@@ -757,7 +760,7 @@ namespace {
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
-        thisThread->checkCount += 1;
+        thisThread->checkCount += bool(pos.checkers() & pos.pieces(~us, QUEEN));
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ttHit)

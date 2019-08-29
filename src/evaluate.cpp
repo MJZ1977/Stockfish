@@ -585,7 +585,7 @@ namespace {
     }
 
     // Bonus if we attack a piece by 2 minor pieces
-    score += make_score(12, 6) * popcount(attackedBy2Minors[Us] & nonPawnEnemies & ~stronglyProtected);
+    score += make_score(6, 3) * popcount(attackedBy2Minors[Us] & nonPawnEnemies & ~stronglyProtected);
 
     if (T)
         Trace::add(THREAT, Us, score);

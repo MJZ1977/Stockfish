@@ -184,6 +184,7 @@ namespace {
     // attackedBy2[color] are the squares attacked by at least 2 units of a given
     // color, including x-rays. But diagonal x-rays through pawns are not computed.
     Bitboard attackedBy2[COLOR_NB];
+    Bitboard attackedBy2Minors[COLOR_NB];
 
     // kingRing[color] are the squares adjacent to the king plus some other
     // very near squares, depending on king position.
@@ -234,6 +235,11 @@ namespace {
     attackedBy[Us][PAWN] = pe->pawn_attacks(Us);
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us] = dblAttackByPawn | (attackedBy[Us][KING] & attackedBy[Us][PAWN]);
+    attackedBy2Minors[Us] = dblAttackByPawn;
+    attackedBy[Us][KNIGHT] = 0;
+    attackedBy[Us][BISHOP] = 0;
+    attackedBy[Us][ROOK] = 0;
+    attackedBy[Us][QUEEN] = 0;
 
     // Init our king safety tables
     kingRing[Us] = attackedBy[Us][KING];
@@ -267,7 +273,7 @@ namespace {
     Bitboard b, bb;
     Score score = SCORE_ZERO;
 
-    attackedBy[Us][Pt] = 0;
+    //attackedBy[Us][Pt] = 0;
 
     for (Square s = *pl; s != SQ_NONE; s = *++pl)
     {
@@ -280,6 +286,8 @@ namespace {
             b &= LineBB[pos.square<KING>(Us)][s];
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
+        if (Pt == BISHOP || Pt == KNIGHT)
+           attackedBy2Minors[Us] |= (attackedBy[Us][PAWN] | attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]) & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
@@ -575,6 +583,9 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+
+    // Bonus if we attack a piece by 2 minor pieces
+    //score += make_score(8, 4) * popcount(attackedBy2Minors[Us] & nonPawnEnemies & ~stronglyProtected);
 
     if (T)
         Trace::add(THREAT, Us, score);

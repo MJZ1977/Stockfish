@@ -687,12 +687,12 @@ namespace {
                     update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY));
             }
             // Penalty for a quiet ttMove that fails low
-          /*  else if (!pos.capture_or_promotion(ttMove))
+            else if (!pos.capture_or_promotion(ttMove))
             {
                 int penalty = -stat_bonus(depth);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
-            }*/
+            }
         }
         return ttValue;
     }
@@ -1293,14 +1293,18 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
+    if (bestMove2 != bestMove && depth <= 4 * ONE_PLY)
+       bestMove2 = bestMove;
+
     if (!excludedMove)
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove2, ss->staticEval);
-    /*if (bestMove2 && !(bestMove))
+    /*if (bestMove2 != bestMove)
       sync_cout << "Position = " << pos.fen()
                 << " - depth = " << depth / ONE_PLY
+                << (bestValue >= beta ? " -BOUND_LOWER" : PvNode && bestMove ? " -BOUND_EXACT" : " -BOUND_UPPER")
                 << " - Move2 = " << UCI::move(bestMove2, pos.is_chess960())
                 << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;*/
 

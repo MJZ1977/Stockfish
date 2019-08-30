@@ -1144,6 +1144,9 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
+          if (value > alpha)
+             bestMove2 = move;
+
           doFullDepthSearch = (value > alpha && d != newDepth), doLMR = true;
       }
       else
@@ -1222,7 +1225,6 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
-          bestMove2 = move;
 
           if (value > alpha)
           {
@@ -1293,7 +1295,7 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
-    if (bestMove2 != bestMove && depth <= 4 * ONE_PLY)
+    if (bestMove)
        bestMove2 = bestMove;
 
     if (!excludedMove)

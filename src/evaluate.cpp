@@ -74,6 +74,7 @@ using namespace Trace;
 namespace {
 
   // Threshold for lazy and space evaluation
+  constexpr Value InitiativeThreshold  = Value(10);
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
 
@@ -714,6 +715,9 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
+    if (abs(eg) < InitiativeThreshold)
+        return SCORE_ZERO;    
+
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
@@ -731,7 +735,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -(abs(eg) - InitiativeThreshold));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

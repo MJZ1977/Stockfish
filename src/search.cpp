@@ -1005,6 +1005,14 @@ moves_loop: // When in check, search starts from here
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
           extension = ONE_PLY;
 
+      // Winning PV line extension
+      else if (  PvNode
+              && ttValue > Value(260)
+              && ((tte->bound() & BOUND_LOWER) || (tte->bound() & BOUND_EXACT))
+              && depth > 12 * ONE_PLY
+              && move == ttMove)
+          extension = ONE_PLY;
+
       // Passed pawn extension
       else if (   move == ss->killers[0]
                && pos.advanced_pawn_push(move)

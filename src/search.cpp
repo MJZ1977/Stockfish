@@ -1008,8 +1008,8 @@ moves_loop: // When in check, search starts from here
       // Winning PV line extension
       else if (  PvNode
               && ttValue > Value(260)
-              && ((tte->bound() & BOUND_LOWER) || (tte->bound() & BOUND_EXACT))
-              && depth > 12 * ONE_PLY
+              && (tte->bound() & BOUND_LOWER)
+              && depth > 14 * ONE_PLY
               && move == ttMove)
           extension = ONE_PLY;
 

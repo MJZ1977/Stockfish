@@ -1077,7 +1077,6 @@ moves_loop: // When in check, search starts from here
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1 + 2 * rootNode
           && (!rootNode || thisThread->best_move_count(move) == 0)
-          && (!givesCheck || !extension)
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
@@ -1099,6 +1098,9 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
+
+          if (givesCheck && extension)
+              r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {

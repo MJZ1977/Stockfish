@@ -1099,7 +1099,7 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
 
-          if (givesCheck && extension && ss->staticEval < alpha - Value(800))
+          if (givesCheck && extension && ss->staticEval < alpha - Value(1000))
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

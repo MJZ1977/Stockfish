@@ -1099,7 +1099,7 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
 
-          if (givesCheck && extension)
+          if (givesCheck && extension && thisThread->nodes.load(std::memory_order_relaxed) % 2 == 1)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

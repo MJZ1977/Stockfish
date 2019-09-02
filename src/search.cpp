@@ -63,8 +63,8 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 661;
-  Value futility_margin(Depth d, bool improving) {
-    return Value(198 * (d / ONE_PLY - improving));
+  Value futility_margin(Depth d, bool improving, int CheckIndex) {
+    return Value((260 - std::min(CheckIndex,120)) * (d / ONE_PLY - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -796,7 +796,7 @@ namespace {
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin(depth, improving, thisThread->checkIndex) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
@@ -1094,10 +1094,6 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
               r -= 2 * ONE_PLY;
-
-          // Decrease reduction for tactical positions
-          if (thisThread->checkIndex < 15)
-              r -= ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)

@@ -795,7 +795,11 @@ namespace {
         &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
-        return eval;
+    {
+        Value fut_value = qsearch<NT>(pos, ss, alpha, beta);
+        if (fut_value >= beta)
+            return fut_value;
+	}
 
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
@@ -1099,8 +1103,8 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
 
-          if (givesCheck && extension && ss->staticEval < alpha - Value(1000))
-              r -= ONE_PLY;
+          //if (givesCheck && extension && ss->staticEval < alpha - Value(1000))
+          //    r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {

@@ -791,7 +791,7 @@ namespace {
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
     Value LazyThreshold = Value(1400) + pos.non_pawn_material() / 64
-                - std::min(pe->king_safety<WHITE>(pos), pe->king_safety<BLACK>(pos)) * 2;
+                - std::min(mg_value(pe->king_safety<WHITE>(pos)), mg_value(pe->king_safety<BLACK>(pos))) * 2;
     if (abs(v) > LazyThreshold)
        return pos.side_to_move() == WHITE ? v : -v;
 

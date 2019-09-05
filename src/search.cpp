@@ -1100,7 +1100,7 @@ moves_loop: // When in check, search starts from here
           r -= singularLMR * ONE_PLY;
 
           // Decrease reduction if move gives check for mate searches
-          if (givesCheck && extension && depth < 8 * ONE_PLY)
+          if (givesCheck && extension && depth < 8 * ONE_PLY && ss->staticEval < alpha - Value(800))
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

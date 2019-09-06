@@ -649,7 +649,7 @@ namespace {
                     if (attackedBy2[Them] & blockSq)
                        k += 5;
                     else
-                       k += 6;
+                       k += 7;
 				}
 
                 bonus += make_score(k * w, k * w);

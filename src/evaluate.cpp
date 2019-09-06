@@ -646,8 +646,11 @@ namespace {
                 // Assign a larger bonus if the block square is defended
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                 {
-                    if (attackedBy2[Them] & blockSq)
-                       k += 5;
+                    Bitboard attBB = pos.attackers_to(blockSq);
+                    int protecters = popcount((attBB | bb) & pos.pieces(Us));
+                    int attackers  = popcount(attBB & pos.pieces(Them));
+                    if (protecters <= attackers)
+                       k += 4;
                     else
                        k += 6;
 				}

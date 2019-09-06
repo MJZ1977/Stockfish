@@ -472,6 +472,10 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
+    // Penalty for smothered King
+    score -= make_score(100, 100)
+               * !bool(attackedBy[Us][KING] & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us)));
+
     if (T)
         Trace::add(KING, Us, score);
 

@@ -647,7 +647,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                 {
                     if (attackedBy2[Them] & blockSq)
-                       k += 4;
+                       k += 5;
                     else
                        k += 6;
 				}

@@ -514,7 +514,7 @@ namespace {
             Square s = pop_lsb(&b);
             score += ThreatByMinor[type_of(pos.piece_on(s))];
             if ((pos.blockers_for_king(Them) & s) && type_of(pos.piece_on(s)) >= ROOK)
-                score += ThreatByMinor[type_of(pos.piece_on(s))] / 4;
+                score += ThreatByMinor[type_of(pos.piece_on(s))] / 8;
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
         }

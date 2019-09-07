@@ -473,7 +473,7 @@ namespace {
     score -= FlankAttacks * kingFlankAttacks;
 
     // Penalty for smothered King
-    score -= make_score(100, 100)
+    score -= make_score(60, 60)
                * !bool(attackedBy[Us][KING] & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us)));
 
     if (T)

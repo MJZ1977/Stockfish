@@ -74,7 +74,7 @@ using namespace Trace;
 namespace {
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold  = Value(1580);
+  constexpr Value LazyThreshold  = Value(1320);
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
@@ -791,7 +791,7 @@ namespace {
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
-    if (abs(v) > LazyThreshold + (pos.count<QUEEN>() > 0) * 600)
+    if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64 + (pos.count<QUEEN>() > 0) * 200)
        return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here

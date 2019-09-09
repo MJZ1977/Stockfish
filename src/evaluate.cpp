@@ -791,10 +791,13 @@ namespace {
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
-    bool dangerousPPawn = bool(pe->passed_pawns(WHITE) & Rank7BB)
-                       || bool(pe->passed_pawns(BLACK) & Rank2BB);
-    if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64 + dangerousPPawn * 500)
+    if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
+    {
+        bool dangerousPPawn = bool(pe->passed_pawns(WHITE) & Rank7BB)
+                              || bool(pe->passed_pawns(BLACK) & Rank2BB);
+        if (!dangerousPPawn)
            return pos.side_to_move() == WHITE ? v : -v;
+	}
 
     // Main evaluation begins here
 

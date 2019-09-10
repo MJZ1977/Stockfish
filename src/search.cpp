@@ -1100,7 +1100,7 @@ moves_loop: // When in check, search starts from here
           r -= singularLMR * ONE_PLY;
 
           // For losing side, decrease reduction for check moves
-          if (beta < -Value(200) && givesCheck && extension)
+          if (beta < -Value(400) && givesCheck && extension)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

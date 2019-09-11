@@ -576,6 +576,15 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
+    if (b)
+    {
+        Bitboard bb = pos.pieces(Them,PAWN) & weak;
+        bb &= Them == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
+                            : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+        score += make_score(10, 0) * popcount(bb);
+    }
+
     if (T)
         Trace::add(THREAT, Us, score);
 

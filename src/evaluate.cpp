@@ -580,8 +580,7 @@ namespace {
     if (b)
     {
         Bitboard bb = pos.pieces(Them,PAWN) & weak;
-        bb &= Them == WHITE ? shift<NORTH_WEST>(b) | shift<NORTH_EAST>(b)
-                            : shift<SOUTH_WEST>(b) | shift<SOUTH_EAST>(b);
+        bb &= pawn_attacks_bb<Them>(b);
         score += make_score(10, 0) * popcount(bb);
     }
 

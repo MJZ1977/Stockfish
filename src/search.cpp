@@ -64,7 +64,7 @@ namespace {
   // Razor and futility margins
   constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
-    return Value(198 * (d / ONE_PLY - improving));
+    return Value(190 * (d / ONE_PLY - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -792,7 +792,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
-        &&  depth < 8 * ONE_PLY
+        &&  depth < 7 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  int(thisThread->nodes.load(std::memory_order_relaxed) % 8) > depth / ONE_PLY - 3
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins

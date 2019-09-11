@@ -581,7 +581,7 @@ namespace {
     {
         Bitboard bb = pos.pieces(Them,PAWN) & weak;
         bb &= pawn_attacks_bb<Them>(b);
-        score += make_score(10, 0) * popcount(bb);
+        score += make_score(16, 0) * popcount(bb);
     }
 
     if (T)

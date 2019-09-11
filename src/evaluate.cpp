@@ -580,7 +580,7 @@ namespace {
     {
         b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
         if (b)
-           score += make_score(16, 0) * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(b));
+           score += make_score(22, 0) * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(b));
     }
 
     if (T)

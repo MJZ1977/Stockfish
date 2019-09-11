@@ -576,12 +576,11 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
-    b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
-    if (b)
+    if (pos.non_pawn_material() > EndgameLimit)
     {
-        Bitboard bb = pos.pieces(Them,PAWN) & weak;
-        bb &= pawn_attacks_bb<Them>(b);
-        score += make_score(16, 0) * popcount(bb);
+        b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
+        if (b)
+           score += make_score(16, 0) * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(b));
     }
 
     if (T)

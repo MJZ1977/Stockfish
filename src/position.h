@@ -101,6 +101,7 @@ public:
   // Castling
   int castling_rights(Color c) const;
   bool can_castle(CastlingRights cr) const;
+  bool castling_impeded(CastlingRights cr, Bitboard b) const;
   bool castling_impeded(CastlingRights cr) const;
   Square castling_rook_square(CastlingRights cr) const;
 
@@ -274,6 +275,10 @@ inline bool Position::can_castle(CastlingRights cr) const {
 
 inline int Position::castling_rights(Color c) const {
   return st->castlingRights & (c == WHITE ? WHITE_CASTLING : BLACK_CASTLING);
+}
+
+inline bool Position::castling_impeded(CastlingRights cr, Bitboard b) const {
+  return b & castlingPath[cr];
 }
 
 inline bool Position::castling_impeded(CastlingRights cr) const {

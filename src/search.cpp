@@ -902,7 +902,6 @@ moves_loop: // When in check, search starts from here
                                           nullptr, (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
-    Value alpha2 = alpha;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->captureHistory,
@@ -1143,15 +1142,15 @@ moves_loop: // When in check, search starts from here
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 
-          if (d == newDepth)
+          if (d == newDepth || !PvNode)
           {
               value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
-              doFullDepthSearch = false;
+              doFullDepthSearch = (value > alpha && d != newDepth);
 		  }
 		  else
 		  {
-              value = -search<NonPV>(pos, ss+1, -(alpha2+1), -alpha2, d, true);
-              doFullDepthSearch = value > alpha2;
+              value = -search<NonPV>(pos, ss+1, -alpha, -(alpha-1), d, true);
+              doFullDepthSearch = value >= alpha;
           }
           doLMR = true;
       }
@@ -1240,7 +1239,7 @@ moves_loop: // When in check, search starts from here
                   update_pv(ss->pv, move, (ss+1)->pv);
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
-                  alpha = value, alpha2 = alpha - 1;
+                  alpha = value;
               else
               {
                   assert(value >= beta); // Fail high

@@ -584,9 +584,13 @@ namespace {
     if (pos.non_pawn_material() > EndgameLimit)
     {
         b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
-        if (b)
-           score += make_score(8 * (1 + 2 * (pos.castling_impeded(Them & KING_SIDE, b) || pos.castling_impeded(Them & QUEEN_SIDE, b))), 0)
-                     * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(b));
+        while (b)
+        {
+           Bitboard bb = square_bb(pop_lsb(&b));
+           CastlingRights cr = Them & ((bb & KingSide)? KING_SIDE : QUEEN_SIDE);
+           score += make_score(6 * (1 + pos.castling_impeded(cr, bb)), 0)
+                     * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(bb));
+	    }
     }
 
     if (T)

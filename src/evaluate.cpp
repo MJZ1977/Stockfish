@@ -588,7 +588,7 @@ namespace {
         {
            Bitboard bb = square_bb(pop_lsb(&b));
            CastlingRights cr = Them & ((bb & KingSide)? KING_SIDE : QUEEN_SIDE);
-           score += make_score(6 * (1 + pos.castling_impeded(cr, bb)), 0)
+           score += make_score(6 * (2 + pos.castling_impeded(cr, bb)), 0)
                      * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(bb));
 	    }
     }

@@ -585,7 +585,7 @@ namespace {
     {
         b = pos.pieces(Them,BISHOP) & (Them == WHITE ? Rank1BB : Rank8BB);
         if (b)
-           score += make_score(8 * (1 + (pos.castling_impeded(Them & KING_SIDE, b) || pos.castling_impeded(Them & QUEEN_SIDE, b))), 0)
+           score += make_score(8 * (1 + 2 * (pos.castling_impeded(Them & KING_SIDE, b) || pos.castling_impeded(Them & QUEEN_SIDE, b))), 0)
                      * popcount(pos.pieces(Them,PAWN) & weak & pawn_attacks_bb<Them>(b));
     }
 

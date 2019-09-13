@@ -389,7 +389,7 @@ namespace {
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
-    int kingDanger = 0;
+    int kingDanger = 0, checksCount = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -411,7 +411,7 @@ namespace {
     rookChecks = b1 & safe & attackedBy[Them][ROOK];
 
     if (rookChecks)
-        kingDanger += RookSafeCheck;
+        kingDanger += RookSafeCheck, checksCount++;
     else
         unsafeChecks |= b1 & attackedBy[Them][ROOK];
 
@@ -424,7 +424,7 @@ namespace {
                  & ~rookChecks;
 
     if (queenChecks)
-        kingDanger += QueenSafeCheck;
+        kingDanger += QueenSafeCheck, checksCount++;
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.
@@ -434,7 +434,7 @@ namespace {
                   & ~queenChecks;
 
     if (bishopChecks)
-        kingDanger += BishopSafeCheck;
+        kingDanger += BishopSafeCheck, checksCount++;
     else
         unsafeChecks |= b2 & attackedBy[Them][BISHOP];
 
@@ -442,7 +442,7 @@ namespace {
     knightChecks = pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
 
     if (knightChecks & safe)
-        kingDanger += KnightSafeCheck;
+        kingDanger += KnightSafeCheck, checksCount++;
     else
         unsafeChecks |= knightChecks;
 
@@ -464,6 +464,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
+                 -  20 * checksCount
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

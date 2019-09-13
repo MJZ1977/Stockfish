@@ -121,9 +121,10 @@ namespace {
     S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(51, 38)
   };
 
-  constexpr Score Hanging[PIECE_TYPE_NB] = {
+  Score Hanging[PIECE_TYPE_NB] = {
      S( 69, 36), S( 69, 36), S( 69, 36), S( 69, 36), S( 69, 36), S( 69, 36)
   };
+  TUNE(Hanging);
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {

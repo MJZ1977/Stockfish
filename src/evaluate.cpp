@@ -536,7 +536,20 @@ namespace {
 
         b =  ~attackedBy[Them][ALL_PIECES]
            | (nonPawnEnemies & attackedBy2[Us]);
-        score += Hanging * popcount(weak & b) * (4 + (pos.side_to_move() == Us)) / 4;
+        b &= weak;
+        if (pos.side_to_move() == Them)
+            score += Hanging * popcount(b);
+        else if (b)
+        {
+            if (b & pos.pieces(Them, QUEEN))
+                score += make_score(500,500);
+            else if (b & pos.pieces(Them, ROOK))
+                score += make_score(250,250);
+            else if (b & pos.pieces(Them, KNIGHT, BISHOP))
+                score += make_score(150,150);
+            else if (b & pos.pieces(Them, PAWN))
+                score += make_score(100,100);
+        }
     }
 
     // Bonus for restricting their piece moves

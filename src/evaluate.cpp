@@ -542,11 +542,11 @@ namespace {
         else if (b)
         {
             if (b & pos.pieces(Them, QUEEN))
-                score += make_score(350,200);
+                score += make_score(300,200);
             else if (b & pos.pieces(Them, ROOK))
-                score += make_score(210,120);
+                score += make_score(180,120);
             else if (b & pos.pieces(Them, KNIGHT, BISHOP))
-                score += make_score(140, 80);
+                score += make_score(120, 80);
             else if (b & pos.pieces(Them, PAWN))
                 score += make_score( 70, 40) * popcount(b);
         }

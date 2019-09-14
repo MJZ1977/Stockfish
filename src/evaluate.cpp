@@ -536,7 +536,7 @@ namespace {
 
         b =  ~attackedBy[Them][ALL_PIECES]
            | (nonPawnEnemies & attackedBy2[Us]);
-        score += Hanging * popcount(weak & b);
+        score += Hanging * popcount(weak & b) * (4 + (pos.side_to_move() == Us)) / 4;
     }
 
     // Bonus for restricting their piece moves

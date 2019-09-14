@@ -122,7 +122,7 @@ namespace {
   };
 
   constexpr Score Hanging[PIECE_TYPE_NB] = {
-     S( 0, 0), S( 73, 40), S( 68, 36), S( 64, 32), S( 81, 36), S( 76, 35)
+     S( 0, 0), S( 69, 41), S( 69, 34), S( 64, 30), S( 81, 35), S( 78, 36)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn

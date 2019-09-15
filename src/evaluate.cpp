@@ -771,7 +771,7 @@ namespace {
         else if (pos.count<PAWN>(strongSide) == 0 && pos.count<ROOK>(strongSide) == 0 && pos.count<QUEEN>(strongSide) == 0)
             sf = 8;
         else
-            sf = std::min(28 + ((pos.opposite_bishops() ? 12 : 40) * pos.count<PAWN>(strongSide)) / (1+pos.count<PAWN>(strongSide))
+            sf = std::min(30 + ((pos.opposite_bishops() ? 12 : 40) * pos.count<PAWN>(strongSide)) / (1+pos.count<PAWN>(strongSide))
                              + 2 * pos.count<QUEEN>(strongSide) + 2 * pos.count<ROOK>(strongSide), sf);
 
     }

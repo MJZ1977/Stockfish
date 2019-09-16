@@ -1101,8 +1101,8 @@ moves_loop: // When in check, search starts from here
 
           if (!captureOrPromotion)
           {
-              // Increase reduction if ttMove is a capture (~0 Elo)
-              if (ttCapture)
+              // Increase reduction if ttMove is a capture or rule50 is high (~0 Elo)
+              if (ttCapture || pos.rule50_count() > 30)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)

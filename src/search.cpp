@@ -586,6 +586,7 @@ namespace {
         Value v = qsearch<NT>(pos, ss, alpha, beta);
         if(thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)
             return std::min(v, VALUE_DRAW);
+            //return VALUE_DRAW;
         else
             return v;
     }
@@ -660,7 +661,7 @@ namespace {
     {
         thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY / 2, 21, 41);
         Value shuffle_v = VALUE_DRAW;
-        Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
+        Value v = search<NonPV>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
         thisThread->shuffleLimit = 0;
         if (v <= VALUE_DRAW)
         {
@@ -1098,6 +1099,12 @@ moves_loop: // When in check, search starts from here
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
+
+      if (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit && alpha > 0)
+      {
+          pos.undo_move(move);
+          continue;
+      }
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.

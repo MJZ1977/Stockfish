@@ -582,13 +582,13 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-	{
-		Value v = qsearch<NT>(pos, ss, alpha, beta);
-		if(thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)
-			return std::min(v, VALUE_DRAW);
-		else
+    {
+        Value v = qsearch<NT>(pos, ss, alpha, beta);
+        if(thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)
+            return std::min(v, VALUE_DRAW);
+        else
             return v;
-	}
+    }
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -653,22 +653,22 @@ namespace {
 
     // In case of high rule50 counter, enter in shuffle search mode
     if (   std::min(pos.rule50_count(), ss->ply) > 20
-	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
-		&& thisThread->shuffleLimit == 0
-		&& pos.count<ALL_PIECES>() >= 8
-		&& alpha > Value(10))
-	{
-		thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY / 2, 21, 41);
-		Value shuffle_v = VALUE_DRAW;
-		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
-		thisThread->shuffleLimit = 0;
-		if (v <= VALUE_DRAW)
-		{
-			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
-			return VALUE_DRAW;
-		}
-		//sync_cout << "Shuffle negative : " << pos.fen() << sync_endl;
-	}
+        && depth > 10 * ONE_PLY        //up = more stability in case of shuffling, down = more correct if no shuffling
+        && thisThread->shuffleLimit == 0
+        && pos.count<ALL_PIECES>() >= 8
+        && alpha > Value(10))
+    {
+        thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY / 2, 21, 41);
+        Value shuffle_v = VALUE_DRAW;
+        Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
+        thisThread->shuffleLimit = 0;
+        if (v <= VALUE_DRAW)
+        {
+            //sync_cout << "Shuffle : " << pos.fen() << sync_endl;
+            return VALUE_DRAW;
+        }
+        //sync_cout << "Shuffle negative : " << pos.fen() << sync_endl;
+    }
 
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
@@ -1026,7 +1026,8 @@ moves_loop: // When in check, search starts from here
 
       // Shuffle extension
       else if (   PvNode
-               && pos.rule50_count() > 18
+               && thisThread->shuffleLimit > 0
+               && pos.rule50_count() < thisThread->shuffleLimit + 8
                && depth < 3 * ONE_PLY
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
           extension = ONE_PLY;

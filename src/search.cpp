@@ -566,6 +566,7 @@ namespace {
 
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
+    Thread* thisThread = pos.this_thread();
 
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
@@ -581,7 +582,13 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
-        return qsearch<NT>(pos, ss, alpha, beta);
+	{
+		Value v = qsearch<NT>(pos, ss, alpha, beta);
+		if(thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)
+			return std::min(v, VALUE_DRAW);
+		else
+            return v;
+	}
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -602,7 +609,6 @@ namespace {
     int moveCount, captureCount, quietCount, singularLMR;
 
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
@@ -645,6 +651,25 @@ namespace {
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
+    // In case of high rule50 counter, enter in shuffle search mode
+    if (   std::min(pos.rule50_count(), ss->ply) > 20
+	    && depth > 10 * ONE_PLY		//up = more stability in case of shuffling, down = more correct if no shuffling
+		&& thisThread->shuffleLimit == 0
+		&& pos.count<ALL_PIECES>() >= 8
+		&& alpha > Value(10))
+	{
+		thisThread->shuffleLimit = clamp(16 + depth / ONE_PLY / 2, 21, 41);
+		Value shuffle_v = VALUE_DRAW;
+		Value v = search<NT>(pos, ss, shuffle_v, shuffle_v+1, depth - 2 * ONE_PLY, cutNode);
+		thisThread->shuffleLimit = 0;
+		if (v <= VALUE_DRAW)
+		{
+			//sync_cout << "Shuffle : " << pos.fen() << sync_endl;
+			return VALUE_DRAW;
+		}
+		//sync_cout << "Shuffle negative : " << pos.fen() << sync_endl;
+	}
+
     // Initialize statScore to zero for the grandchildren of the current position.
     // So statScore is shared between all grandchildren and only the first grandchild
     // starts with statScore = 0. Later grandchildren start with the last calculated
@@ -659,7 +684,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() ^ Key((thisThread->shuffleLimit > 0) << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -694,7 +719,7 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
-        return ttValue;
+        return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
     }
 
     // Step 5. Tablebases probe
@@ -749,7 +774,7 @@ namespace {
     }
 
     // Step 6. Static evaluation of the position
-    if (inCheck)
+    if (inCheck || thisThread->shuffleLimit > 0)
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
@@ -956,6 +981,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin then we will extend the ttMove.
       if (    depth >= 6 * ONE_PLY
           &&  move == ttMove
+          && thisThread->shuffleLimit == 0
           && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
@@ -1352,7 +1378,7 @@ moves_loop: // When in check, search starts from here
     ttDepth = inCheck || depth >= DEPTH_QS_CHECKS ? DEPTH_QS_CHECKS
                                                   : DEPTH_QS_NO_CHECKS;
     // Transposition table lookup
-    posKey = pos.key();
+    posKey = pos.key() ^ Key((thisThread->shuffleLimit > 0) << 17);
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove = ttHit ? tte->move() : MOVE_NONE;
@@ -1364,7 +1390,7 @@ moves_loop: // When in check, search starts from here
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
-        return ttValue;
+        return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(ttValue, VALUE_DRAW) : ttValue;
 
     // Evaluate the position statically
     if (inCheck)
@@ -1397,7 +1423,7 @@ moves_loop: // When in check, search starts from here
                 tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit, BOUND_LOWER,
                           DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
-            return bestValue;
+            return (thisThread->shuffleLimit > 0 && pos.rule50_count() > thisThread->shuffleLimit)? std::min(bestValue, VALUE_DRAW) : bestValue;
         }
 
         if (PvNode && bestValue > alpha)

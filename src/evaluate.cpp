@@ -599,7 +599,7 @@ namespace {
        int k = pos.count<ALL_PIECES>(Us) / 3 - popcount(b);
 
        if (k > 0)
-          score -= make_score(10 * k, 0);
+          score -= make_score(k, 0);
     }
 
     if (T)

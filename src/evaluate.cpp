@@ -582,7 +582,7 @@ namespace {
     }
 
     // Penalty if we have few safe mobility squares
-    if (mg_value(mobility[Us]) < Value(200) && pos.count<ALL_PIECES>(Us) > 2)
+    if (mg_value(mobility[Us]) < Value(100) && pos.count<ALL_PIECES>(Us) > 2)
     {
        b = attackedBy[Us][PAWN] & pos.pieces(Them);
        b |= shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
@@ -599,7 +599,7 @@ namespace {
        int k = pos.count<ALL_PIECES>(Us) / 3 - popcount(b);
 
        if (k > 0)
-          score -= make_score(k, 0);
+          score -= make_score(3 * k, 0);
     }
 
     if (T)

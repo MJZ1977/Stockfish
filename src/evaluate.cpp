@@ -582,7 +582,7 @@ namespace {
     }
 
     // Penalty if we have few safe mobility squares
-    if (mg_value(mobility[Us]) < Value(100) && pos.count<ALL_PIECES>(Us) > 2)
+    if (mg_value(mobility[Us]) < Value(40) && pos.count<ALL_PIECES>(Us) > 2)
     {
        b = attackedBy[Us][PAWN] & pos.pieces(Them);
        b |= shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

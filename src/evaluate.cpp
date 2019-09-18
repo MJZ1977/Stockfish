@@ -581,6 +581,27 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Penalty if we have few safe mobility squares
+    if (mg_value(mobility[Us]) < Value(200) && pos.count<ALL_PIECES>(Us) > 2)
+    {
+       b = attackedBy[Us][PAWN] & pos.pieces(Them);
+       b |= shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
+
+       safe = ~(attackedBy[Them][PAWN] | pos.pieces(Us)) & (attackedBy2[Us] | ~attackedBy[Them][ALL_PIECES]);
+       b |= (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]) & safe;
+
+       safe &= ~(attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP]);
+       b |= attackedBy[Us][ROOK] & safe;
+
+       safe &= ~attackedBy[Them][ROOK];
+       b |= attackedBy[Us][QUEEN] & safe;
+
+       int k = pos.count<ALL_PIECES>(Us) / 3 - popcount(b);
+
+       if (k > 0)
+          score -= make_score(10 * k, 0);
+    }
+
     if (T)
         Trace::add(THREAT, Us, score);
 

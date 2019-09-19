@@ -959,7 +959,11 @@ moves_loop: // When in check, search starts from here
       // then that move is singular and should be extended. To verify this we do
       // a reduced search on all the other moves but the ttMove and if the
       // result is lower than ttValue minus a margin then we will extend the ttMove.
-      if (    depth >= 6 * ONE_PLY
+      if (move == ttMove
+          && goodCapture)
+          extension = ONE_PLY;
+
+      else if (    depth >= 6 * ONE_PLY
           &&  move == ttMove
           && !rootNode
           && !excludedMove // Avoid recursive singular search
@@ -1108,7 +1112,7 @@ moves_loop: // When in check, search starts from here
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
-                  r += (1 + goodCapture) * ONE_PLY;
+                  r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)

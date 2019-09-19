@@ -913,8 +913,10 @@ moves_loop: // When in check, search starts from here
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     goodCapture = ttCapture &&
-                 (PieceValue[EG][pos.piece_on(to_sq(ttMove))] > PieceValue[EG][pos.piece_on(from_sq(ttMove))]
+                 (PieceValue[EG][pos.piece_on(to_sq(ttMove))] > PieceValue[EG][pos.piece_on(from_sq(ttMove))] + Value(100)
                  || type_of(pos.moved_piece(ttMove)) == KING);
+    //if (goodCapture)
+    //    sync_cout << "Good Capture = " << pos.fen() << " - Move = " <<  UCI::move(ttMove, pos.is_chess960()) << sync_endl;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);

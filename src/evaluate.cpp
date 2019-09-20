@@ -652,7 +652,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 4;
                 if (attackedBy[Us][PAWN] & blockSq)
-                    k = std::max(k + 1, 6);
+                    k = std::max(k + 1, 7);
 
                 bonus += make_score(k * w, k * w);
             }

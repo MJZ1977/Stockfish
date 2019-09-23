@@ -600,7 +600,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
-    int shuffle_limit = pos.count<ALL_PIECES>() < 8? 99 : clamp(24 + depth / ONE_PLY / 2, 39, 49);
+    int shuffle_limit = pos.count<ALL_PIECES>() < 8? 99 : clamp(24 + depth / ONE_PLY / 2, 29, 49);
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -660,7 +660,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = (pos.key() ^ Key((std::min(pos.rule50_count(), ss->ply) > 31) << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() ^ Key((std::min(pos.rule50_count(), ss->ply) > 21) << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -1344,7 +1344,7 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply, pos.count<ALL_PIECES>() < 8? 99 : 39)
+    if (   pos.is_draw(ss->ply, pos.count<ALL_PIECES>() < 8? 99 : 29)
         || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
@@ -1356,7 +1356,7 @@ moves_loop: // When in check, search starts from here
     ttDepth = inCheck || depth >= DEPTH_QS_CHECKS ? DEPTH_QS_CHECKS
                                                   : DEPTH_QS_NO_CHECKS;
     // Transposition table lookup
-    posKey = pos.key() ^ Key((std::min(pos.rule50_count(), ss->ply) > 31) << 17);
+    posKey = pos.key() ^ Key((std::min(pos.rule50_count(), ss->ply) > 21) << 17);
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove = ttHit ? tte->move() : MOVE_NONE;

@@ -652,7 +652,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 4;
                 if (attackedBy[Us][PAWN] & blockSq)
-                    k += 1;
+                    k += 1 + (pos.non_pawn_material(Them) == RookValueMg);
 
                 bonus += make_score(k * w, k * w);
             }

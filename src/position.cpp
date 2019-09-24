@@ -1127,9 +1127,9 @@ bool Position::see_ge(Move m, Value threshold) const {
 /// Position::is_draw() tests whether the position is drawn by 50-move rule
 /// or by repetition. It does not detect stalemates.
 
-bool Position::is_draw(int ply, int suffle_limit) const {
+bool Position::is_draw(int ply, int shuffle_limit) const {
 
-  if (std::min(st->rule50, ply) > std::min(suffle_limit, 99) && (!checkers() || MoveList<LEGAL>(*this).size()))
+  if (std::min(st->rule50, ply) > std::min(shuffle_limit, 99) && (!checkers() || MoveList<LEGAL>(*this).size()))
       return true;
 
   // Return a draw score if a position repeats once earlier but strictly

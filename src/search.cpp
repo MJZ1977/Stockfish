@@ -600,7 +600,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
-    int shuffle_limit = pos.count<ALL_PIECES>() < 8 ? 99 : clamp(30 + depth / ONE_PLY / 2, 41, 59);
+    int shuffle_limit = pos.count<ALL_PIECES>() < 8 ? 99 : clamp(28 + depth / ONE_PLY, 35, 49);
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -624,8 +624,12 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply, shuffle_limit)
             || ss->ply >= MAX_PLY)
+        {
+            //if (std::min(pos.rule50_count(), ss->ply) > std::min(shuffle_limit, 99))
+            //   sync_cout << "Shuffle = " << pos.fen() << sync_endl;
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
                                                     : value_draw(depth, pos.this_thread());
+        }
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because

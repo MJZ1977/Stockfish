@@ -613,6 +613,14 @@ namespace {
             return alpha;
     }
 
+    // If opponent is shuffling for several moves without pushing our king to move, we can hope for a draw
+    ss->ksq = pos.square<KING>(pos.side_to_move());
+    if (   std::min(ss->ply,pos.rule50_count()) > 24
+        && distance<Square>(ss->ksq, (ss-18)->ksq) <= 1
+        && beta < 0
+        && depth < 4 * ONE_PLY)
+        return VALUE_DRAW;
+
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)
         return qsearch<NT>(pos, ss, alpha, beta);
@@ -642,6 +650,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    ss->ksq = pos.square<KING>(us);
 
     // Check for the available remaining time
     if (thisThread == Threads.main())

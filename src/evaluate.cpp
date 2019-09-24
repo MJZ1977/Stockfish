@@ -651,8 +651,8 @@ namespace {
                 // Assign a larger bonus if the block square is defended
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 4;
-                if (attackedBy[Us][PAWN] & blockSq)
-                    k += 1 + (pos.non_pawn_material(Them) == RookValueMg);
+                if ((attackedBy[Us][PAWN] & blockSq) && k < 6)
+                    k += 1 + 2 * (pos.non_pawn_material(Them) == RookValueMg);
 
                 bonus += make_score(k * w, k * w);
             }

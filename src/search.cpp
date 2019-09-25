@@ -583,7 +583,7 @@ namespace {
     if (   std::min(ss->ply,pos.rule50_count()) > 26
         && distance<Square>(ss->ksq, (ss-22)->ksq) <= 1
         && beta < 0
-        && depth < 4 * ONE_PLY)
+        && (depth < 4 * ONE_PLY || std::min(ss->ply,pos.rule50_count()) > 38))
     {
         //sync_cout << "Shuffling = " << pos.fen() << sync_endl;
         return VALUE_DRAW;
@@ -1099,6 +1099,12 @@ moves_loop: // When in check, search starts from here
           // Reduction if other threads are searching this position.
           if (th.marked())
               r++;
+
+          // Increase reduction for weak side king moves in shuffling positions
+          /*if (std::min(ss->ply,pos.rule50_count()) > 12
+              && beta < 0
+              && type_of(movedPiece) == KING)
+              r += 2 * ONE_PLY;*/
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)

@@ -1103,10 +1103,10 @@ moves_loop: // When in check, search starts from here
               r += ONE_PLY;
 
           // Increase reduction for weak side king moves in shuffling positions
-          /*if (std::min(ss->ply,pos.rule50_count()) > 12
+          if (std::min(ss->ply,pos.rule50_count()) > 12
               && beta < 0
               && type_of(movedPiece) == KING)
-              r += 2 * ONE_PLY;*/
+              r += 2 * ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)

@@ -808,7 +808,9 @@ namespace {
     Value v = (mg_value(score) + eg_value(score)) / 2;
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
     {
-        bool dangerousPPawn = v < 0 ?
+        bool dangerousPPawn = false;
+        if (pe->passed_pawns(v < 0 ? WHITE : BLACK))
+           dangerousPPawn = v < 0 ?
               bool(pe->passed_pawns(WHITE) & (Rank7BB | Rank6BB) & ~shift<SOUTH>(pos.pieces(BLACK)))
             : bool(pe->passed_pawns(BLACK) & (Rank2BB | Rank3BB) & ~shift<NORTH>(pos.pieces(WHITE)));
         if (!dangerousPPawn)

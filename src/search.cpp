@@ -581,14 +581,11 @@ namespace {
 
     // If opponent is shuffling for several moves without pushing our king to move, we can hope for a draw
     ss->ksq = pos.square<KING>(pos.side_to_move());
-    if (   std::min(ss->ply,pos.rule50_count()) > 22
-        && distance<Square>(ss->ksq, (ss-20)->ksq) <= 1
+    if (   std::min(ss->ply,pos.rule50_count()) > 20
+        && distance<Square>(ss->ksq, (ss-18)->ksq) <= 1
         && beta < 0
-        && (depth < 4 * ONE_PLY || std::min(ss->ply,pos.rule50_count()) > 34))
-    {
-        //sync_cout << "Shuffling = " << pos.fen() << sync_endl;
-        return value_draw(depth, pos.this_thread());
-    }
+        && (depth < 4 * ONE_PLY || std::min(ss->ply,pos.rule50_count()) > 32))
+          return value_draw(depth, pos.this_thread());
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)

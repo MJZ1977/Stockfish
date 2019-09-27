@@ -596,7 +596,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, doLMR;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, doLMR, shuffling;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
@@ -915,6 +915,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    shuffling = pos.rule50_count() > 16;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1101,6 +1102,10 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if ttMove has been singularly extended
           r -= singularLMR * ONE_PLY;
+
+          // Decrease reduction for moves that reset rule50_count in case of shuffling
+          if (shuffling && pos.rule50_count() == 0)
+              r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {

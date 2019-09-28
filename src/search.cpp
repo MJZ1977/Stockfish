@@ -915,7 +915,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    shuffling = pos.rule50_count() > 16;
+    shuffling = pos.rule50_count() > 14;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);

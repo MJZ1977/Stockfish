@@ -1104,7 +1104,7 @@ moves_loop: // When in check, search starts from here
           r -= singularLMR * ONE_PLY;
 
           // Decrease reduction for moves that reset rule50_count in case of shuffling
-          if (shuffling && pos.rule50_count() == 0)
+          if (shuffling && pos.rule50_count() == 0 && alpha > 0)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)

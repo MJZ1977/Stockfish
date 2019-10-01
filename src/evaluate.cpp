@@ -470,7 +470,7 @@ namespace {
       score -= FlankAttacks * kingFlankAttacks;
     }
     else
-      score -= make_score(0, 6 * kingAttacksCount[Them]);
+      score -= make_score(0, 4 * kingAttacksCount[Them]);
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

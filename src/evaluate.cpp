@@ -389,7 +389,7 @@ namespace {
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
 
-    if (pos.non_pawn_material() > EndgameLimit)
+    if (pos.non_pawn_material() > Value(4200))
     {
       // Attacked squares defended at most once by our queen or king
       weak =  attackedBy[Them][ALL_PIECES]
@@ -470,7 +470,7 @@ namespace {
       score -= FlankAttacks * kingFlankAttacks;
     }
     else
-      score -= make_score(0, 4 * kingAttacksCount[Them]);
+      score -= make_score(0, 5 * kingAttacksCount[Them]);
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

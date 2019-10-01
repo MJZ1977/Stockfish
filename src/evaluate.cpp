@@ -389,87 +389,92 @@ namespace {
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
 
-    // Attacked squares defended at most once by our queen or king
-    weak =  attackedBy[Them][ALL_PIECES]
-          & ~attackedBy2[Us]
-          & (~attackedBy[Us][ALL_PIECES] | attackedBy[Us][KING] | attackedBy[Us][QUEEN]);
+    if (pos.non_pawn_material() > EndgameLimit)
+    {
+      // Attacked squares defended at most once by our queen or king
+      weak =  attackedBy[Them][ALL_PIECES]
+            & ~attackedBy2[Us]
+            & (~attackedBy[Us][ALL_PIECES] | attackedBy[Us][KING] | attackedBy[Us][QUEEN]);
 
-    // Analyse the safe enemy's checks which are possible on next move
-    safe  = ~pos.pieces(Them);
-    safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
+      // Analyse the safe enemy's checks which are possible on next move
+      safe  = ~pos.pieces(Them);
+      safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
 
-    b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
-    b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
+      b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
+      b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
 
-    // Enemy rooks checks
-    rookChecks = b1 & safe & attackedBy[Them][ROOK];
+      // Enemy rooks checks
+      rookChecks = b1 & safe & attackedBy[Them][ROOK];
 
-    if (rookChecks)
-        kingDanger += RookSafeCheck;
+      if (rookChecks)
+          kingDanger += RookSafeCheck;
+      else
+          unsafeChecks |= b1 & attackedBy[Them][ROOK];
+
+      // Enemy queen safe checks: we count them only if they are from squares from
+      // which we can't give a rook check, because rook checks are more valuable.
+      queenChecks =  (b1 | b2)
+                   & attackedBy[Them][QUEEN]
+                   & safe
+                   & ~attackedBy[Us][QUEEN]
+                   & ~rookChecks;
+
+      if (queenChecks)
+          kingDanger += QueenSafeCheck;
+
+      // Enemy bishops checks: we count them only if they are from squares from
+      // which we can't give a queen check, because queen checks are more valuable.
+      bishopChecks =  b2
+                    & attackedBy[Them][BISHOP]
+                    & safe
+                    & ~queenChecks;
+
+      if (bishopChecks)
+          kingDanger += BishopSafeCheck;
+      else
+          unsafeChecks |= b2 & attackedBy[Them][BISHOP];
+
+      // Enemy knights checks
+      knightChecks = pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
+
+      if (knightChecks & safe)
+          kingDanger += KnightSafeCheck;
+      else
+          unsafeChecks |= knightChecks;
+
+      // Find the squares that opponent attacks in our king flank, and the squares
+      // which are attacked twice in that flank.
+      b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
+      b2 = b1 & attackedBy2[Them];
+
+      int kingFlankAttacks = popcount(b1) + popcount(b2);
+
+      kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
+                   +  69 * kingAttacksCount[Them]
+                   + 185 * popcount(kingRing[Us] & weak)
+                   - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
+                   -  35 * bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])
+                   + 148 * popcount(unsafeChecks)
+                   +  98 * popcount(pos.blockers_for_king(Us))
+                   - 873 * !pos.count<QUEEN>(Them)
+                   -   6 * mg_value(score) / 8
+                   +       mg_value(mobility[Them] - mobility[Us])
+                   +   5 * kingFlankAttacks * kingFlankAttacks / 16
+                   -   7;
+
+      // Transform the kingDanger units into a Score, and subtract it from the evaluation
+      if (kingDanger > 100)
+          score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+
+      // Penalty if king flank is under attack, potentially moving toward the king
+      score -= FlankAttacks * kingFlankAttacks;
+    }
     else
-        unsafeChecks |= b1 & attackedBy[Them][ROOK];
-
-    // Enemy queen safe checks: we count them only if they are from squares from
-    // which we can't give a rook check, because rook checks are more valuable.
-    queenChecks =  (b1 | b2)
-                 & attackedBy[Them][QUEEN]
-                 & safe
-                 & ~attackedBy[Us][QUEEN]
-                 & ~rookChecks;
-
-    if (queenChecks)
-        kingDanger += QueenSafeCheck;
-
-    // Enemy bishops checks: we count them only if they are from squares from
-    // which we can't give a queen check, because queen checks are more valuable.
-    bishopChecks =  b2
-                  & attackedBy[Them][BISHOP]
-                  & safe
-                  & ~queenChecks;
-
-    if (bishopChecks)
-        kingDanger += BishopSafeCheck;
-    else
-        unsafeChecks |= b2 & attackedBy[Them][BISHOP];
-
-    // Enemy knights checks
-    knightChecks = pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
-
-    if (knightChecks & safe)
-        kingDanger += KnightSafeCheck;
-    else
-        unsafeChecks |= knightChecks;
-
-    // Find the squares that opponent attacks in our king flank, and the squares
-    // which are attacked twice in that flank.
-    b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
-    b2 = b1 & attackedBy2[Them];
-
-    int kingFlankAttacks = popcount(b1) + popcount(b2);
-
-    kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 +  69 * kingAttacksCount[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
-                 - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
-                 -  35 * bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])
-                 + 148 * popcount(unsafeChecks)
-                 +  98 * popcount(pos.blockers_for_king(Us))
-                 - 873 * !pos.count<QUEEN>(Them)
-                 -   6 * mg_value(score) / 8
-                 +       mg_value(mobility[Them] - mobility[Us])
-                 +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 -   7;
-
-    // Transform the kingDanger units into a Score, and subtract it from the evaluation
-    if (kingDanger > 100)
-        score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+      score -= make_score(0, 5 * kingAttacksCount[Them]);
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
-
-    // Penalty if king flank is under attack, potentially moving toward the king
-    score -= FlankAttacks * kingFlankAttacks;
 
     if (T)
         Trace::add(KING, Us, score);

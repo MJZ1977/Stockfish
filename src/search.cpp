@@ -1009,6 +1009,13 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // Extend all captures in the EG
+      else if ( pos.non_pawn_material() <= EndgameLimit
+                && captureOrPromotion
+                && (PieceValue[EG][pos.piece_on(to_sq(move))] > PieceValue[EG][pos.piece_on(from_sq(move))] - Value(100)
+                    || type_of(pos.moved_piece(ttMove)) == KING))
+          extension = ONE_PLY;
+
       // Castling extension
       if (type_of(move) == CASTLING)
           extension = ONE_PLY;

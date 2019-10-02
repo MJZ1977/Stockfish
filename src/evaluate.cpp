@@ -477,7 +477,7 @@ namespace {
 		Bitboard barriers = attackedBy[Them][ALL_PIECES] | pos.pieces(Us);
 		b1 = barriers & shift<SOUTH>(barriers) & shift<NORTH>(barriers) & attackedBy[Us][KING];
 		b2 = barriers & shift<EAST>(barriers) & shift<WEST>(barriers) & attackedBy[Us][KING];
-		score -= make_score(0, 2 * popcount(b1) + 2 * popcount(b2));
+		score -= make_score(0, 3 * popcount(b1) + 3 * popcount(b2));
 	}
 
     if (T)

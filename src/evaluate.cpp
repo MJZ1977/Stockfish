@@ -475,13 +475,8 @@ namespace {
     if (pos.non_pawn_material() < 8000)
     {
 		Bitboard barriers = attackedBy[Them][ALL_PIECES] | pos.pieces(Us);
-		b1 = barriers & shift<SOUTH>(barriers) & shift<NORTH>(barriers);
-		b2 = barriers & shift<EAST>(barriers) & shift<WEST>(barriers);
-		if (!(pos.pieces(PAWN) & KingFlank[7 - file_of(ksq)]))
-		  {
-			  b1 &= ~KingFlank[7 - file_of(ksq)];
-			  b2 &= ~KingFlank[7 - file_of(ksq)];
-		  }
+		b1 = barriers & shift<SOUTH>(barriers) & shift<NORTH>(barriers) & attackedBy[Us][KING];
+		b2 = barriers & shift<EAST>(barriers) & shift<WEST>(barriers) & attackedBy[Us][KING];
 		score -= make_score(0, 2 * popcount(b1) + 2 * popcount(b2));
 	}
 

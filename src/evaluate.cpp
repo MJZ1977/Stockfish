@@ -471,6 +471,15 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
+    // In the late endgame, give a penalty depending on the number of barriers to king path
+    if (pos.non_pawn_material() < 8000)
+    {
+		Bitboard barriers = attackedBy[Them][ALL_PIECES] | pos.pieces(Us);
+		b1 = barriers & shift<SOUTH>(barriers) & shift<NORTH>(barriers);
+		b2 = barriers & shift<EAST>(barriers) & shift<WEST>(barriers);
+		score -= make_score(0, 4 * popcount(b1) + 4 * popcount(b2));
+	}
+
     if (T)
         Trace::add(KING, Us, score);
 

@@ -498,7 +498,6 @@ void Thread::search() {
          lastBestMove2 = rootMoves[0].pv[1];
          lastBestMoveDepth = rootDepth;
       }
-      else if (rootMoves[0].pv[1] != lastBestMove2)
 
       // Have we found a "mate in x"?
       if (   Limits.mate

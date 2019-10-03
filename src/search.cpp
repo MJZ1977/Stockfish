@@ -521,7 +521,7 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
+          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 2.10 : 0.98;
           if (rootMoves[0].pv[1] != lastBestCMove && timeReduction > 1.7)
              timeReduction = 1.7;
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);

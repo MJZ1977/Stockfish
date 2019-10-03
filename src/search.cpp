@@ -328,6 +328,7 @@ void Thread::search() {
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
+  Move  lastBestMove2 = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
@@ -494,8 +495,10 @@ void Thread::search() {
 
       if (rootMoves[0].pv[0] != lastBestMove) {
          lastBestMove = rootMoves[0].pv[0];
+         lastBestMove2 = rootMoves[0].pv[1];
          lastBestMoveDepth = rootDepth;
       }
+      else if (rootMoves[0].pv[1] != lastBestMove2)
 
       // Have we found a "mate in x"?
       if (   Limits.mate
@@ -520,6 +523,8 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
+          if (rootMoves[0].pv[1] != lastBestMove2 && timeReduction > 1.5)
+             timeReduction = 1.5;
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move

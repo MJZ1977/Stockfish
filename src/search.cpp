@@ -581,7 +581,6 @@ namespace {
     // If opponent is shuffling for several moves without pushing our king to move, we can hope for a draw
     ss->ksq = pos.square<KING>(pos.side_to_move());
     if (   std::min(ss->ply,pos.rule50_count()) > 22
-        && !PvNode
         && distance<Square>(ss->ksq, (ss-20)->ksq) <= 1
         && beta < 0
         && (depth < 5 || std::min(ss->ply,pos.rule50_count()) > 30 + depth))
@@ -667,7 +666,7 @@ namespace {
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
     excludedMove = ss->excludedMove;
-    posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
+    posKey = (pos.key() ^ Key((std::min(ss->ply,pos.rule50_count()) > 30) << 17)) ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
@@ -1362,7 +1361,7 @@ moves_loop: // When in check, search starts from here
     ttDepth = inCheck || depth >= DEPTH_QS_CHECKS ? DEPTH_QS_CHECKS
                                                   : DEPTH_QS_NO_CHECKS;
     // Transposition table lookup
-    posKey = pos.key();
+    posKey = (pos.key() ^ Key((std::min(ss->ply,pos.rule50_count()) > 30) << 17));
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
     ttMove = ttHit ? tte->move() : MOVE_NONE;

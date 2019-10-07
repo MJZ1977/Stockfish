@@ -584,7 +584,7 @@ namespace {
         && !PvNode
         && distance<Square>(ss->ksq, (ss-20)->ksq) <= 1
         && beta < 0
-        && (depth < 5 || std::min(ss->ply,pos.rule50_count()) > 30 + depth))
+        && (depth < 5 || std::min(ss->ply,pos.rule50_count()) > 28 + depth))
         return value_draw(pos.this_thread());
 
     // Dive into quiescence search when the depth reaches zero

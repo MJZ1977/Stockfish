@@ -583,8 +583,8 @@ namespace {
     if (   std::min(ss->ply,pos.rule50_count()) > 22
         && distance<Square>(ss->ksq, (ss-20)->ksq) <= 1
         && beta < 0
-        && (depth < 4 * ONE_PLY || std::min(ss->ply,pos.rule50_count()) > 34))
-        return value_draw(depth, pos.this_thread());
+        && (depth < 5 || std::min(ss->ply,pos.rule50_count()) > 30 + depth))
+        return value_draw(pos.this_thread());
 
     // Dive into quiescence search when the depth reaches zero
     if (depth <= 0)

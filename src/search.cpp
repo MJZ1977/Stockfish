@@ -602,7 +602,9 @@ namespace {
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
-    priorCapture = (pos.captured_piece() && abs(pos.non_pawn_material(BLACK) - pos.non_pawn_material(WHITE)) > Value(100));
+    priorCapture = (pos.captured_piece()
+           && abs(pos.non_pawn_material(BLACK) - pos.non_pawn_material(WHITE) 
+                  + (pos.count<PAWN>(BLACK) - pos.count<PAWN>(WHITE)) * Value(200)) > Value(100));
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;

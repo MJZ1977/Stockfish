@@ -77,6 +77,7 @@ namespace {
     bool backward, passed, doubled;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+    int blockedCount = 0;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -113,6 +114,8 @@ namespace {
         // Compute additional span if pawn is not backward nor blocked
         if (!backward && !blocked)
             e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+        else
+           blockedCount += 1;
 
         // A pawn is passed if one of the three following conditions is true:
         // (a) there is no stoppers except some levers
@@ -151,6 +154,8 @@ namespace {
                      + WeakLever * more_than_one(lever);
     }
 
+    e->almostBlocked &= (blockedCount > 4);
+
     return score;
   }
 
@@ -172,6 +177,7 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  e->almostBlocked = pos.count<PAWN>() >= 14;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 

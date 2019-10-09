@@ -77,6 +77,11 @@ namespace {
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
 
+  int AAA = 0;
+  int BBB = 0;
+  int CCC = 0;
+  TUNE(SetRange(-40, 40), AAA, BBB, SetRange(-6, 6), CCC);
+
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
@@ -458,6 +463,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   3 * kingFlankAttacks * kingFlankAttacks / 8
+                 + AAA * pe->almostBlocked
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
@@ -723,7 +729,7 @@ namespace {
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     - 36 * almostUnwinnable
-                    - 20 * pe->almostBlocked
+                    - BBB * pe->almostBlocked
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting the
@@ -805,7 +811,7 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    score += (mobility[WHITE] - mobility[BLACK]) * (32 + CCC * pe->almostBlocked) / 32;
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

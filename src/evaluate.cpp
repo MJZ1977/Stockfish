@@ -805,7 +805,7 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += (mobility[WHITE] - mobility[BLACK]) * (6 - pe->almostBlocked) / 6;
+    score += (mobility[WHITE] - mobility[BLACK]) * (4 - pe->almostBlocked) / 4;
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

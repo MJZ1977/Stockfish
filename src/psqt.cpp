@@ -115,7 +115,7 @@ void init() {
       PieceValue[MG][~pc] = PieceValue[MG][pc];
       PieceValue[EG][~pc] = PieceValue[EG][pc];
 
-      Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
+      Score score = SCORE_ZERO;//make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {

@@ -298,10 +298,10 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & attackedBy[Us][PAWN] & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += (Outpost - make_score(4, 0) * pe->almostBlocked) * (Pt == KNIGHT ? 2 : 1);
+                score += Outpost * (Pt == KNIGHT ? 2 : 1);
 
             else if (Pt == KNIGHT && bb & b & ~pos.pieces(Us))
-                score += (Outpost - make_score(4, 0) * pe->almostBlocked);
+                score += Outpost;
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)
@@ -780,13 +780,15 @@ namespace {
     if (me->specialized_eval_exists())
         return me->evaluate(pos);
 
+    // Probe the pawn hash table
+    pe = Pawns::probe(pos);
+
     // Initialize score by reading the incrementally updated scores included in
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
-    Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    Score score = pos.psq_score() * (4 - pe->almostBlocked) / 4 + pos.material_score()
+                  + me->imbalance() + pos.this_thread()->contempt;
 
-    // Probe the pawn hash table
-    pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
@@ -824,7 +826,7 @@ namespace {
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {
-        Trace::add(MATERIAL, pos.psq_score());
+        Trace::add(MATERIAL, pos.psq_score() * (4 - pe->almostBlocked) / 4 + pos.material_score());
         Trace::add(IMBALANCE, me->imbalance());
         Trace::add(PAWN, pe->pawn_score(WHITE), pe->pawn_score(BLACK));
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);

@@ -159,6 +159,7 @@ public:
   bool has_repeated() const;
   int rule50_count() const;
   Score psq_score() const;
+  Score material_score() const;
   Value non_pawn_material(Color c) const;
   Value non_pawn_material() const;
 
@@ -191,7 +192,7 @@ private:
   Bitboard castlingPath[CASTLING_RIGHT_NB];
   int gamePly;
   Color sideToMove;
-  Score psq;
+  Score psq, material;
   Thread* thisThread;
   StateInfo* st;
   bool chess960;
@@ -350,6 +351,10 @@ inline Score Position::psq_score() const {
   return psq;
 }
 
+inline Score Position::material_score() const {
+  return material;
+}
+
 inline Value Position::non_pawn_material(Color c) const {
   return st->nonPawnMaterial[c];
 }
@@ -405,6 +410,8 @@ inline void Position::put_piece(Piece pc, Square s) {
   pieceList[pc][index[s]] = s;
   pieceCount[make_piece(color_of(pc), ALL_PIECES)]++;
   psq += PSQT::psq[pc][s];
+  material += make_score(PieceValue[MG][type_of(pc)], PieceValue[EG][type_of(pc)])
+    * (color_of(pc) == WHITE ? 1 : -1);
 }
 
 inline void Position::remove_piece(Piece pc, Square s) {
@@ -423,6 +430,8 @@ inline void Position::remove_piece(Piece pc, Square s) {
   pieceList[pc][pieceCount[pc]] = SQ_NONE;
   pieceCount[make_piece(color_of(pc), ALL_PIECES)]--;
   psq -= PSQT::psq[pc][s];
+  material -= make_score(PieceValue[MG][type_of(pc)], PieceValue[EG][type_of(pc)])
+    * (color_of(pc) == WHITE ? 1 : -1);
 }
 
 inline void Position::move_piece(Piece pc, Square from, Square to) {

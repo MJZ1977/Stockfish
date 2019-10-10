@@ -458,7 +458,6 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   3 * kingFlankAttacks * kingFlankAttacks / 8
-                 +  10 * pe->almostBlocked
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
@@ -564,6 +563,11 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+    if (pe->almostBlocked)
+    {
+        b = pos.pieces(Them, PAWN) & attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][PAWN];
+        score += make_score(6, 0) * popcount(b);
     }
 
     if (T)

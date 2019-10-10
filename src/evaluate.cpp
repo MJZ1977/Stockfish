@@ -458,10 +458,11 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   3 * kingFlankAttacks * kingFlankAttacks / 8
+                 -  10 * pe->almostBlocked
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
-    if (kingDanger > 100 + 40 * pe->almostBlocked)
+    if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
 
     // Penalty when our king is on a pawnless flank

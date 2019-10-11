@@ -805,7 +805,7 @@ namespace {
         && (ss-1)->statScore < 22661
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 33 * depth + 270 - improving * 30 + int(thisThread->nodes.load(std::memory_order_relaxed) % 4) * Value(20)
+        &&  ss->staticEval >= beta - 33 * depth + 255 - improving * 30 + int(thisThread->nodes.load(std::memory_order_relaxed) % 4) * Value(30)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

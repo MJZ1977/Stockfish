@@ -1093,7 +1093,7 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2;
 
-          if (alpha > Value(200) && depth > 8)
+          if (alpha > Value(200) && depth > 8 && bestValue >= alpha)
               r += alpha / Value(200);
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

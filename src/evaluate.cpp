@@ -754,7 +754,7 @@ namespace {
             sf = 16 + 4 * pe->passed_count();
         else
             sf = std::min(sf, 36 
-                + (pos.opposite_bishops() ? 2 * pos.count<PAWN>(strongSide) + 2 * (pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK))
+                + (pos.opposite_bishops() ? 2 * pos.count<PAWN>(strongSide) + 4 * (pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK))
                                           : 7 * pos.count<PAWN>(strongSide)));
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4  );

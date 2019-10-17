@@ -612,9 +612,12 @@ namespace {
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+            
+            if (r == RANK_7 && ((pawn_attacks_bb<Us>(square_bb(s)) & pos.pieces(Them)) | blockSq) & ~attackedBy[Them][ALL_PIECES])
+                bonus += make_score(600,600);
 
             // If the pawn is free to advance, then increase the bonus
-            if (pos.empty(blockSq))
+            else if (pos.empty(blockSq))
             {
                 squaresToQueen = forward_file_bb(Us, s);
                 unsafeSquares = passed_pawn_span(Us, s);

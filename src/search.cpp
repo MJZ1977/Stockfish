@@ -794,7 +794,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
-        &&  depth < 7 + 2 * (pos.non_pawn_material() <= 4000)
+        &&  depth < 9 - std::min(2, int(pos.non_pawn_material()) / 4000)
         &&  eval - futility_margin(std::min(depth, 7), improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;

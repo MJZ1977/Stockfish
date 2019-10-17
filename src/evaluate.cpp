@@ -613,7 +613,9 @@ namespace {
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
             
-            if (r == RANK_7 && ((pawn_attacks_bb<Us>(square_bb(s)) & pos.pieces(Them)) | blockSq) & ~attackedBy[Them][ALL_PIECES])
+            if (r == RANK_7 && 
+                  ((pawn_attacks_bb<Us>(square_bb(s)) & pos.pieces(Them)) | (~pos.pieces() & blockSq)) 
+                      & ~attackedBy[Them][ALL_PIECES])
                 bonus += make_score(600,600);
 
             // If the pawn is free to advance, then increase the bonus

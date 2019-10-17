@@ -693,6 +693,8 @@ namespace {
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
         }
+        if (ss->ply == 1)
+            sync_cout << "TTcut" << sync_endl;
         return ttValue;
     }
 
@@ -831,7 +833,11 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 13))
+            {
+                if (ss->ply == 1)
+                    sync_cout << "NMP" << sync_endl;
                 return nullValue;
+            }
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
 
@@ -845,7 +851,11 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
+            {
+                if (ss->ply == 1)
+                    sync_cout << "NMP" << sync_endl;
                 return nullValue;
+            }
         }
     }
 
@@ -883,7 +893,11 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
+                {
+                    if (ss->ply == 1)
+                        sync_cout << "Probcut" << sync_endl;
                     return value;
+                }
             }
     }
 
@@ -937,7 +951,7 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
-      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 30)
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;

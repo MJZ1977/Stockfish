@@ -206,9 +206,22 @@ namespace {
         Bitboard b = pos.attacks_from<Pt>(from) & target;
 
         if (Checks)
+        {
             b &= pos.check_squares(Pt);
+            if (b && Pt == QUEEN)
+            {
+               Bitboard b1 = b & pos.attacks_from<KING>(pos.square<KING>(~us));
+               b &= ~b1;
+               while (b1)
+                 *moveList++ = make_move(from, pop_lsb(&b1));
+               while (b)
+                 *moveList++ = make_move(from, pop_lsb(&b));
+		    }
+		    else while (b)
+                 *moveList++ = make_move(from, pop_lsb(&b));
+		}
 
-        while (b)
+        else while (b)
             *moveList++ = make_move(from, pop_lsb(&b));
     }
 

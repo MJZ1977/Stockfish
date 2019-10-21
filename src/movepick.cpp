@@ -130,8 +130,10 @@ void MovePicker::score() {
                        + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                        - (1 << 28);
       }
-      if (P_attacks & from_sq(m))
-        m.value += 200;
+      if (type_of(pos.moved_piece(m)) != KING
+          && type_of(pos.moved_piece(m)) != PAWN
+          && P_attacks & from_sq(m))
+        m.value += int(PieceValue[MG][pos.moved_piece(m)]) / 2 - 64;
   }
 }
 

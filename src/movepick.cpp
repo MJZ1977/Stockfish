@@ -131,7 +131,7 @@ void MovePicker::score() {
                        - (1 << 28);
       }
       if (P_attacks & from_sq(m))
-        m.value += 400;
+        m.value += 200;
   }
 }
 

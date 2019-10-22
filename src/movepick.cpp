@@ -130,7 +130,7 @@ void MovePicker::score() {
                        + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                        - (1 << 28);
       }
-      if (type_of(pos.moved_piece(m)) != PAWN && (P_attacks & from_sq(m)))
+      if (stage != PROBCUT_INIT && depth < 5 type_of(pos.moved_piece(m)) != PAWN && (P_attacks & from_sq(m)))
         m.value += int(PieceValue[MG][pos.piece_on(from_sq(m))]) - 64;
   }
 }

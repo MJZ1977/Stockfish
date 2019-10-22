@@ -131,7 +131,7 @@ void MovePicker::score() {
                        - (1 << 28);
       }
       if (type_of(pos.moved_piece(m)) != PAWN && (P_attacks & from_sq(m)))
-        m.value += int(PieceValue[MG][pos.piece_on(from_sq(m))]) / 2;
+        m.value += int(PieceValue[MG][pos.piece_on(from_sq(m))]) - 64;
   }
 }
 

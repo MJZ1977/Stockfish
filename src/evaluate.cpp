@@ -725,19 +725,18 @@ namespace {
                     - 36 * almostUnwinnable
                     -103 ;
 
+    if (  abs(eg) > Value(300)
+       && pos.count<PAWN>() >= 4
+       && pos.count<PAWN>() <= 14
+       && pos.non_pawn_material() < 3000
+       && !pos.opposite_bishops())
+     complexity += (abs(eg) - 300) / 2;
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
     int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
-
-    if (complexity > -60
-     && abs(eg) > Value(300)
-     && pos.count<PAWN>() >= 4
-     && pos.count<PAWN>() <= 14
-     && pos.non_pawn_material() < 3000
-     && !pos.opposite_bishops())
-     v += eg/4;
 
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));

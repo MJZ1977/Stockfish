@@ -732,7 +732,7 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (complexity > -60
-     && abs(eg) > Value(200)
+     && abs(eg) > Value(300)
      && pos.count<PAWN>() >= 4
      && pos.count<PAWN>() <= 14
      && pos.non_pawn_material() < 5000)

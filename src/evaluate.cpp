@@ -735,7 +735,7 @@ namespace {
      && abs(eg) > Value(300)
      && pos.count<PAWN>() >= 4
      && pos.count<PAWN>() <= 14
-     && pos.non_pawn_material() < 5000)
+     && pos.non_pawn_material() < 3000)
      v += eg/4;
 
     if (T)

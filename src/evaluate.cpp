@@ -731,6 +731,13 @@ namespace {
     int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
+    if (complexity > -60
+     && eg > Value(200)
+     && pos.count<PAWN>() >= 4
+     && pos.count<PAWN>() <= 14
+     && pos.non_pawn_material() < 5000)
+     v += eg/2;
+
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));
 

@@ -736,7 +736,7 @@ namespace {
      && pos.count<PAWN>() >= 4
      && pos.count<PAWN>() <= 14
      && pos.non_pawn_material() < 5000)
-     v += eg/2;
+     v += eg/4;
 
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));

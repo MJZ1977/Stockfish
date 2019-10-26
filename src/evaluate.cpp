@@ -381,6 +381,9 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
+    if (pos.non_pawn_material(Them) <= RookValueMg)
+       return SCORE_ZERO;
+
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
     int kingDanger = 0;

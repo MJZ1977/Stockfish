@@ -393,6 +393,9 @@ namespace {
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
 
+    if (pos.non_pawn_material(Them) <= RookValueMg)
+        return score - make_score(0, 5 * kingAttacksCount[Them]);
+
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
           & ~attackedBy2[Us]

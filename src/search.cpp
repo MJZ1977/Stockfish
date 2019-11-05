@@ -1093,7 +1093,7 @@ moves_loop: // When in check, search starts from here
               r -= 2;
 
           // Increase reduction for PV line if alpha is high
-          if (PvNode && alpha > Value(280) && bestValue >= alpha && depth > 9)
+          if (PvNode && alpha > Value(320) && bestValue >= alpha && depth > 9)
               r += 1;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)

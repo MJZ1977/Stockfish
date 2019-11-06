@@ -1008,7 +1008,7 @@ moves_loop: // When in check, search starts from here
       // Capture extension
       else if (   PvNode
                && captureOrPromotion
-               && depth < 8
+               && depth < 6
                && move == ttMove
                && pos.non_pawn_material() < 6000)
           extension = 1;

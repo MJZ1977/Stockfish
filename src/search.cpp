@@ -1007,10 +1007,10 @@ moves_loop: // When in check, search starts from here
 
       // Capture extension
       else if (   PvNode
-		       && captureOrPromotion
-		       && depth < 8
-		       && move == ttMove)
-		  extension = 1;
+               && captureOrPromotion
+               && depth < 8
+               && move == ttMove)
+          extension = 1;
 
       // Castling extension
       if (type_of(move) == CASTLING)

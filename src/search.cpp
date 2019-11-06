@@ -1009,7 +1009,8 @@ moves_loop: // When in check, search starts from here
       else if (   PvNode
                && captureOrPromotion
                && depth < 8
-               && move == ttMove)
+               && move == ttMove
+               && pos.non_pawn_material() < 6000)
           extension = 1;
 
       // Castling extension

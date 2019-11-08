@@ -258,6 +258,7 @@ namespace {
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
+    Bitboard nonPawnEnemies = pos.pieces(Them) & ~pos.pieces(PAWN);
     Score score = SCORE_ZERO;
 
     attackedBy[Us][Pt] = 0;
@@ -342,6 +343,14 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pos.is_on_semiopen_file(Us, s))
                 score += RookOnFile[pos.is_on_semiopen_file(Them, s)];
+
+            // bonus if rook is attacking 2 non pawn pieces in a row
+            bb = b & nonPawnEnemies;
+            if (bb)
+            {
+                if (attacks_bb<ROOK>(s, pos.pieces() ^ bb) & nonPawnEnemies & ~bb)
+                    score += make_score(10,10);
+            }
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

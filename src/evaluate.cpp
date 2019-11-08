@@ -258,6 +258,7 @@ namespace {
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
+    Bitboard nonPawnEnemies = pos.pieces(Them) & ~pos.pieces(PAWN);
     Score score = SCORE_ZERO;
 
     attackedBy[Us][Pt] = 0;
@@ -316,6 +317,14 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
+
+                // bonus if bishop is attacking 2 non pawn pieces in a row
+                bb = b & nonPawnEnemies;
+                if (bb)
+                {
+                    if (attacks_bb<BISHOP>(s, pos.pieces() ^ bb) & nonPawnEnemies & ~bb)
+                        score += make_score(10,10);
+                }
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

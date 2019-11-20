@@ -492,6 +492,7 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+          //sync_cout << "ttHitAverage = " << ttHitAverage / ttHitAverageWindow << sync_endl;
       }
 
       if (!Threads.stop)
@@ -602,7 +603,7 @@ namespace {
     bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, ttUpdate = std::max(4 - pos.this_thread()->rootDepth / 4, 1);
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -670,8 +671,8 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
     // thisThread->ttHitAverage can be used to approximate the running average of ttHit
-    thisThread->ttHitAverage =   (ttHitAverageWindow - 1) * thisThread->ttHitAverage / ttHitAverageWindow
-                                + ttHitAverageResolution * ttHit;
+    thisThread->ttHitAverage =   (ttHitAverageWindow - ttUpdate) * thisThread->ttHitAverage / ttHitAverageWindow
+                                + ttHitAverageResolution * ttUpdate * ttHit;
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode

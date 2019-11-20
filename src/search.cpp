@@ -603,7 +603,7 @@ namespace {
     bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount, ttUpdate = std::max(4 - pos.this_thread()->rootDepth / 4, 1);
+    int moveCount, captureCount, quietCount, ttUpdate = std::max(5 - pos.this_thread()->rootDepth / 4, 1);
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -1090,7 +1090,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction(improving, depth, moveCount);
 
           // Decrease reduction if the ttHit running average is large
-          if (thisThread->ttHitAverage > 552 * ttHitAverageResolution * ttHitAverageWindow / 1024)
+          if (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024)
               r--;
 
           // Reduction if other threads are searching this position.

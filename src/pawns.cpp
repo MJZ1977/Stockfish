@@ -158,7 +158,7 @@ namespace {
     }
 
     // EG Bonus depending on file distance between extreme points
-    score += make_score(0, 6 * (int(maxFile) - int(minFile) - 2));
+    score += make_score(0, 8 * (int(maxFile) - int(minFile) - 2));
 
     return score;
   }

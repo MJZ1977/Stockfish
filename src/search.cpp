@@ -1110,7 +1110,7 @@ moves_loop: // When in check, search starts from here
               r -= 2;
 
           // Decrease reduction for checks if staticEval is low
-          if (ss->staticEval < alpha - Value(500) && givesCheck && extension)
+          if (ss->staticEval < alpha - Value(500) && givesCheck && !extension)
               r--;
 
           if (!captureOrPromotion)

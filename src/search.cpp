@@ -1109,6 +1109,10 @@ moves_loop: // When in check, search starts from here
           if (singularLMR)
               r -= 2;
 
+          // Decrease reduction for checks if staticEval is low
+          if (ss->staticEval < alpha - Value(600) && givesCheck)
+              r--;
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)

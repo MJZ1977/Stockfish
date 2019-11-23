@@ -1050,7 +1050,7 @@ moves_loop: // When in check, search starts from here
           extension = 1;
       
       // low pvHits extension
-      else if ( thisThread->ttHitAverage > 840 * ttHitAverageResolution * ttHitAverageWindow / 1024
+      else if ( thisThread->ttHitAverage > 900 * ttHitAverageResolution * ttHitAverageWindow / 1024
            && !ttHit
            && ss->ply < thisThread->rootDepth * 3)	// to avoid infinite extensions
           extension = 1;

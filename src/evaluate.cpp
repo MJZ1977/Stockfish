@@ -275,7 +275,7 @@ namespace {
 
         // Bonus if rooks can easily be linked
         if (Pt == ROOK && (attackedBy[Us][ROOK] & b & ~pos.pieces(Us)))
-           score += make_score(8, 4);
+           score += make_score(6, 3);
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;

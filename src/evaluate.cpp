@@ -273,6 +273,10 @@ namespace {
         if (pos.blockers_for_king(Us) & s)
             b &= LineBB[pos.square<KING>(Us)][s];
 
+        // Bonus if rooks can easily be linked
+        if (Pt == ROOK && (attackedBy[Us][ROOK] & b & ~pos.pieces(Us)))
+           score += make_score(8, 4);
+
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;

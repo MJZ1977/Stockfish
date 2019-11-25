@@ -1050,9 +1050,9 @@ moves_loop: // When in check, search starts from here
           extension = 1;
 
       // Last captures extension
-      else if (   PvNode
+      else if (   ttPv
                && PieceValue[EG][pos.captured_piece()] > PawnValueEg
-               && pos.non_pawn_material() < 1000 + PieceValue[MG][pos.captured_piece()])
+               && pos.non_pawn_material() < 2600)
           extension = 1;
 
       // Castling extension

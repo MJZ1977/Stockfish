@@ -274,7 +274,7 @@ namespace {
             b &= LineBB[pos.square<KING>(Us)][s];
 
         // Bonus if rooks can easily be linked
-        if (Pt == ROOK && (attackedBy[Us][ROOK] & b & ~pos.pieces(Us)))
+        if (Pt == ROOK && (attackedBy[Us][ROOK] & b & ~pos.pieces(Us, PAWN)))
            score += make_score(12, 2);
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;

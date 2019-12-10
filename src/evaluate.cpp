@@ -460,7 +460,9 @@ namespace {
        kingDanger -= 873;
     else if (!(attackedBy[Us][QUEEN]
                & kingRing[Us]
-               & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us))))
+               & ~pos.pieces(Us)
+               & ~(attackedBy[Them][QUEEN] & ~attackedBy2[Us])
+               & ~(attackedBy[Them][PAWN] | attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP])))
        kingDanger += 50;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

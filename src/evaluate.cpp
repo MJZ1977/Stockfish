@@ -461,7 +461,7 @@ namespace {
     else if (!(attackedBy[Us][QUEEN]
                & kingRing[Us]
                & ~(attackedBy[Them][ALL_PIECES] | pos.pieces(Us))))
-       kingDanger += 50;
+       kingDanger += 80;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

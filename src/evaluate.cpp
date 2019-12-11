@@ -146,6 +146,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 52, 10);
+  constexpr Score TrappedQueen       = S( 16, 16);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -572,13 +573,13 @@ namespace {
             & mobilityArea[Us]
             & ~unsafeSq;
         if (!bool(b))
-            score -= make_score(8, 8);
+            score -= TrappedQueen;
         else while (b)
         {
-            if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 4)
+            if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 3)
               break;
             if (!bool(b))
-			  score -= make_score(8, 8);
+			  score -= TrappedQueen;
 		 }
 	}
 

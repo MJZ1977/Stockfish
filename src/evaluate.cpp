@@ -572,13 +572,13 @@ namespace {
             & mobilityArea[Us]
             & ~unsafeSq;
         if (!bool(b))
-            score -= make_score(8, 8);
+            score -= make_score(12, 12);
         else while (b)
         {
             if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 3)
               break;
             if (!bool(b))
-			  score -= make_score(8, 8);
+			  score -= make_score(12, 12);
 		 }
 	}
 

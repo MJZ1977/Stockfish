@@ -564,7 +564,7 @@ namespace {
     }
 
     // Penalty if queen safe mobility is very low
-    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 7)
+    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN] & mobilityArea[Us]) < 6)
     {
         // Safe squares for our queen
         Bitboard unsafeSq = (attackedBy[Them][QUEEN] & ~attackedBy2[Us])

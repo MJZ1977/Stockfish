@@ -146,6 +146,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 52, 10);
+  constexpr Score TrappedQueen       = S( 14, 10);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -563,7 +564,7 @@ namespace {
     }
 
     // Penalty if queen safe mobility is very low
-    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 8)
+    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 10)
     {
         // Safe squares for our queen
         Bitboard unsafeSq = (attackedBy[Them][QUEEN] & ~attackedBy2[Us])
@@ -572,13 +573,13 @@ namespace {
             & mobilityArea[Us]
             & ~unsafeSq;
         if (!bool(b))
-            score -= make_score(12, 12);
+            score -= TrappedQueen;
         else while (b)
         {
             if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 3)
               break;
             if (!bool(b))
-			  score -= make_score(12, 12);
+			  score -= TrappedQueen;
 		 }
 	}
 

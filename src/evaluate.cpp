@@ -463,7 +463,7 @@ namespace {
                & ~pos.pieces(Us)
                & ~(attackedBy[Them][QUEEN] & ~attackedBy2[Us])
                & ~(attackedBy[Them][PAWN] | attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP])))
-       kingDanger += 50;
+       kingDanger += 40;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

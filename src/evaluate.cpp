@@ -562,6 +562,26 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Penalty if queen safe mobility is very low
+    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 8)
+    {
+        // Safe squares for our queen
+        Bitboard unsafeSq = (attackedBy[Them][QUEEN] & ~attackedBy2[Us])
+                            | attackedBy[Them][PAWN] | attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP];
+        b = attackedBy[Us][QUEEN]
+            & mobilityArea[Us]
+            & ~unsafeSq;
+        if (!bool(b))
+            score -= make_score(8, 8);
+        else while (b)
+        {
+            if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 3)
+              break;
+            if (!bool(b))
+			  score -= make_score(8, 8);
+		 }
+	}
+
     if (T)
         Trace::add(THREAT, Us, score);
 

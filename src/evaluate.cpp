@@ -575,7 +575,7 @@ namespace {
             score -= make_score(8, 8);
         else while (b)
         {
-            if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 2)
+            if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 4)
               break;
             if (!bool(b))
 			  score -= make_score(8, 8);

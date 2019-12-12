@@ -146,7 +146,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 52, 10);
-  constexpr Score TrappedQueen       = S( 14, 10);
+  constexpr Score TrappedQueen       = S( 14,  6);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S

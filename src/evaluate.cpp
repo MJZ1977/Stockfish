@@ -146,7 +146,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 52, 10);
-  constexpr Score TrappedQueen       = S( 14, 10);
+  constexpr Score TrappedQueen       = S(  7,  5);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -564,23 +564,23 @@ namespace {
     }
 
     // Penalty if queen safe mobility is very low
-    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 8)
+    if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 10)
     {
         // Safe squares for our queen
-        Bitboard unsafeSq = ((attackedBy[Them][QUEEN] | attackedBy[Them][KING]) & ~attackedBy2[Us])
+        Bitboard unsafeSq = (attackedBy[Them][QUEEN] & ~attackedBy2[Us])
                             | attackedBy[Them][PAWN] | attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP];
         b = attackedBy[Us][QUEEN]
             & mobilityArea[Us]
             & ~unsafeSq;
         if (!bool(b))
-            score -= TrappedQueen;
-        else while (b)
+            score -= TrappedQueen * std::max(2 - popcount(b), 0);
+        /*else while (b)
         {
             if (popcount(pos.attacks_from<QUEEN>(pop_lsb(&b)) & mobilityArea[Us] & ~unsafeSq) > 3)
               break;
             if (!bool(b))
 			  score -= TrappedQueen;
-		 }
+		 }*/
 	}
 
     if (T)

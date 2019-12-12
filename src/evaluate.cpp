@@ -567,7 +567,7 @@ namespace {
     if (pos.count<QUEEN>(Us) && popcount(attackedBy[Us][QUEEN]) < 8)
     {
         // Safe squares for our queen
-        Bitboard unsafeSq = (attackedBy[Them][QUEEN] & ~attackedBy2[Us])
+        Bitboard unsafeSq = ((attackedBy[Them][QUEEN] | attackedBy[Them][KING]) & ~attackedBy2[Us])
                             | attackedBy[Them][PAWN] | attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP];
         b = attackedBy[Us][QUEEN]
             & mobilityArea[Us]

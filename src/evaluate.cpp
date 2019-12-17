@@ -384,6 +384,10 @@ namespace {
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
 
+    if (pos.non_pawn_material() <= EndgameLimit)
+        score -= make_score(0, (69 * kingAttacksCount[Them] + kingAttackersCount[Them] * kingAttackersWeight[Them]) / 16);
+    else
+    {
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
           & ~attackedBy2[Us]
@@ -467,6 +471,7 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+    }
 
     if (T)
         Trace::add(KING, Us, score);

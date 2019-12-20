@@ -460,9 +460,9 @@ namespace {
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
-    else if(   pos.non_pawn_material(BLACK) == pos.non_pawn_material(WHITE)
-            && pos.count<PAWN>(Us) > pos.count<PAWN>(Them))
-        score += make_score(6 * (pos.count<PAWN>(Us) - pos.count<PAWN>(Them)), 0);
+    else if(   pos.non_pawn_material(BLACK) - pos.non_pawn_material(WHITE) < 50
+            && pos.count<PAWN>(Us) > pos.count<PAWN>(Them) + 1)
+        score += make_score(0, 6 * (pos.count<PAWN>(Us) - pos.count<PAWN>(Them)));
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

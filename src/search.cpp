@@ -775,6 +775,7 @@ namespace {
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
+        thisThread->lazyEval = false;
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ttHit)

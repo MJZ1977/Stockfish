@@ -775,6 +775,7 @@ namespace {
     {
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
+        thisThread->lazyEval = false;
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ttHit)
@@ -806,7 +807,7 @@ namespace {
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
 
-    thisThread->lazyEval = !PvNode && abs(ss->staticEval - alpha) > Value(600) + pos.non_pawn_material() / 64 ;
+    thisThread->lazyEval = !PvNode && abs(ss->staticEval - alpha) > Value(600);
 
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch

@@ -587,7 +587,7 @@ namespace {
     b = pe->passed_pawns(Us);
 
     if (b && !bool(pe->passed_pawns(Them)))
-      score += make_score(6, 0);
+      score += make_score(8, 0);
 
     while (b)
     {

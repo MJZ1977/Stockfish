@@ -586,9 +586,6 @@ namespace {
 
     b = pe->passed_pawns(Us);
 
-    if (b && !bool(pe->passed_pawns(Them)))
-      score += make_score(4, 0);
-
     while (b)
     {
         Square s = pop_lsb(&b);
@@ -603,10 +600,11 @@ namespace {
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;
+            int KProximityBonus = ((king_proximity(Them, blockSq) * 19) / 4 
+                                  - king_proximity(Us,   blockSq) *  2) * w;
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  (king_proximity(Them, blockSq) * 19) / 4
-                                     - king_proximity(Us,   blockSq) *  2) * w);
+            bonus += make_score(KProximityBonus * !bool(pe->passed_pawns(Them)) / 8, KProximityBonus);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

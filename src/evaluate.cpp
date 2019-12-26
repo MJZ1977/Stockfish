@@ -604,7 +604,7 @@ namespace {
                                   - king_proximity(Us,   blockSq) *  2) * w;
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(KProximityBonus * !bool(pe->passed_pawns(Them)) / 8, KProximityBonus);
+            bonus += make_score(KProximityBonus / 8, KProximityBonus);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

@@ -586,6 +586,9 @@ namespace {
 
     b = pe->passed_pawns(Us);
 
+    if (b && !bool(pe->passed_pawns(Them)))
+      score += make_score(6, 0);
+
     while (b)
     {
         Square s = pop_lsb(&b);

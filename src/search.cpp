@@ -1033,7 +1033,7 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
       thisThread->badCapture = captureOrPromotion
-                            && (PieceValue[EG][pos.piece_on(to_sq(move))] < PieceValue[EG][movedPiece]);
+                            && (*contHist[0])[movedPiece][to_sq(move)] < 0;
       //if (thisThread->badCapture)
       //   sync_cout << "Position = " << pos.fen() << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 

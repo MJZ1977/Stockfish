@@ -969,6 +969,8 @@ namespace {
                 if (value >= raisedBeta)
                     return value;
             }
+         // if (thisThread->badCapture && ss->ply > 0)
+		 //       sync_cout << "Position = " << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
     }
 
     // Step 11. Internal iterative deepening (~1 Elo)
@@ -1032,10 +1034,6 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      thisThread->badCapture = captureOrPromotion
-                            && (PieceValue[EG][pos.piece_on(to_sq(move))] < PieceValue[EG][movedPiece]);
-      //if (thisThread->badCapture)
-      //   sync_cout << "Position = " << pos.fen() << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -1155,6 +1153,10 @@ moves_loop: // When in check, search starts from here
                                                                 [captureOrPromotion]
                                                                 [movedPiece]
                                                                 [to_sq(move)];
+      thisThread->badCapture = pos.capture(move)
+                            && (PieceValue[EG][pos.piece_on(to_sq(move))] < PieceValue[EG][movedPiece] - 100);
+      //if (thisThread->badCapture)
+      //   sync_cout << "Position = " << pos.fen() << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);

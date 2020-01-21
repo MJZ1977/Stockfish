@@ -835,6 +835,48 @@ namespace {
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
+    // Step 10. Early probCut for bad captures
+    if (   !PvNode
+        &&  depth >= 5
+        &&  thisThread->badCapture
+        &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
+    {
+        Value raisedBeta = std::min(beta + 189 - 45 * improving, VALUE_INFINITE);
+        MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
+        int probCutCount = 0;
+
+        while (  (move = mp.next_move()) != MOVE_NONE
+               && probCutCount < 2 + 2 * cutNode)
+            if (move != excludedMove && pos.legal(move))
+            {
+                assert(pos.capture_or_promotion(move));
+                assert(depth >= 5);
+
+                captureOrPromotion = true;
+                probCutCount++;
+
+                ss->currentMove = move;
+                ss->continuationHistory = &thisThread->continuationHistory[inCheck]
+                                                                          [captureOrPromotion]
+                                                                          [pos.moved_piece(move)]
+                                                                          [to_sq(move)];
+
+                pos.do_move(move, st);
+
+                // Perform a preliminary qsearch to verify that the move holds
+                value = -qsearch<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1);
+
+                // If the qsearch held, perform the regular search
+                if (value >= raisedBeta)
+                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4, !cutNode);
+
+                pos.undo_move(move);
+
+                if (value >= raisedBeta)
+                    return value;
+            }
+    }
+
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
@@ -890,6 +932,7 @@ namespace {
     // much above beta, we can (almost) safely prune the previous move.
     if (   !PvNode
         &&  depth >= 5
+        && !thisThread->badCapture
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         Value raisedBeta = std::min(beta + 189 - 45 * improving, VALUE_INFINITE);
@@ -989,6 +1032,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      thisThread->badCapture = captureOrPromotion
+                            && (PieceValue[EG][pos.piece_on(to_sq(move))] < PieceValue[EG][movedPiece]);
+      //if (thisThread->badCapture)
+      //   sync_cout << "Position = " << pos.fen() << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       // Calculate new depth for this move
       newDepth = depth - 1;

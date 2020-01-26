@@ -631,6 +631,10 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
+                // Assign a larger bonus if we can advance pawn with discovered check
+                if ((pos.blockers_for_king(Them) & s) && k < 20)
+                    k += 3;
+
                 bonus += make_score(k * w, k * w);
             }
         } // r > RANK_3

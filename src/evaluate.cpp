@@ -633,7 +633,7 @@ namespace {
 
                 // Assign a larger bonus if we can advance pawn with discovered check
                 if ((pos.blockers_for_king(Them) & s) && k < 20)
-                    k += 3;
+                    k += 4;
 
                 bonus += make_score(k * w, k * w);
             }

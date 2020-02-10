@@ -1085,6 +1085,15 @@ moves_loop: // When in check, search starts from here
                && pos.non_pawn_material() <= 2 * RookValueMg)
           extension = 1;
 
+      // Shuffle extension
+      else if (   thisThread->ttHitAverage > 900 * ttHitAverageResolution * ttHitAverageWindow / 1024
+               && PvNode
+               && depth < 4
+               && pos.rule50_count() > 10
+               && ttHit
+               && ss->ply < thisThread->rootDepth * 1.5)	// to avoid infinite extensions
+          extension = 1;
+
       // Castling extension
       if (type_of(move) == CASTLING)
           extension = 1;

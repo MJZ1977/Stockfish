@@ -1129,10 +1129,10 @@ moves_loop: // When in check, search starts from here
           if (thisThread->ttHitAverage > 500 * ttHitAverageResolution * ttHitAverageWindow / 1024)
               r--;
 
-          // Increase reduction for losing side if the ttHit running average is very large
-          if (thisThread->ttHitAverage > 760 * ttHitAverageResolution * ttHitAverageWindow / 1024
-              && alpha > Value(100)
-              && depth > 8)
+          // Increase reduction for winning side if the ttHit running average is very large
+          if ( alpha > Value(200)
+              && depth > 8
+              && thisThread->ttHitAverage > 800 * ttHitAverageResolution * ttHitAverageWindow / 1024)
               r++;
 
           // Reduction if other threads are searching this position.

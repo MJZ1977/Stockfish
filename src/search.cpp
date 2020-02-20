@@ -1086,6 +1086,14 @@ moves_loop: // When in check, search starts from here
                && pos.non_pawn_material() <= 2 * RookValueMg)
           extension = 1;
 
+      // Random Pv Extension is static eval is too high
+      else if ( PvNode
+               && abs(ss->staticEval) > Value(400)
+               && move == ttMove
+               && depth < 5
+               && thisThread->nodes % 2 == 1)
+          extension = 1;
+
       // Castling extension
       if (type_of(move) == CASTLING)
           extension = 1;

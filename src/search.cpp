@@ -1091,9 +1091,14 @@ moves_loop: // When in check, search starts from here
                && abs(ss->staticEval) > Value(400)
                && move == ttMove
                && !ttCapture
+               && !inCheck
                && depth < 6
                && thisThread->nodes % 2 == 1)
+      {
+          //sync_cout << "Position = " << pos.fen()
+          //          << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
           extension = 1;
+	  }
 
       // Castling extension
       if (type_of(move) == CASTLING)

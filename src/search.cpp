@@ -1088,10 +1088,10 @@ moves_loop: // When in check, search starts from here
 
       // Random Pv Extension is static eval is too high
       else if ( PvNode
-               && abs(ss->staticEval) > Value(400)
+               && abs(ss->staticEval) > Value(360)
                && move == ttMove
                && !ttCapture
-               && depth < 6
+               && depth < 5
                && thisThread->nodes % 2 == 1)
           extension = 1;
 

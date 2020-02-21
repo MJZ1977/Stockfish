@@ -1091,7 +1091,7 @@ moves_loop: // When in check, search starts from here
                && abs(ss->staticEval) > Value(400)
                && move == ttMove
                && !ttCapture
-               && depth < 5
+               && depth < 6
                && thisThread->nodes % 2 == 1)
           extension = 1;
 

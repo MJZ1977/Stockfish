@@ -1093,7 +1093,7 @@ moves_loop: // When in check, search starts from here
                && !ttCapture
                && !inCheck
                && depth < 6
-               && thisThread->nodes % 2 == 1)
+               && thisThread->nodes % 4 != 1)
       {
           //sync_cout << "Position = " << pos.fen()
           //          << " - Move = " << UCI::move(move, pos.is_chess960()) << sync_endl;

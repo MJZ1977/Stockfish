@@ -1296,7 +1296,7 @@ moves_loop: // When in check, search starts from here
                   break;
               }
           }
-          else PvFail |= (PvNode && bestValue < alpha);
+          else PvFail |= (ttPv && bestValue < alpha);
       }
 
       if (move != bestMove)

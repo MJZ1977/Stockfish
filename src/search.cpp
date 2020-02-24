@@ -625,7 +625,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture, PvFail = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -1142,7 +1142,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ttPv)
-              r -= 2;
+              r -= 1 + PvFail;
 
           // Decrease reduction if opponent's move count is high (~5 Elo)
           if ((ss-1)->moveCount > 14)
@@ -1296,6 +1296,7 @@ moves_loop: // When in check, search starts from here
                   break;
               }
           }
+          else PvFail |= (PvNode && bestValue < alpha);
       }
 
       if (move != bestMove)

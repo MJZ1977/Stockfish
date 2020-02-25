@@ -1146,7 +1146,7 @@ moves_loop: // When in check, search starts from here
 
           // Random increase of reduction for non ttPv nodes at higher depths
           // (at high depth, good positions have more probability to be ttPv)
-          else if (depth > 16 && thisThread->nodes % 4 == 1)
+          else if (depth > 15 && thisThread->nodes % 2 == 1)
               r++;
 
           // Decrease reduction if opponent's move count is high (~5 Elo)

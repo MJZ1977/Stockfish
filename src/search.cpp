@@ -480,7 +480,7 @@ void Thread::search() {
               if (bestValue <= alpha)
               {
                   beta = (alpha + beta) / 2;
-                  alpha = std::max(bestValue - delta, -VALUE_INFINITE);
+                  alpha = std::max(std::max(bestValue - delta, alpha - 4 * delta), -VALUE_INFINITE);
 
                   failedHighCnt = 0;
                   if (mainThread)

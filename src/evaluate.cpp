@@ -394,8 +394,8 @@ namespace {
     b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
     b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
 
-    b1 &= ~pos.pieces(Them);
-    b2 &= ~pos.pieces(Them);
+    b1 &= ~(pos.pieces(Them, PAWN) & shift<pawn_push(Us)>(pos.pieces()));
+    b2 &= ~(pos.pieces(Them, PAWN) & shift<pawn_push(Us)>(pos.pieces()));
 
     // Enemy rooks checks
     rookChecks = b1 & safe & attackedBy[Them][ROOK];

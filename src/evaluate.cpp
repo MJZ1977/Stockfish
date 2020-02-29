@@ -497,7 +497,8 @@ namespace {
     defended = nonPawnEnemies & stronglyProtected;
 
     // Enemies not strongly protected and under our attack
-    weak = pos.pieces(Them) & ~stronglyProtected & attackedBy[Us][ALL_PIECES];
+    weak = ((pos.pieces(Them) & ~stronglyProtected) | pos.pieces(Them, QUEEN))
+          & attackedBy[Us][ALL_PIECES];
 
     // Bonus according to the kind of attacking pieces
     if (defended | weak)

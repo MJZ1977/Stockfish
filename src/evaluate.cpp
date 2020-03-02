@@ -408,11 +408,12 @@ namespace {
     queenChecks =  (b1 | b2)
                  & attackedBy[Them][QUEEN]
                  & safe
-                 & ~attackedBy[Us][QUEEN]
                  & ~rookChecks;
 
-    if (queenChecks)
+    if (queenChecks & ~attackedBy[Us][QUEEN])
         kingDanger += QueenSafeCheck;
+    else if (queenChecks)
+        kingDanger += QueenSafeCheck / 8;
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.

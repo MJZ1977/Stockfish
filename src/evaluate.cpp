@@ -428,7 +428,7 @@ namespace {
                  & ~rookChecks;
 
     if (queenChecks)
-        kingDanger += QueenSafeCheck - 12 * (distanceBB_sq(queenChecks, ksq) - 3);
+        kingDanger += QueenSafeCheck - 16 * (distanceBB_sq(queenChecks, ksq) - 3);
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.

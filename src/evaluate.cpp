@@ -69,6 +69,22 @@ namespace Trace {
   }
 }
 
+// distanceBB_Sq return the distance between Sq and closest square in BB
+// if BB is empty, it returns 8
+inline int distanceBB_sq(Bitboard BB, Square Sq){
+    if (BB)
+    {
+        int min_distance = 8;
+        while (BB)
+             min_distance = std::min(min_distance,
+                distance<Square>(Sq, pop_lsb(&BB)));
+        return min_distance;
+    }
+
+    else
+       return 8;
+}
+
 using namespace Trace;
 
 namespace {
@@ -412,7 +428,7 @@ namespace {
                  & ~rookChecks;
 
     if (queenChecks)
-        kingDanger += QueenSafeCheck;
+        kingDanger += QueenSafeCheck - 12 * (distanceBB_sq(queenChecks, ksq) - 3);
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.

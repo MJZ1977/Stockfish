@@ -403,15 +403,18 @@ namespace {
         kingDanger += RookSafeCheck;
 
         // Bonus for rook safe checks in moves history
-        b3 = rookChecks;
-        while (b3)
+        if (pos.side_to_move() == ~Us)
         {
-            Square Sq = pop_lsb(&b3);
-            Piece  pc = (Us == WHITE ? B_ROOK : W_ROOK);
-            PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 10;
-            (*continuationHistory)[pc][Sq] << bonus;
-        }
+			b3 = rookChecks;
+            while (b3)
+            {
+                Square Sq = pop_lsb(&b3);
+                Piece  pc = (Us == WHITE ? B_ROOK : W_ROOK);
+                PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
+                int bonus = 10;
+                (*continuationHistory)[pc][Sq] << bonus;
+            }
+		}
 	}
     else
         unsafeChecks |= b1 & attackedBy[Them][ROOK];
@@ -429,15 +432,18 @@ namespace {
         kingDanger += QueenSafeCheck;
 
         // Bonus for queen safe checks in moves history
-        b3 = queenChecks;
-        while (b3)
+        if (pos.side_to_move() == ~Us)
         {
-            Square Sq = pop_lsb(&b3);
-            Piece  pc = (Us == WHITE ? B_QUEEN : W_QUEEN);
-            PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 10;
-            (*continuationHistory)[pc][Sq] << bonus;
-        }
+            b3 = queenChecks;
+            while (b3)
+            {
+                Square Sq = pop_lsb(&b3);
+                Piece  pc = (Us == WHITE ? B_QUEEN : W_QUEEN);
+                PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
+                int bonus = 10;
+                (*continuationHistory)[pc][Sq] << bonus;
+            }
+	    }
 	}
 
     // Enemy bishops checks: we count them only if they are from squares from
@@ -452,15 +458,18 @@ namespace {
         kingDanger += BishopSafeCheck;
 
         // Bonus for bishop safe checks in moves history
-        b3 = bishopChecks;
-        while (b3)
+        if (pos.side_to_move() == ~Us)
         {
-            Square Sq = pop_lsb(&b3);
-            Piece  pc = (Us == WHITE ? B_BISHOP : W_BISHOP);
-            PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 10;
-            (*continuationHistory)[pc][Sq] << bonus;
-        }
+            b3 = bishopChecks;
+            while (b3)
+            {
+                Square Sq = pop_lsb(&b3);
+                Piece  pc = (Us == WHITE ? B_BISHOP : W_BISHOP);
+                PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
+                int bonus = 10;
+                (*continuationHistory)[pc][Sq] << bonus;
+            }
+		}
 	}
     else
         unsafeChecks |= b2 & attackedBy[Them][BISHOP];
@@ -473,15 +482,18 @@ namespace {
         kingDanger += KnightSafeCheck;
 
         // Bonus for knight safe checks in moves history
-        b3 = knightChecks & safe;
-        while (b3)
+        if (pos.side_to_move() == ~Us)
         {
-            Square Sq = pop_lsb(&b3);
-            Piece  pc = (Us == WHITE ? B_KNIGHT : W_KNIGHT);
-            PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 10;
-            (*continuationHistory)[pc][Sq] << bonus;
-        }
+            b3 = knightChecks & safe;
+            while (b3)
+            {
+                Square Sq = pop_lsb(&b3);
+                Piece  pc = (Us == WHITE ? B_KNIGHT : W_KNIGHT);
+                PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
+                int bonus = 10;
+                (*continuationHistory)[pc][Sq] << bonus;
+            }
+		}
 	}
     else
         unsafeChecks |= knightChecks;

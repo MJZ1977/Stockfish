@@ -29,6 +29,7 @@
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+#include "position.h"
 
 namespace Trace {
 
@@ -412,7 +413,20 @@ namespace {
                  & ~rookChecks;
 
     if (queenChecks)
+    {
         kingDanger += QueenSafeCheck;
+
+        // Store queen safe checks into history
+        b3 = queenChecks;
+        while (b3)
+        {
+            Square Sq = pop_lsb(&b3);
+            Piece  pc = (Us == WHITE ? B_QUEEN : W_QUEEN);
+            PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
+            int bonus = 20;
+            (*continuationHistory)[pc][Sq] << bonus;
+        }
+	}
 
     // Enemy bishops checks: we count them only if they are from squares from
     // which we can't give a queen check, because queen checks are more valuable.

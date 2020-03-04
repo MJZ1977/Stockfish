@@ -410,7 +410,7 @@ namespace {
             Square Sq = pop_lsb(&b3);
             Piece  pc = (Us == WHITE ? B_ROOK : W_ROOK);
             PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 50;
+            int bonus = 10;
             (*continuationHistory)[pc][Sq] << bonus;
         }
 	}
@@ -436,7 +436,7 @@ namespace {
             Square Sq = pop_lsb(&b3);
             Piece  pc = (Us == WHITE ? B_QUEEN : W_QUEEN);
             PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 50;
+            int bonus = 10;
             (*continuationHistory)[pc][Sq] << bonus;
         }
 	}
@@ -459,7 +459,7 @@ namespace {
             Square Sq = pop_lsb(&b3);
             Piece  pc = (Us == WHITE ? B_BISHOP : W_BISHOP);
             PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 50;
+            int bonus = 10;
             (*continuationHistory)[pc][Sq] << bonus;
         }
 	}
@@ -480,7 +480,7 @@ namespace {
             Square Sq = pop_lsb(&b3);
             Piece  pc = (Us == WHITE ? B_KNIGHT : W_KNIGHT);
             PieceToHistory* continuationHistory = &(pos.this_thread())->continuationHistory[0][0][pc][Sq];
-            int bonus = 50;
+            int bonus = 10;
             (*continuationHistory)[pc][Sq] << bonus;
         }
 	}

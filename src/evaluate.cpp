@@ -29,7 +29,6 @@
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-#include "position.h"
 
 namespace Trace {
 

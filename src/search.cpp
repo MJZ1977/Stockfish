@@ -428,7 +428,9 @@ void Thread::search() {
 
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
-          shuffleLimit = std::min(rootPos.rule50_count() + std::max(33, 18 + rootDepth/2), 99);
+          shuffleLimit = std::min(rootPos.rule50_count() 
+                                + std::max(35, 25 + rootDepth / 4)
+                                + 6 * (rootPos.count<ALL_PIECES>() < 8), 99);
           //sync_cout << "shuffleLimit = " << shuffleLimit << sync_endl;
 
           // Reset aspiration window starting size
@@ -1095,12 +1097,12 @@ moves_loop: // When in check, search starts from here
           extension = 1;
 
       // Shuffle extension
-      else if(pos.rule50_count() > 20
+      /*else if(pos.rule50_count() > 20
               && ss->ply > 20
               && depth < 3
               && PvNode
               && ss->ply < 2 * thisThread->rootDepth)	           // To limit infinite loops
-          extension = 1;
+          extension = 1;*/
 
       // Castling extension
       if (type_of(move) == CASTLING)

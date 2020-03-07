@@ -428,10 +428,6 @@ void Thread::search() {
 
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
-          shuffleLimit = std::min(rootPos.rule50_count() 
-                                + std::max(35, 25 + rootDepth / 4)
-                                + 6 * (rootPos.count<ALL_PIECES>() < 8), 99);
-          //sync_cout << "shuffleLimit = " << shuffleLimit << sync_endl;
 
           // Reset aspiration window starting size
           if (rootDepth >= 4)
@@ -633,6 +629,11 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    int shuffleLimit = std::min( 27 + depth / 4 
+                                    + 6 * (pos.count<ALL_PIECES>() < 8)
+                                    + std::max(0, pos.rule50_count() - ss->ply)
+                               , 99);
+    //sync_cout << "shuffleLimit = " << shuffleLimit << sync_endl;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -655,7 +656,7 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply, thisThread->shuffleLimit)
+            || pos.is_draw(ss->ply, shuffleLimit)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
                                                     : value_draw(pos.this_thread());
@@ -1384,6 +1385,9 @@ moves_loop: // When in check, search starts from here
     Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
     bool ttHit, pvHit, inCheck, givesCheck, captureOrPromotion, evasionPrunable;
     int moveCount;
+    int shuffleLimit = std::min( 27 + 6 * (pos.count<ALL_PIECES>() < 8)
+                                    + std::max(0, pos.rule50_count() - ss->ply)
+                               , 99);
 
     if (PvNode)
     {
@@ -1399,7 +1403,7 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply, thisThread->shuffleLimit)
+    if (   pos.is_draw(ss->ply, shuffleLimit)
         || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 

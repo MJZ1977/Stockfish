@@ -598,7 +598,7 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (r > RANK_3 || distance(pos.square<KING>(Them), s) > 4)
+        if (r > RANK_3 || distance(pos.square<KING>(Them), s) > 5)
         {
             int w = std::max(5 * r - 13, 1);
             Square blockSq = s + Up;

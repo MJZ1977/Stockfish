@@ -598,7 +598,7 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (r > RANK_3 + (distance(pos.square<KING>(Them), s + Up) < 3))
+        if (r > RANK_3 + (distance(pos.square<KING>(Them), (s + Up) + Up) < 2))
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;

@@ -323,7 +323,7 @@ namespace {
                 // Bonus for bishop controlling several squares with no opposed bishop
                 if (  !bool(SameColorSq & pos.pieces(Them,BISHOP))
                    && !bool(SameColorSq & pos.pieces(Them,PAWN) & kingRing[Them]))
-                    score += make_score(14,0) * popcount(b & kingRing[Them]);
+                    score += make_score(22,0) * popcount(b & kingRing[Them]);
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

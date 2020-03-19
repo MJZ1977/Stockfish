@@ -701,21 +701,27 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Score score) const {
 
-    int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
-                     - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+    int complexity;
+    
+    if (pos.complexity() != 9999)
+       complexity = pos.complexity();
+    else {
+        
+        int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
+                         - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                            && (pos.pieces(PAWN) & KingSide);
+        bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                                && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   !pe->passed_count()
-                           &&  outflanking < 0
-                           && !pawnsOnBothFlanks;
+        bool almostUnwinnable =   !pe->passed_count()
+                               &&  outflanking < 0
+                               && !pawnsOnBothFlanks;
 
-    bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
-                     || rank_of(pos.square<KING>(BLACK)) < RANK_5;
+        bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
+                         || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
-    // Compute the initiative bonus for the attacking side
-    int complexity =   9 * pe->passed_count()
+        // Compute the initiative bonus for the attacking side
+        complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
@@ -723,7 +729,8 @@ namespace {
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
                     -110 ;
-
+        pos.set_complexity(complexity);
+    }
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 

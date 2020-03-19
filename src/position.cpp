@@ -339,6 +339,7 @@ void Position::set_state(StateInfo* si) const {
   si->pawnKey = Zobrist::noPawns;
   si->nonPawnMaterial[WHITE] = si->nonPawnMaterial[BLACK] = VALUE_ZERO;
   si->checkersBB = attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
+  si->complexity = 9999;
 
   set_check_info(si);
 
@@ -368,6 +369,10 @@ void Position::set_state(StateInfo* si) const {
           si->materialKey ^= Zobrist::psq[pc][cnt];
 }
 
+
+void Position::set_complexity(int complx) const {
+  st->complexity = complx;
+}
 
 /// Position::set() is an overload to initialize the position object with
 /// the given endgame code string like "KBPKN". It is mainly a helper to
@@ -840,6 +845,12 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
   // Update king attacks used for fast check detection
   set_check_info(st);
+
+  // Update complexity
+  if ( type_of(pc) == KING || type_of(pc) == PAWN || bool(captured))
+     st->complexity = 9999;
+  else 
+     st->complexity = st->previous->complexity;
 
   // Calculate the repetition info. It is the ply distance from the previous
   // occurrence of the same position, negative in the 3-fold case, or zero

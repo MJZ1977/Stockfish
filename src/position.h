@@ -54,6 +54,7 @@ struct StateInfo {
   Bitboard   pinners[COLOR_NB];
   Bitboard   checkSquares[PIECE_TYPE_NB];
   int        repetition;
+  int        complexity;
 };
 
 /// A list to keep track of the position states along the setup moves (from the
@@ -161,6 +162,8 @@ public:
   Score psq_score() const;
   Value non_pawn_material(Color c) const;
   Value non_pawn_material() const;
+  void set_complexity(int complx) const;
+  int complexity() const;
 
   // Position consistency check, for debugging
   bool pos_is_ok() const;
@@ -361,6 +364,10 @@ inline Value Position::non_pawn_material(Color c) const {
 
 inline Value Position::non_pawn_material() const {
   return st->nonPawnMaterial[WHITE] + st->nonPawnMaterial[BLACK];
+}
+
+inline int Position::complexity() const {
+  return st->complexity;
 }
 
 inline int Position::game_ply() const {

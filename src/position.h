@@ -29,6 +29,7 @@
 #include "bitboard.h"
 #include "types.h"
 
+constexpr int UnknownInt = 999;
 
 /// StateInfo struct stores information needed to restore a Position object to
 /// its previous state when we retract a move. Whenever a move is made on the
@@ -43,6 +44,7 @@ struct StateInfo {
   int    castlingRights;
   int    rule50;
   int    pliesFromNull;
+  int    complexity;
   Square epSquare;
 
   // Not copied when making a move (will be recomputed anyhow)
@@ -54,7 +56,6 @@ struct StateInfo {
   Bitboard   pinners[COLOR_NB];
   Bitboard   checkSquares[PIECE_TYPE_NB];
   int        repetition;
-  int        complexity;
 };
 
 /// A list to keep track of the position states along the setup moves (from the

@@ -339,7 +339,7 @@ void Position::set_state(StateInfo* si) const {
   si->pawnKey = Zobrist::noPawns;
   si->nonPawnMaterial[WHITE] = si->nonPawnMaterial[BLACK] = VALUE_ZERO;
   si->checkersBB = attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
-  si->complexity = 9999;
+  si->complexity = UnknownInt;
 
   set_check_info(si);
 
@@ -848,9 +848,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
   // Update complexity
   if ( type_of(pc) == KING || type_of(pc) == PAWN || bool(captured))
-     st->complexity = 9999;
-  else 
-     st->complexity = st->previous->complexity;
+     st->complexity = UnknownInt;
 
   // Calculate the repetition info. It is the ply distance from the previous
   // occurrence of the same position, negative in the 3-fold case, or zero

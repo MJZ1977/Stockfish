@@ -703,7 +703,7 @@ namespace {
 
     int complexity;
     
-    if (pos.complexity() != 9999)
+    if (pos.complexity() != UnknownInt)
        complexity = pos.complexity();
     else {
         

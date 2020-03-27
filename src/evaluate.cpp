@@ -622,10 +622,15 @@ namespace {
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES];
 
+                int k = 0;
+
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? 35 :
+                if (!(pos.opposite_bishops() 
+                   && pos.non_pawn_material() == 2 * BishopValueMg
+                   && (unsafeSquares & ~attackedBy[Us][ALL_PIECES])))
+                    k = !unsafeSquares                    ? 35 :
                         !(unsafeSquares & squaresToQueen) ? 20 :
                         !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;

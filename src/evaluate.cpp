@@ -622,15 +622,10 @@ namespace {
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES];
 
-                int k = 0;
-
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                if (!(pos.opposite_bishops() 
-                   && pos.non_pawn_material() == 2 * BishopValueMg
-                   && (unsafeSquares & ~attackedBy[Us][ALL_PIECES])))
-                    k = !unsafeSquares                    ? 35 :
+                int k = !unsafeSquares                    ? 35 :
                         !(unsafeSquares & squaresToQueen) ? 20 :
                         !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;
@@ -640,6 +635,11 @@ namespace {
                     k += 5;
 
                 bonus += make_score(k * w, k * w);
+                
+                if (  pos.opposite_bishops() 
+                   && pos.non_pawn_material() == 2 * BishopValueMg
+                   && (unsafeSquares & ~attackedBy[Us][ALL_PIECES]))
+                  bonus = bonus * 3 / 4;
             }
         } // r > RANK_3
 
@@ -757,7 +757,7 @@ namespace {
     {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material() == 2 * BishopValueMg)
-            sf = 26 ;
+            sf = 24 ;
         else
             sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
 

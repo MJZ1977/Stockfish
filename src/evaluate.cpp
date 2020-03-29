@@ -564,6 +564,10 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Bonus for unprotected enemy pieces
+    if (pos.count<QUEEN>(Us) > 0)
+        score += make_score(2, 6) * popcount(nonPawnEnemies & ~attackedBy[Them][ALL_PIECES]);
+
     if (T)
         Trace::add(THREAT, Us, score);
 

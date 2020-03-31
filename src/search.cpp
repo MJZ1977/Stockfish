@@ -1153,7 +1153,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)
           if (singularLMR)
-              r -= 1 + formerPv;
+              r -= 1 + formerPv - bool(depth >= 12 && bestValue >= alpha);
 
           if (!captureOrPromotion)
           {

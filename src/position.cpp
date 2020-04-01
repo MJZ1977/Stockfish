@@ -335,7 +335,7 @@ void Position::set_OppositeBishops(StateInfo* si) const {
 
 void Position::set_scaleFactor(StateInfo* si) const {
     Color strongSide = 
-      (st->nonPawnMaterial[WHITE] + 200 * count<PAWN>(WHITE) > st->nonPawnMaterial[BLACK] + 200 * count<PAWN>(BLACK)) ?
+      (st->nonPawnMaterial[WHITE] + 220 * count<PAWN>(WHITE) > st->nonPawnMaterial[BLACK] + 220 * count<PAWN>(BLACK)) ?
          WHITE : BLACK;
     if (   si->opposite_bishops
         && non_pawn_material() == 2 * BishopValueMg)
@@ -886,7 +886,7 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
   // Update scale factor
   if ( (st->opposite_bishops || count<PAWN>(BLACK) < 5 || count<PAWN>(WHITE) < 5)
-      && (captured || type_of(m) == PROMOTION))
+      && (bool(captured) || type_of(m) == PROMOTION))
     set_scaleFactor(st);
 
   assert(pos_is_ok());

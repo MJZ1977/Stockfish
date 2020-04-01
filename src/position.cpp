@@ -334,8 +334,9 @@ void Position::set_OppositeBishops(StateInfo* si) const {
 }
 
 void Position::set_scaleFactor(StateInfo* si) const {
+    int pawnValue = 260 - non_pawn_material() / 128;
     Color strongSide = 
-      (st->nonPawnMaterial[WHITE] + 220 * count<PAWN>(WHITE) > st->nonPawnMaterial[BLACK] + 220 * count<PAWN>(BLACK)) ?
+      (st->nonPawnMaterial[WHITE] + pawnValue * count<PAWN>(WHITE) > st->nonPawnMaterial[BLACK] + pawnValue * count<PAWN>(BLACK)) ?
          WHITE : BLACK;
     if (   si->opposite_bishops
         && non_pawn_material() == 2 * BishopValueMg)

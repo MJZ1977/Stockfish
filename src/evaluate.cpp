@@ -749,15 +749,7 @@ namespace {
 
     // If scale is not already specific, scale down the endgame via general heuristics
     if (sf == SCALE_FACTOR_NORMAL)
-    {
-        if (   pos.opposite_bishops()
-            && pos.non_pawn_material() == 2 * BishopValueMg)
-            sf = 22 ;
-        else
-            sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
-
-        sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
-    }
+       sf = pos.scaleFactor();
 
     return ScaleFactor(sf);
   }

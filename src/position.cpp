@@ -333,6 +333,17 @@ void Position::set_OppositeBishops(StateInfo* si) const {
                       && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
 }
 
+void Position::set_scaleFactor(StateInfo* si) const {
+    Color strongSide = 
+      (st->nonPawnMaterial[WHITE] + 200 * count<PAWN>(WHITE) > st->nonPawnMaterial[BLACK] + 200 * count<PAWN>(BLACK)) ?
+         WHITE : BLACK;
+    if (   si->opposite_bishops
+        && non_pawn_material() == 2 * BishopValueMg)
+        si->scaleFactor = 22 ;
+    else
+        si->scaleFactor = std::min(int(SCALE_FACTOR_NORMAL), 36 + (si->opposite_bishops ? 2 : 7) * count<PAWN>(strongSide));
+}
+
 /// Position::set_state() computes the hash keys of the position, and other
 /// data that once computed is updated incrementally as moves are made.
 /// The function is only used when a new position is set up, and to verify
@@ -361,6 +372,8 @@ void Position::set_state(StateInfo* si) const {
       else if (type_of(pc) != KING)
           si->nonPawnMaterial[color_of(pc)] += PieceValue[MG][pc];
   }
+
+  set_scaleFactor(si);
 
   if (si->epSquare != SQ_NONE)
       si->key ^= Zobrist::enpassant[file_of(si->epSquare)];
@@ -870,6 +883,11 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
   // Update Opposite_Bishops
   if (type_of(captured) == BISHOP || promotion_type(m) == BISHOP)
     set_OppositeBishops(st);
+
+  // Update scale factor
+  if ( (st->opposite_bishops || count<PAWN>(BLACK) < 5 || count<PAWN>(WHITE) < 5)
+      && (captured || type_of(m) == PROMOTION))
+    set_scaleFactor(st);
 
   assert(pos_is_ok());
 }

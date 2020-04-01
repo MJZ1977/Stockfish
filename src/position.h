@@ -44,7 +44,8 @@ struct StateInfo {
   int    rule50;
   int    pliesFromNull;
   Square epSquare;
-  bool       opposite_bishops;
+  bool   opposite_bishops;
+  int    scaleFactor;
 
   // Not copied when making a move (will be recomputed anyhow)
   Key        key;
@@ -133,6 +134,7 @@ public:
   bool pawn_passed(Color c, Square s) const;
   bool opposite_bishops() const;
   int  pawns_on_same_color_squares(Color c, Square s) const;
+  int  scaleFactor() const;
 
   // Doing and undoing moves
   void do_move(Move m, StateInfo& newSt);
@@ -171,6 +173,7 @@ private:
   // Initialization helpers (used while setting up a position)
   void set_castling_right(Color c, Square rfrom);
   void set_OppositeBishops(StateInfo* si) const;
+  void set_scaleFactor(StateInfo* si) const;
   void set_state(StateInfo* si) const;
   void set_check_info(StateInfo* si) const;
 
@@ -375,6 +378,10 @@ inline int Position::rule50_count() const {
 
 inline bool Position::opposite_bishops() const {
   return   st->opposite_bishops;
+}
+
+inline int Position::scaleFactor() const {
+  return  std::max(0, st->scaleFactor - (st->rule50 - 12) / 4);
 }
 
 inline bool Position::is_chess960() const {

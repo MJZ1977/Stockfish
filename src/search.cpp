@@ -868,7 +868,7 @@ namespace {
 
         if (reverse_move((ss-1)->currentMove) == (ss+1)->currentMove
          && nullValue < beta
-         && !pos.captured_piece())
+         && depth < 12)
             nullValue = beta;
         /*sync_cout << "Position = " << pos.fen() 
                   << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
@@ -972,6 +972,7 @@ moves_loop: // When in check, search starts from here
     singularLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     bool formerPv = ttPv && !PvNode;
+    Move bestMove2 = MOVE_NONE;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1297,6 +1298,7 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
+          bestMove2 = move;
 
           if (value > alpha)
           {
@@ -1362,6 +1364,8 @@ moves_loop: // When in check, search starts from here
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, ss->staticEval);
+
+    ss->currentMove = bestMove2;
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

@@ -868,7 +868,7 @@ namespace {
 
         if (reverse_move((ss-1)->currentMove) == (ss+1)->currentMove
          && nullValue < beta
-         && depth < 12)
+         && !pos.captured_piece())
             nullValue = beta;
         /*sync_cout << "Position = " << pos.fen() 
                   << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())

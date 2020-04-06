@@ -937,11 +937,21 @@ namespace {
     // Step 11. Internal iterative deepening (~1 Elo)
     if (depth >= 7 && !ttMove)
     {
+        ss->currentMove = MOVE_NONE;
         search<NT>(pos, ss, alpha, beta, depth - 7, cutNode);
 
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
         ttMove = ttHit ? tte->move() : MOVE_NONE;
+
+        if (!ttMove)
+        {
+           ttMove = ss->currentMove;
+           /*sync_cout << "Position = " << pos.fen() 
+                  << " - depth = " << depth
+                  << " - move = " << UCI::move(ttMove, pos.is_chess960())    
+                  << " - ttmValue = " << ttValue << sync_endl;*/
+        }
     }
 
 moves_loop: // When in check, search starts from here
@@ -951,6 +961,8 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+
+    Move bestMove2 = MOVE_NONE;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -1289,6 +1301,7 @@ moves_loop: // When in check, search starts from here
       if (value > bestValue)
       {
           bestValue = value;
+          bestMove2 = move;
 
           if (value > alpha)
           {
@@ -1348,6 +1361,8 @@ moves_loop: // When in check, search starts from here
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
+
+    ss->currentMove = bestMove2;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

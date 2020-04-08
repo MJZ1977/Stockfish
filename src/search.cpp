@@ -1166,6 +1166,9 @@ moves_loop: // When in check, search starts from here
           if (singularLMR)
               r -= 1 + formerPv;
 
+          if (pos.non_pawn_material() <= 2 * BishopValueMg && PvNode && depth > 12)
+              r++; 
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~5 Elo)

@@ -1166,7 +1166,7 @@ moves_loop: // When in check, search starts from here
           if (singularLMR)
               r -= 1 + formerPv;
 
-          if (pos.non_pawn_material() <= 2 * BishopValueMg && PvNode && depth > 12)
+          if (pos.non_pawn_material() <= 2 * BishopValueMg && PvNode && depth > 13)
               r++; 
 
           if (!captureOrPromotion)

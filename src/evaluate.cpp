@@ -718,7 +718,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 43 * almostUnwinnable
+                    - almostUnwinnable * std::max(int(2 * PawnValueEg - abs(eg)), 0) / 10
                     -110 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting the

@@ -706,7 +706,7 @@ namespace {
 
     bool almostUnwinnable =   outflanking < 0
                            && !pawnsOnBothFlanks
-                           && abs(eg) < Value(140);
+                           && abs(eg) < PawnValueEg;
 
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;

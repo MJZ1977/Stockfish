@@ -566,7 +566,8 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
+                   && Time.elapsed() > std::min(Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6,
+                                                Time.maximum() * 0.9))
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;
@@ -1839,6 +1840,7 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
 
       ss << " tbhits "   << tbHits
          << " time "     << elapsed
+        // << " time.max " << Time.maximum()
          << " pv";
 
       for (Move m : rootMoves[i].pv)

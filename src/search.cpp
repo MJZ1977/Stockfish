@@ -567,7 +567,7 @@ void Thread::search() {
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
                    && Time.elapsed() > std::min(Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6,
-                                                Time.maximum() * 0.75))
+                                                Time.maximum() * 0.84))
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;

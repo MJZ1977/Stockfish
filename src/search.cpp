@@ -1212,7 +1212,7 @@ moves_loop: // When in check, search starts from here
           }
 
           if (PvNode && ss->ply <= 1)
-              r = std::min(r, 4);
+              r = std::min(r, 3);
 
           Depth d = Utility::clamp(newDepth - r, 1, newDepth);
 

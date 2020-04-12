@@ -527,7 +527,7 @@ namespace {
         while (b)
         {
             if (!bool(pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP)))
-               score += make_score(16,0);
+               score += make_score(12,0);
         }
         
     }

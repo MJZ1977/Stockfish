@@ -528,7 +528,7 @@ namespace {
         {
             Square sq = lsb(pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP));
             if (relative_rank(Them, sq) == RANK_1)
-               score += make_score(10,0);
+               score += make_score(14,0);
         }
         
     }

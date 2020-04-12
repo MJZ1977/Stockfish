@@ -523,13 +523,11 @@ namespace {
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
 
         // Additional bonus if weak piece is protected by a bishop in last rank
-        b = weak & attackedBy[Them][BISHOP] & (Them == WHITE ? Rank2BB : Rank7BB);
+        b = weak & attackedBy[Them][BISHOP];
         while (b)
         {
-            Bitboard ProtectingBishops = pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP);
-            Square sq = lsb(ProtectingBishops);
-            if (!bool(ProtectingBishops) || relative_rank(Them, sq) == RANK_1)
-               score += make_score(10,0);
+            if (!bool(pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP)))
+               score += make_score(16,0);
         }
         
     }

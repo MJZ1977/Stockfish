@@ -521,6 +521,16 @@ namespace {
 
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
+
+        // Additional bonus if weak piece is protected by a bishop in last rank
+        b = weak & attackedBy[Them][BISHOP] & (Them == WHITE ? Rank2BB : Rank7BB);
+        while (b)
+        {
+            Square sq = lsb(pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP));
+            if (relative_rank(Them, sq) == RANK_1)
+               score += make_score(10,0);
+        }
+        
     }
 
     // Bonus for restricting their piece moves

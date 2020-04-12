@@ -526,8 +526,9 @@ namespace {
         b = weak & attackedBy[Them][BISHOP] & (Them == WHITE ? Rank2BB : Rank7BB);
         while (b)
         {
-            Square sq = lsb(pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP));
-            if (relative_rank(Them, sq) == RANK_1)
+            Bitboard ProtectingBishops = pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP);
+            Square sq = lsb(ProtectingBishops);
+            if (ProtectingBishops && relative_rank(Them, sq) == RANK_1)
                score += make_score(10,0);
         }
         

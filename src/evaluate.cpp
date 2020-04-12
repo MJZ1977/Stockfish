@@ -528,7 +528,7 @@ namespace {
         {
             Bitboard ProtectingBishops = pos.attacks_from<BISHOP>(pop_lsb(&b)) & pos.pieces(Them, BISHOP);
             Square sq = lsb(ProtectingBishops);
-            if (ProtectingBishops && relative_rank(Them, sq) == RANK_1)
+            if (!bool(ProtectingBishops) || relative_rank(Them, sq) == RANK_1)
                score += make_score(10,0);
         }
         

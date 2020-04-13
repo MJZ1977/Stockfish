@@ -523,7 +523,7 @@ namespace {
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
 
         // Additional bonus if weak piece is protected by a bishop in last rank
-        b = weak & attackedBy[Them][BISHOP] & (Them == WHITE ? Rank2BB : Rank7BB);
+        b = weak & attackedBy[Them][BISHOP] & (Them == WHITE ? Rank2BB : Rank7BB) & pos.pieces(Them, PAWN);
         if (b)
             score += make_score(6,0) * popcount(pawn_attacks_bb<Us>(b) & pos.pieces(Them, BISHOP));
         

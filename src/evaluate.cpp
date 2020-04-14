@@ -645,7 +645,7 @@ namespace {
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
                 if (pos.opposite_bishops() && pos.non_pawn_material() == 2 * BishopValueMg)
-                    k = !unsafeSquares                    ? 20 :
+                    k = !unsafeSquares                    ? 16 :
                         !(squaresToQueen & attackedBy[Them][BISHOP]) ? 9 : 0;
                 else
                     k = !unsafeSquares                    ? 35 :
@@ -769,7 +769,7 @@ namespace {
     {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material() == 2 * BishopValueMg)
-            sf = 22 + 2 * pe->passed_count();
+            sf = 20 + 2 * pe->passed_count();
         else
             sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
 

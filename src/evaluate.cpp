@@ -645,8 +645,8 @@ namespace {
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
                 if (pos.opposite_bishops() && pos.non_pawn_material() == 2 * BishopValueMg)
-                    k = !unsafeSquares                    ? 20 :
-                        !(squaresToQueen & attackedBy[Them][BISHOP]) ? 9 : 0;
+                    k = !unsafeSquares                    ? 12 :
+                        !(squaresToQueen & attackedBy[Them][BISHOP]) ? 6 : 0;
                 else
                     k = !unsafeSquares                    ? 35 :
                         !(unsafeSquares & squaresToQueen) ? 20 :

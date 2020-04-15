@@ -54,8 +54,8 @@ namespace {
   template<TimeType T>
   TimePoint remaining(TimePoint myTime, int movesToGo, int ply, TimePoint slowMover) {
 
-    constexpr double TMaxRatio   = (T == OptimumTime ? 1.0 : MaxRatio);
-    constexpr double TStealRatio = (T == OptimumTime ? 0.0 : StealRatio);
+    constexpr double TMaxRatio   = (T == OptimumTime ? 1.2 : MaxRatio);
+    constexpr double TStealRatio = (T == OptimumTime ? 0.05 : StealRatio);
 
     double moveImportance = (move_importance(ply) * slowMover) / 100.0;
     double otherMovesImportance = 0.0;

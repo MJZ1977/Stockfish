@@ -1269,6 +1269,9 @@ moves_loop: // When in check, search starts from here
       // Step 18. Undo move
       pos.undo_move(move);
 
+     if (value <= VALUE_MATED_IN_MAX_PLY)
+        ss->staticEval = evaluate(pos) - Value(30);
+
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
       // Step 19. Check for a new best move

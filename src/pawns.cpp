@@ -37,7 +37,7 @@ namespace {
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
-  constexpr Score WeakUnopposed = S(13, 27);
+  constexpr Score WeakUnopposed = S(10, 20);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -87,6 +87,7 @@ namespace {
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
     e->blockedCount[Us] = 0;
+    e->weakPawns[Us] = 0;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -145,12 +146,18 @@ namespace {
         }
 
         else if (!neighbours)
+        {
             score -=   Isolated
                      + WeakUnopposed * !opposed;
+            e->weakPawns[Us] |= s;
+        }
 
         else if (backward)
+        {
             score -=   Backward
                      + WeakUnopposed * !opposed;
+            e->weakPawns[Us] |= s;
+        }
 
         if (!support)
             score -=   Doubled * doubled

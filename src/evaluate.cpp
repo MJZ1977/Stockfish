@@ -549,7 +549,7 @@ namespace {
     score += ThreatByPawnPush * popcount(b);
 
     // Bonus for attacking weak opponent pawns
-    score += make_score(9, 18) * popcount(pe->weak_pawns(Them) & weak);
+    score += make_score(12, 18) * popcount(pe->weak_pawns(Them) & weak);
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

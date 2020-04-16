@@ -1270,7 +1270,7 @@ moves_loop: // When in check, search starts from here
       // Step 18. Undo move
       pos.undo_move(move);
 
-     if (value <= VALUE_MATED_IN_MAX_PLY && depth > 2)
+     if (value <= VALUE_MATED_IN_MAX_PLY && depth < 5)
         ss->staticEval = evaluate(pos) - Value(30);
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);

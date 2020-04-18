@@ -32,12 +32,12 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 9, 24);
+  constexpr Score Backward      = S( 9, 18);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
-  constexpr Score Isolated      = S( 5, 15);
+  constexpr Score Isolated      = S( 5,  9);
   constexpr Score WeakLever     = S( 0, 56);
-  constexpr Score WeakUnopposed = S(10, 20);
+  constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -257,6 +257,10 @@ Score Entry::do_king_safety(const Position& pos) {
       minPawnDist = 1;
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
+
+  pawns = weakPawns[Us];
+  while (pawns)
+      shelter -= make_score(0, 2 * distance(ksq, pop_lsb(&pawns)));
 
   return shelter - make_score(0, 16 * minPawnDist);
 }

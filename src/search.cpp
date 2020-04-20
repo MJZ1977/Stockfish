@@ -1190,6 +1190,10 @@ moves_loop: // When in check, search starts from here
           if (singularLMR)
               r -= 1 + formerPv;
 
+          // Increase reduction if previous move is null
+          if ((ss-1)->currentMove == MOVE_NULL)
+              r++;
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~5 Elo)

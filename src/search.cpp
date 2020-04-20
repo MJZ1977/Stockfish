@@ -1391,7 +1391,7 @@ moves_loop: // When in check, search starts from here
         bestValue = std::min(bestValue, maxValue);
 
 
-    if (bestValue < beta && PvNode && bestMove)
+    if (bestValue < beta && PvNode && bestMove && depth >= tte->depth())
         ss->staticEval = bestValue;
         /*sync_cout << "Position = " << pos.fen() 
          << " best = " << bestValue 

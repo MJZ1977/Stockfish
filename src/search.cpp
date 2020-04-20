@@ -1390,6 +1390,15 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
+
+    if (bestValue < beta && PvNode && bestMove)
+        ss->staticEval = bestValue;
+        /*sync_cout << "Position = " << pos.fen() 
+         << " best = " << bestValue 
+         << " static = " << ss->staticEval 
+         << " Move = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;*/
+
+
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :

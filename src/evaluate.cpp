@@ -653,6 +653,9 @@ namespace {
 
                 bonus += make_score(k * w, k * w);
             }
+
+            if ((attackedBy[Them][ALL_PIECES] & s) && !bool(attackedBy[Us][ALL_PIECES] & s))
+                bonus = bonus * 3 / 4;
         } // r > RANK_3
 
         score += bonus - PassedFile * edge_distance(file_of(s));

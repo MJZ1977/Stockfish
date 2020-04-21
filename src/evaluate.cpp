@@ -592,6 +592,11 @@ namespace {
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
+ 
+    if (b & attackedBy[Us][PAWN])
+        score += make_score(0,4);
+    if (b & attackedBy[Us][KING])
+        score += make_score(0,4);
 
     candidatePassers = b & shift<Down>(pos.pieces(Them, PAWN));
     if (candidatePassers)

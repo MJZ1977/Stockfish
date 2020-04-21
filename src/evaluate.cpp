@@ -593,6 +593,11 @@ namespace {
 
     b = pe->passed_pawns(Us);
  
+    if (b & attackedBy[Us][PAWN])
+        score += make_score(0,4);
+    if (b & attackedBy[Us][KING])
+        score += make_score(0,4);
+
     candidatePassers = b & shift<Down>(pos.pieces(Them, PAWN));
     if (candidatePassers)
     {
@@ -618,11 +623,6 @@ namespace {
         int r = relative_rank(Us, s);
 
         Score bonus = PassedRank[r];
-
-        if (attackedBy[Us][PAWN] & s)
-           bonus += make_score(0,4);
-        if (attackedBy[Us][KING] & s)
-           bonus += make_score(0,4);
 
         if (r > RANK_3)
         {

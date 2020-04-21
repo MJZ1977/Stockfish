@@ -137,6 +137,7 @@ namespace {
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
+  constexpr Score PassedProtection    = S(  4,  4);
   constexpr Score PawnlessFlank       = S( 17, 95);
   constexpr Score RestrictedPiece     = S(  7,  7);
   constexpr Score RookOnQueenFile     = S(  5,  9);
@@ -279,7 +280,7 @@ namespace {
         attackedBy[Us][ALL_PIECES] |= b;
 
         if (b & PPawns)
-            score += make_score(0,4);
+            score += PassedProtection;
 
         if (b & kingRing[Them])
         {
@@ -594,9 +595,9 @@ namespace {
     b = pe->passed_pawns(Us);
  
     if (b & attackedBy[Us][PAWN])
-        score += make_score(0,4);
+        score += PassedProtection;
     if (b & attackedBy[Us][KING])
-        score += make_score(0,4);
+        score += PassedProtection;
 
     candidatePassers = b & shift<Down>(pos.pieces(Them, PAWN));
     if (candidatePassers)

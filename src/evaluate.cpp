@@ -257,11 +257,13 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard TheirCamp    = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                                   : Rank4BB | Rank3BB | Rank2BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
     Score score = SCORE_ZERO;
-    Bitboard PPawns = pe->passed_pawns(Us);
+    Bitboard PPawns = (pe->passed_pawns(Us) & TheirCamp);
 
     attackedBy[Us][Pt] = 0;
 
@@ -584,6 +586,8 @@ namespace {
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
+    constexpr Bitboard TheirCamp    = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                                   : Rank4BB | Rank3BB | Rank2BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -594,9 +598,9 @@ namespace {
 
     b = pe->passed_pawns(Us);
  
-    if (b & attackedBy[Us][PAWN])
+    if (b & attackedBy[Us][PAWN] & TheirCamp)
         score += PassedProtection;
-    if (b & attackedBy[Us][KING])
+    if (b & attackedBy[Us][KING] & TheirCamp)
         score += PassedProtection;
 
     candidatePassers = b & shift<Down>(pos.pieces(Them, PAWN));

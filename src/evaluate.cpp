@@ -260,6 +260,7 @@ namespace {
 
     Bitboard b, bb;
     Score score = SCORE_ZERO;
+    Bitboard PPawns = pe->passed_pawns(Us);
 
     attackedBy[Us][Pt] = 0;
 
@@ -276,6 +277,9 @@ namespace {
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
+
+        if (b & PPawns)
+            score += make_score(0,4);
 
         if (b & kingRing[Them])
         {

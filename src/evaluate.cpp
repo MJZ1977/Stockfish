@@ -123,7 +123,7 @@ namespace {
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(11, 25), S(14, 28), S(15, 53), S(72, 82), S(170, 177), S(260, 270)
+    S(0, 0), S(11, 25), S(14, 28), S(17, 53), S(78, 86), S(170, 177), S(260, 270)
   };
 
   // Assorted bonuses and penalties

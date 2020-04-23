@@ -123,7 +123,7 @@ namespace {
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
+    S(0, 0), S(11, 28), S(14, 25), S(15, 53), S(80, 74), S(175, 172), S(240, 290)
   };
 
   // Assorted bonuses and penalties
@@ -642,16 +642,16 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? 35 :
-                        !(unsafeSquares & squaresToQueen) ? 20 :
-                        !(unsafeSquares & blockSq)        ?  9 :
-                                                             0 ;
+                int k = !unsafeSquares                    ? 133 :
+                        !(unsafeSquares & squaresToQueen) ?  76 :
+                        !(unsafeSquares & blockSq)        ?  32 :
+                                                              0 ;
 
                 // Assign a larger bonus if the block square is defended
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
-                    k += 5 + 3 * (r < RANK_7 && bool(attackedBy[Us][PAWN] & (blockSq + Up)));
+                    k += 20 + 10 * (r < RANK_7 && bool(attackedBy[Us][PAWN] & (blockSq + Up)));
 
-                bonus += make_score(k * w, k * w);
+                bonus += make_score(k * w / 4, k * w / 4);
             }
         } // r > RANK_3
 

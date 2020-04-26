@@ -821,7 +821,7 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += (mobility[WHITE] - mobility[BLACK]) * (12 + std::max(pe->blocked_count(), 4)) / 16;
+    score += (mobility[WHITE] - mobility[BLACK]) * (20 - std::max(pe->blocked_count(), 4)) / 16;
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

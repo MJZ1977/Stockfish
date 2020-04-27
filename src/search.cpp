@@ -1121,6 +1121,13 @@ moves_loop: // When in check, search starts from here
                && pos.non_pawn_material() <= 2 * RookValueMg)
           extension = 1;
 
+      else if (PvNode
+            && pos.non_pawn_material() <= 2 * RookValueMg 
+            && move == ttMove 
+            && tte->depth() >= depth - 3 
+            && alpha > Value(300))
+          extension = 1;
+
       // Castling extension
       if (type_of(move) == CASTLING)
           extension = 1;

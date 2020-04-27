@@ -1124,7 +1124,7 @@ moves_loop: // When in check, search starts from here
       else if (PvNode
             && pos.non_pawn_material() <= 2 * RookValueMg 
             && move == ttMove 
-            && tte->depth() >= depth - 3 
+            && tte->depth() >= depth - 2 
             && alpha > Value(300))
           extension = 1;
 

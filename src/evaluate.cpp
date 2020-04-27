@@ -147,7 +147,7 @@ namespace {
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
-  Score WeakPawnAttacked = S(12, 24);
+  Score WeakPawnAttacked = S( 8, 16);
   TUNE (WeakPawnAttacked);
 
 #undef S
@@ -551,7 +551,7 @@ namespace {
     score += ThreatByPawnPush * popcount(b);
 
     // Bonus for attacking weak opponent pawns
-    score += WeakPawnAttacked * popcount(pe->weak_pawns(Them) & weak);
+    score += WeakPawnAttacked * popcount(pe->weak_pawns(Them) & weak & shift<Up>(pos.pieces(Us) | attackedBy[Us][PAWN]));
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

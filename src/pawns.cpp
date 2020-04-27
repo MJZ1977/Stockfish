@@ -32,10 +32,10 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  Score Backward      = S( 9, 18);
+  Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
-  Score Isolated      = S( 5,  9);
+  Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
   Score WeakUnopposed = S(13, 27);
 

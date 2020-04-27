@@ -1125,7 +1125,7 @@ moves_loop: // When in check, search starts from here
             && pos.non_pawn_material() <= 2 * RookValueMg 
             && move == ttMove 
             && tte->depth() >= depth - 3 
-            && alpha > Value(280))
+            && alpha > Value(320))
           extension = 1;
 
       // Castling extension

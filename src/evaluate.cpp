@@ -772,7 +772,7 @@ namespace {
         else if (pos.count<PAWN>(strongSide) > 1)
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
         else
-            sf = std::min(sf, 32 + 7 * pos.count<PAWN>(strongSide) 
+            sf = std::min(sf, 30 + 9 * pos.count<PAWN>(strongSide) 
                                  + 8 * (bool(pos.count<ROOK>(strongSide) + pos.count<QUEEN>(strongSide))
                                        || pos.non_pawn_material(~strongSide) == 0));
 

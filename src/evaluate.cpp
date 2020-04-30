@@ -84,7 +84,6 @@ namespace {
   constexpr int QueenSafeCheck  = 780;
   constexpr int RookSafeCheck   = 1078;
   constexpr int BishopSafeCheck = 635;
-  constexpr int KnightSafeCheck = 10;
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -377,7 +376,7 @@ namespace {
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
+    Bitboard rookChecks, queenChecks, bishopChecks;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -428,12 +427,7 @@ namespace {
         unsafeChecks |= b2 & attackedBy[Them][BISHOP];
 
     // Enemy knights checks
-    knightChecks = pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
-    if (knightChecks & safe)
-        kingDanger += more_than_one(knightChecks & safe) ? KnightSafeCheck * 3/2
-                                                         : KnightSafeCheck;
-    else
-        unsafeChecks |= knightChecks;
+    unsafeChecks |= pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
 
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.

@@ -84,8 +84,7 @@ namespace {
   constexpr int QueenSafeCheck  = 780;
   constexpr int RookSafeCheck   = 1078;
   constexpr int BishopSafeCheck = 635;
-  int KnightSafeCheck = 590;
-  TUNE(KnightSafeCheck);
+  constexpr int KnightSafeCheck = 790;
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -148,6 +147,9 @@ namespace {
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
+
+  int Coef1 = 20;
+  TUNE (Coef1);
 
 #undef S
 
@@ -446,7 +448,7 @@ namespace {
     int kingFlankDefense = popcount(b3);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
+                 + Coef1 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
                  +  69 * kingAttacksCount[Them]

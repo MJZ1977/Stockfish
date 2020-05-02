@@ -630,10 +630,12 @@ namespace {
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
+            {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
-            if (OCB)
-                bonus += make_score(0, (king_proximity(Them, blockSq) - king_proximity(Us, blockSq + Up)) * w * 3);
+                if (OCB)
+                   bonus += make_score(0, (king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up)) * w);
+            }
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

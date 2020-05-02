@@ -589,6 +589,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, candidatePassers, leverable;
     Score score = SCORE_ZERO;
+    bool OCB = pos.opposite_bishops();
 
     b = pe->passed_pawns(Us);
 
@@ -630,6 +631,9 @@ namespace {
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+
+            if (OCB)
+                bonus += make_score(0, (king_proximity(Them, blockSq) - king_proximity(Us, blockSq + Up)) * w * 2);
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

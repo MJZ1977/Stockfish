@@ -633,8 +633,8 @@ namespace {
             {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
-                if (OCB)
-                     bonus += make_score(0, (king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up)) * w * 2);
+                if (OCB && king_proximity(Them, blockSq + Up) > king_proximity(Us, blockSq + Up))
+                     bonus += make_score(0, w * 4);
             }
 
             // If the pawn is free to advance, then increase the bonus

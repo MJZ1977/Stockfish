@@ -1390,7 +1390,7 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
-    bool AwfulPos = (bestMove == MOVE_NONE && bestValue < alpha - Value(400) && !moveCountPruning);
+    bool AwfulPos = (bestMove == MOVE_NONE && bestValue < alpha - Value(440) && !moveCountPruning);
     /*if (AwfulPos)
         sync_cout << "Position = " << pos.fen() 
          << " best = " << bestValue 

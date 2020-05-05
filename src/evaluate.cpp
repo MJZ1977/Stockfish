@@ -324,8 +324,7 @@ namespace {
                     score += LongDiagonalBishop;
 
                 // Bonus for bishop controlling several squares with no opposed bishop
-                if (  !bool(SameColorSq & pos.pieces(Them,BISHOP))
-                   && !bool(SameColorSq & pos.pieces(Them,PAWN) & attackedBy[Them][KING]))
+                if (  !bool(SameColorSq & pos.pieces(Them,BISHOP)))
                     score += make_score(12,0) * popcount(b & attackedBy[Them][KING]);
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly

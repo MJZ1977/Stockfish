@@ -944,8 +944,8 @@ namespace {
     // Step 11. Internal iterative deepening (~1 Elo)
     if (depth >= 7 && !ttMove)
     {
-        Value ralpha = alpha - Value(20);
-        Value rbeta = beta - Value(20);            
+        Value ralpha = alpha - Value(6);
+        Value rbeta = beta - Value(6);            
 
         search<NT>(pos, ss, ralpha, rbeta, depth - 7, cutNode);
 

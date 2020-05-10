@@ -571,6 +571,10 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // correction in case of blocked position
+    if (pe->blocked_count()) 
+       score -= make_score(pe->blocked_count(), pe->blocked_count() * 7 / 4) * pos.count<PAWN>(Us);
+
     if (T)
         Trace::add(THREAT, Us, score);
 

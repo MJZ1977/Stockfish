@@ -65,7 +65,8 @@ namespace {
   constexpr uint64_t TtHitAverageResolution = 1024;
   int AA = 64;
   int BB = 16;
-  TUNE(SetRange(4,128),AA,SetRange(1,64),BB);
+  int CC = 200;
+  TUNE(SetRange(4,128),AA,SetRange(1,64),BB,SetRange(100,300),CC);
 
   // Razor and futility margins
   constexpr int RazorMargin = 531;
@@ -82,7 +83,7 @@ namespace {
   }
 
   int futility_move_count(bool improving, Depth depth) {
-    return (AA + BB * depth * depth) / (2 - improving) / 16;
+    return (AA + BB * int(std::pow(double(depth), double(CC) / 100))) / (2 - improving) / 16;
   }
 
   // History and stats update bonus, based on depth

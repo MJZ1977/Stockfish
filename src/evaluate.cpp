@@ -308,7 +308,9 @@ namespace {
             // Penalty if the piece is far from the king
             score -= (Pt == KNIGHT ? KnightKingProtector
                                    : BishopKingProtector) * distance(pos.square<KING>(Us), s);
-
+            if (pe->blocked_count() > 6 && Pt == KNIGHT)
+                score += make_score(6, 6);
+            
             if (Pt == BISHOP)
             {
                 // Penalty according to number of pawns on the same color square as the

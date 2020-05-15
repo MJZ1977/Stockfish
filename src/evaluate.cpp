@@ -309,7 +309,7 @@ namespace {
             score -= (Pt == KNIGHT ? KnightKingProtector
                                    : BishopKingProtector) * distance(pos.square<KING>(Us), s);
             if (pe->blocked_count() > 6 && Pt == KNIGHT)
-                score += make_score(8, 8);
+                score += make_score(6, 4);
             
             if (Pt == BISHOP)
             {

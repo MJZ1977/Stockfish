@@ -1176,7 +1176,7 @@ moves_loop: // When in check, search starts from here
 
           // Decrease reduction if the ttHit running average is large
           if (thisThread->ttHitAverage > 500 * TtHitAverageResolution * TtHitAverageWindow / 1024)
-              r -= 1 + (ss->ply < 2 && pos.rule50_count() > 16);
+              r -= 1 + (ss->ply < 2 && pos.rule50_count() > 8);
 
           // Reduction if other threads are searching this position.
           if (th.marked())

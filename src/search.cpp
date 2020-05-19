@@ -689,6 +689,18 @@ namespace {
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
+    if (pos.rule50_count() > 20 && alpha > VALUE_DRAW && PvNode)
+    {
+        TTEntry* tte2;
+        Key posKey2 = pos.key() ^ Key(1 << 17);
+        tte2 = TT.probe(posKey2, ttHit);
+        if (tte2->depth() < pos.game_ply() && tte2->depth() > depth && (tte2->depth() - pos.game_ply())%2 == 0)
+        {
+            sync_cout << pos.fen() << " old=" << tte2->depth() <<" - search=" << pos.game_ply() << sync_endl;
+            return VALUE_DRAW;
+        }
+    }
+    
     excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
@@ -1391,10 +1403,22 @@ moves_loop: // When in check, search starts from here
         bestValue = std::min(bestValue, maxValue);
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
+    {
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, ss->staticEval);
+        if (pos.rule50_count() > 20 && PvNode)
+        {
+            TTEntry* tte2;
+            Key posKey2 = posKey ^ Key(1 << 17);
+            tte2 = TT.probe(posKey2, ttHit);
+            tte2->save(posKey2, value_to_tt(bestValue, ss->ply), ttPv,
+                  bestValue >= beta ? BOUND_LOWER :
+                  PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
+                  pos.game_ply(), bestMove, ss->staticEval);
+        }
+    }
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

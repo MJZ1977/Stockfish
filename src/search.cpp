@@ -1007,8 +1007,7 @@ moves_loop: // When in check, search starts from here
       shuffleMove = (   pos.rule50_count() > 12 
                      && ss->ply > 4
                      && pos.non_pawn_material(~us) > BishopValueMg
-                     && from_sq(move) == to_sq((ss-2)->currentMove)
-                     && from_sq((ss-2)->currentMove) == to_sq((ss-4)->currentMove));
+                     && from_sq(move) == to_sq((ss-2)->currentMove));
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -1192,7 +1191,7 @@ moves_loop: // When in check, search starts from here
               r -= 2;
 
           if (shuffleMove && alpha > VALUE_DRAW 
-              && bool(pos.attacks_from(type_of(movedPiece),to_sq(move)) & from_sq((ss-4)->currentMove)))
+              && bool(pos.attacks_from(type_of(movedPiece),to_sq(move)) & from_sq((ss-2)->currentMove)))
           {
               /*sync_cout << UCI::move((ss-4)->currentMove, pos.is_chess960()) << " - "
                         << UCI::move((ss-2)->currentMove, pos.is_chess960()) << " - "

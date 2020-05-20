@@ -122,9 +122,10 @@ namespace {
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
-  constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
+  Score PassedRank[RANK_NB] = {
+    S(0, 0), S(50, 50), S(100, 100), S(100, 100), S(150, 150), S(150, 150), S(150, 150)
   };
+  TUNE(SetRange(0,400),PassedRank);
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);

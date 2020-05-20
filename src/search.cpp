@@ -1004,7 +1004,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      shuffleMove = (   pos.rule50_count() > 8 
+      shuffleMove = (   pos.rule50_count() > 12 
                      && ss->ply > 4
                      && pos.non_pawn_material(~us) > BishopValueMg
                      && from_sq(move) == to_sq((ss-2)->currentMove));
@@ -1190,15 +1190,6 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2;
 
-          if (shuffleMove && alpha > VALUE_DRAW 
-              && bool(pos.attacks_from(type_of(movedPiece),to_sq(move)) & from_sq((ss-2)->currentMove)))
-          {
-              /*sync_cout << UCI::move((ss-4)->currentMove, pos.is_chess960()) << " - "
-                        << UCI::move((ss-2)->currentMove, pos.is_chess960()) << " - "
-                        << UCI::move(move, pos.is_chess960()) << sync_endl;*/
-              r++;
-          }
-
           if (moveCountPruning && !formerPv)
               r++;
 
@@ -1212,6 +1203,16 @@ moves_loop: // When in check, search starts from here
 
           if (!captureOrPromotion)
           {
+
+              if (shuffleMove && alpha > VALUE_DRAW 
+                  && bool(pos.attacks_from(type_of(movedPiece),to_sq(move)) & from_sq((ss-2)->currentMove)))
+              {
+                  /*sync_cout << UCI::move((ss-4)->currentMove, pos.is_chess960()) << " - "
+                            << UCI::move((ss-2)->currentMove, pos.is_chess960()) << " - "
+                            << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+                  r++;
+              }
+
               // Increase reduction if ttMove is a capture (~5 Elo)
               if (ttCapture)
                   r++;

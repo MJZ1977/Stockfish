@@ -626,7 +626,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
+    bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture, shuffleMove;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -1004,6 +1004,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      shuffleMove = (   pos.rule50_count() > 16 
+                     && ss->ply > 4
+                     && from_sq(move) == to_sq((ss-2)->currentMove)
+                     && from_sq((ss-2)->currentMove) == to_sq((ss-4)->currentMove));
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -1185,6 +1189,14 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ttPv)
               r -= 2;
+
+          if (shuffleMove && alpha > VALUE_DRAW && pos.legal(make_move(to_sq(move), from_sq((ss-4)->currentMove))))
+          {
+              /*sync_cout << UCI::move((ss-4)->currentMove, pos.is_chess960()) << " - "
+                        << UCI::move((ss-2)->currentMove, pos.is_chess960()) << " - "
+                        << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+              r++;
+          }
 
           if (moveCountPruning && !formerPv)
               r++;

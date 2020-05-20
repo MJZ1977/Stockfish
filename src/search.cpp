@@ -1190,7 +1190,8 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2;
 
-          if (shuffleMove && alpha > VALUE_DRAW && pos.legal(make_move(to_sq(move), from_sq((ss-4)->currentMove))))
+          if (shuffleMove && alpha > VALUE_DRAW 
+              && bool(pos.attacks_from(type_of(movedPiece),to_sq(move)) & from_sq((ss-4)->currentMove)))
           {
               /*sync_cout << UCI::move((ss-4)->currentMove, pos.is_chess960()) << " - "
                         << UCI::move((ss-2)->currentMove, pos.is_chess960()) << " - "

@@ -1004,7 +1004,7 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      shuffleMove = (   pos.rule50_count() > 12 
+      shuffleMove = (   pos.rule50_count() > 20 
                      && ss->ply > 4
                      && pos.non_pawn_material(~us) > BishopValueMg
                      && from_sq(move) == to_sq((ss-2)->currentMove));

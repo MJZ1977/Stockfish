@@ -380,12 +380,13 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = ~Us;
+    constexpr Direction Up       = pawn_push(Us);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
-    int kingDanger = 0;
+    int kingDanger = 0, pawnPushes = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -450,6 +451,8 @@ namespace {
 
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
+    if (distance<File>(ksq, pos.square<KING>(Them)) > 1)
+       pawnPushes = popcount(pos.pieces(Them, PAWN) & ~shift<Up>(pos.pieces()) & KingFlank[file_of(ksq)]);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
@@ -458,6 +461,7 @@ namespace {
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
+                 +  30 * pawnPushes
                  - 873 * !pos.count<QUEEN>(Them)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -   6 * mg_value(score) / 8

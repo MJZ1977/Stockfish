@@ -451,7 +451,7 @@ namespace {
 
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
-    if (distance<File>(ksq, pos.square<KING>(Them)) > 1)
+    if (distance<File>(ksq, pos.square<KING>(Them)) > 2 && pos.non_pawn_material(Them) > 3600)
        pawnPushes = popcount(pos.pieces(Them, PAWN) & ~shift<Up>(pos.pieces()) & KingFlank[file_of(ksq)]);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
@@ -466,7 +466,7 @@ namespace {
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -   6 * mg_value(score) / 8
                  -   4 * kingFlankDefense
-                 +  20;
+                 +  37;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

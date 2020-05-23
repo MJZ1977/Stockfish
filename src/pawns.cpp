@@ -38,7 +38,7 @@ namespace {
   constexpr Score Isolated        = S( 5, 15);
   constexpr Score WeakLever       = S( 0, 56);
   constexpr Score WeakUnopposed   = S(13, 27);
-  constexpr Score BlockedStorm[RANK_NB]  = {S( 0, 0), S( 0, 0), S( 76, 78), S(-10, 15), S(-7, 10), S(-4, 6), S(-1, 2)};
+  constexpr Score BlockedStorm[RANK_NB]  = {S( 0, 0), S( 0, 0), S( 76, 78), S(-15, 15), S(-10, 10), S(-6, 6), S(-2, 2)};
   
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };

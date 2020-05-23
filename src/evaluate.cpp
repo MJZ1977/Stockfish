@@ -244,7 +244,7 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = PseudoAttacks[KING][s] | s;
 
-    kingAttacksCount[Them] = kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
+    kingAttacksCount[Them] = kingAttackersCount[Them] = popcount(PseudoAttacks[KING][ksq] & pe->pawn_attacks(Them));
     kingAttackersWeight[Them] = KingAttackWeights[PAWN] * kingAttackersCount[Them];
 
     // Remove from kingRing[] the squares defended by two pawns

@@ -78,7 +78,15 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
+  int KingAttackWeights[5][5] = {
+    // NP pawn knight bishop rook queen
+    { 20,    0,    0,   0,   0  }, // Pawn
+    { 10,   20,    0,   0,   0  }, // Knight      OUR PIECES
+    { 10,   10,   20,   0,   0  }, // Bishop
+    { 10,   10,   10,   20,   0  }, // Rook
+    { 10,   10,   10,   10,   20 }  // Queen
+  };
+  TUNE(SetRange(-10, 100), KingAttackWeights);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;
@@ -195,13 +203,7 @@ namespace {
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
-    int kingAttackersCount[COLOR_NB];
-
-    // kingAttackersWeight[color] is the sum of the "weights" of the pieces of
-    // the given color which attack a square in the kingRing of the enemy king.
-    // The weights of the individual piece types are given by the elements in
-    // the KingAttackWeights array.
-    int kingAttackersWeight[COLOR_NB];
+    int kingAttackersCount[COLOR_NB][PIECE_TYPE_NB] = {{0, 0, 0, 0, 0, 0} , {0, 0, 0, 0, 0, 0}};
 
     // kingAttacksCount[color] is the number of attacks by the given color to
     // squares directly adjacent to the enemy king. Pieces which attack more
@@ -244,8 +246,8 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = PseudoAttacks[KING][s] | s;
 
-    kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
-    kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
+    kingAttackersCount[Them][PAWN] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
+    kingAttacksCount[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
@@ -283,8 +285,7 @@ namespace {
 
         if (b & kingRing[Them])
         {
-            kingAttackersCount[Us]++;
-            kingAttackersWeight[Us] += KingAttackWeights[Pt];
+            kingAttackersCount[Us][Pt]++;
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
@@ -451,8 +452,11 @@ namespace {
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
 
-    kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
+    for (int pt1 = PAWN; pt1 <= QUEEN; ++pt1)
+        for (int pt2 = PAWN; pt2 <= pt1; ++pt2)
+            kingDanger +=  KingAttackWeights[pt1-1][pt2-1] * kingAttackersCount[Them][pt2];
+
+    kingDanger +=  185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
                  +  69 * kingAttacksCount[Them]

@@ -82,9 +82,9 @@ namespace {
     // pawn knight bishop rook queen
     { 4,    0,    0,   0,   0  }, // Pawn
     { 2,   81,    0,   0,   0  }, // Knight      OUR PIECES
-    { 2,  115,   52,   0,   0  }, // Bishop
+    { 2,  100,   52,   0,   0  }, // Bishop
     { 2,  108,   96,   44,  0  }, // Rook
-    { 2,  100,   62,   54,  10 }  // Queen
+    { 2,  117,   62,   54,  10 }  // Queen
   };
   //TUNE(SetRange(-10, 100), KingAttackWeights);
 

@@ -80,11 +80,11 @@ namespace {
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   int KingAttackWeights[5][5] = {
     //pawn knight bishop rook queen
-    { 36,    0,    0,    0,   0 }, // Pawn
-    {  0,   81,    0,    0,   0 }, // Knight      OUR PIECES
-    {  3,  124,   43,    0,   0 }, // Bishop
-    {  0,  100,   89,   32,   0 }, // Rook
-    { 18,   90,   54,   49,   6 }  // Queen
+    { 24,    0,    0,    0,   0 }, // Pawn
+    {  0,   90,    0,    0,   0 }, // Knight      OUR PIECES
+    {  4,  124,   48,    0,   0 }, // Bishop
+    {  0,  104,   91,   39,   0 }, // Rook
+    { 14,   83,   52,   45,  14 }  // Queen
   };
   //TUNE(SetRange(-10, 100), KingAttackWeights);
 

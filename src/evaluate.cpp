@@ -78,15 +78,15 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  int KingAttackWeights[5][5] = {
+  constexpr int KingAttackWeights[5][5] = {
     // NP pawn knight bishop rook queen
-    { 20,    0,    0,   0,   0  }, // Pawn
-    { 10,   20,    0,   0,   0  }, // Knight      OUR PIECES
-    { 10,   10,   20,   0,   0  }, // Bishop
-    { 10,   10,   10,   20,   0  }, // Rook
-    { 10,   10,   10,   10,   20 }  // Queen
+    { 19,    0,    0,   0,   0  }, // Pawn
+    { 13,   18,    0,   0,   0  }, // Knight      OUR PIECES
+    {  8,   10,   23,   0,   0  }, // Bishop
+    { 10,   10,   12,   23,   0  }, // Rook
+    {  5,    9,   14,   20,   21 }  // Queen
   };
-  TUNE(SetRange(-10, 100), KingAttackWeights);
+  // TUNE(SetRange(-10, 100), KingAttackWeights);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;

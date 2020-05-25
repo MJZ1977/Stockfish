@@ -454,8 +454,12 @@ namespace {
 
     for (int pt1 = PAWN; pt1 <= QUEEN; ++pt1)
     {
+        if (!kingAttackersCount[Them][pt1])
+            continue;
+        int v = 0;
         for (int pt2 = PAWN; pt2 <= pt1; ++pt2)
-            kingDanger +=  KingAttackWeights[pt1-1][pt2-1] * kingAttackersCount[Them][pt2] * kingAttackersCount[Them][pt1];
+            v +=  KingAttackWeights[pt1-1][pt2-1] * kingAttackersCount[Them][pt2];
+        kingDanger += kingAttackersCount[Them][pt1] * v;
     }
 
     kingDanger +=  185 * popcount(kingRing[Us] & weak)

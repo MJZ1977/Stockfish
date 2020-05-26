@@ -533,7 +533,7 @@ namespace {
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
         // Additional bonus if weak piece is only protected by a rook
-        score += WeakRookProtection * popcount(weak & attackedBy[Them][ROOK]);
+        score += WeakRookProtection * popcount(weak & attackedBy[Them][ROOK] & pos.pieces(Them, PAWN));
     }
 
     // Bonus for restricting their piece moves

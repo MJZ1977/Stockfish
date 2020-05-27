@@ -1361,7 +1361,7 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
       
-      if (PvNode && moveCount > 3 && bestValue < alpha - Value(320) && depth > 9)
+      if (PvNode && moveCount > 3 && bestValue < alpha - Value(320) && depth < 10)
         break;     
     }
 

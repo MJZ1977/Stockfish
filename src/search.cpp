@@ -484,7 +484,7 @@ void Thread::search() {
               if (bestValue <= alpha)
               {
                   beta = (alpha + beta) / 2;
-                  alpha = std::max(bestValue - delta, -VALUE_INFINITE);
+                  alpha = std::max(std::max(bestValue - delta, alpha - 4 * delta), -VALUE_INFINITE);
 
                   failedHighCnt = 0;
                   if (mainThread)
@@ -1361,7 +1361,7 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
       
-      if (moveCount > 3 && bestValue < alpha - Value(320) && depth > 8)
+      if (PvNode && moveCount > 3 && bestValue < alpha - Value(std::max(160, 360 - 10 * moveCount)) && depth > 7)
         break;     
     }
 

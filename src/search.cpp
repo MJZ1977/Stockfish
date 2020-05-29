@@ -194,7 +194,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int((24.8 + std::log(Threads.size())) * std::log(i));
+      Reductions[i] = int((26.4 + std::log(Threads.size())) * std::log(i));
 }
 
 
@@ -1188,7 +1188,7 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ttPv)
               r -= 2;
-          else if (abs(ss->staticEval - alpha) < Value(50))
+          else if (abs(ss->staticEval - alpha) < Value(70))
               r--;
 
           if (moveCountPruning && !formerPv)

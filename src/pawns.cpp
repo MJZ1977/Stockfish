@@ -82,12 +82,12 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
+    e->pawnBlockade[Them] = pawn_double_attacks_bb<Them>(theirPawns);
 
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
-    e->blockedCount += popcount(shift<Up>(ourPawns) & (theirPawns | doubleAttackThem));
+    e->blockedCount += popcount(shift<Up>(ourPawns) & (theirPawns | e->pawnBlockade[Them]));
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -125,7 +125,7 @@ namespace {
                 || (   !(stoppers ^ leverPush)
                     && popcount(phalanx) >= popcount(leverPush))
                 || (   stoppers == blocked && r >= RANK_5
-                    && (shift<Up>(support) & ~(theirPawns | doubleAttackThem)));
+                    && (shift<Up>(support) & ~(theirPawns | e->pawnBlockade[Them])));
 
         passed &= !(forward_file_bb(Us, s) & ourPawns);
 

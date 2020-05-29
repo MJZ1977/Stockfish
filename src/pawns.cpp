@@ -163,6 +163,8 @@ namespace {
                      + WeakLever * more_than_one(lever);
     }
 
+    e->pawnBlockade[Them] &= ~e->pawnAttacksSpan[Us];
+
     return score;
   }
 

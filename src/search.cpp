@@ -87,6 +87,18 @@ namespace {
     return d > 15 ? -8 : 19 * d * d + 155 * d - 132;
   }
 
+  // Shuffle limit
+  int shuffle_limit(int rule50, int ply, int pawns)
+   {
+      if (pawns == 0) 
+         return 99;
+      else if (rule50 <= ply)   // all reverse move after root position
+         return 39;
+      else
+         return std::min(39 + rule50 - ply, 99);
+   }
+
+
   // Add a small random component to draw evaluations to avoid 3fold-blindness
   Value value_draw(Thread* thisThread) {
     return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
@@ -643,6 +655,11 @@ namespace {
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
 
+    /*if (pos.is_draw(ss->ply, shuffle_limit))
+        sync_cout << "rule50 = " << pos.rule50_count() << " ply = " << ss->ply << " limit = " << shuffle_limit 
+                  << " repetion = " << pos.repetition() << sync_endl;*/
+
+
     // Check for the available remaining time
     if (thisThread == Threads.main())
         static_cast<MainThread*>(thisThread)->check_time();
@@ -655,7 +672,7 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply)
+            || pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>()))
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
                                                     : value_draw(pos.this_thread());
@@ -1361,6 +1378,9 @@ moves_loop: // When in check, search starts from here
           else if (!captureOrPromotion && quietCount < 64)
               quietsSearched[quietCount++] = move;
       }
+
+      if (PvNode && moveCount > 3 && bestValue < alpha - Value(std::max(160, 360 - 10 * moveCount)))
+        break;     
     }
 
     // The following condition would detect a stop only after move loop has been
@@ -1441,7 +1461,7 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply)
+    if (   pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>()))
         || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
 

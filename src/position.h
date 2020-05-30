@@ -150,9 +150,10 @@ public:
   int game_ply() const;
   bool is_chess960() const;
   Thread* this_thread() const;
-  bool is_draw(int ply) const;
+  bool is_draw(int ply, int shuffle_limit) const;
   bool has_game_cycle(int ply) const;
   bool has_repeated() const;
+  //int repetition() const;
   int rule50_count() const;
   Score psq_score() const;
   Value non_pawn_material(Color c) const;
@@ -341,6 +342,10 @@ inline Value Position::non_pawn_material() const {
 inline int Position::game_ply() const {
   return gamePly;
 }
+
+/*inline int Position::repetition() const {
+  return st->repetition;
+}*/
 
 inline int Position::rule50_count() const {
   return st->rule50;

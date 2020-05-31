@@ -93,9 +93,9 @@ namespace {
       if (pawns == 0) 
          return 99;
       else if (rule50 <= ply)   // all reverse move after root position
-         return 29 + 12 * bool((allPieces - pawns) < 5);
+         return 27 + 10 * bool((allPieces - pawns) < 5);
       else
-         return std::min(29 + 12 * bool((allPieces - pawns) < 5) + rule50 - ply, 99);
+         return std::min(27 + 10 * bool((allPieces - pawns) < 5) + rule50 - ply, 99);
    }
 
 
@@ -644,7 +644,7 @@ namespace {
     bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, shuffleLimit;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -654,6 +654,7 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    shuffleLimit = shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>());
 
     /*if (pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>())))
         sync_cout << "rule50 = " << pos.rule50_count() << " ply = " << ss->ply << " limit = " 
@@ -671,7 +672,7 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>()))
+            || pos.is_draw(ss->ply, shuffleLimit)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
                                                     : value_draw(pos.this_thread());
@@ -753,7 +754,7 @@ namespace {
             }
         }
 
-        if (pos.rule50_count() < shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>()) - 8)
+        if (pos.rule50_count() < shuffleLimit - 8)
             return ttValue;
     }
 
@@ -1154,9 +1155,13 @@ moves_loop: // When in check, search starts from here
 
       // Late irreversible move extension
       if (   move == ttMove
-          && pos.rule50_count() > 80
+          && pos.rule50_count() > shuffleLimit - 10
           && (captureOrPromotion || type_of(movedPiece) == PAWN))
           extension = 2;
+      else if ( PvNode 
+             && pos.rule50_count() > shuffleLimit - 10
+             && depth < 3)
+          extension = 1;
 
       // Add extension to new depth
       newDepth += extension;

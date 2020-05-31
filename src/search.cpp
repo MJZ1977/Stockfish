@@ -93,7 +93,7 @@ namespace {
       if (pawns == 0) 
          return 99;
       else if (rule50 <= ply)   // all reverse move after root position
-         return 31 + 14 * bool((allPieces - pawns) < 5);
+         return 29 + 12 * bool((allPieces - pawns) < 5);
       else
          return std::min(29 + 12 * bool((allPieces - pawns) < 5) + rule50 - ply, 99);
    }

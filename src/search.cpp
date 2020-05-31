@@ -88,14 +88,14 @@ namespace {
   }
 
   // Shuffle limit
-  int shuffle_limit(int rule50, int ply, int pawns)
+  int shuffle_limit(int rule50, int ply, int pawns, int allPieces)
    {
       if (pawns == 0) 
          return 99;
       else if (rule50 <= ply)   // all reverse move after root position
-         return 39;
+         return 31 + 14 * bool((allPieces - pawns) < 5);
       else
-         return std::min(39 + rule50 - ply, 99);
+         return std::min(29 + 12 * bool((allPieces - pawns) < 5) + rule50 - ply, 99);
    }
 
 
@@ -655,10 +655,9 @@ namespace {
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
 
-    /*if (pos.is_draw(ss->ply, shuffle_limit))
-        sync_cout << "rule50 = " << pos.rule50_count() << " ply = " << ss->ply << " limit = " << shuffle_limit 
-                  << " repetion = " << pos.repetition() << sync_endl;*/
-
+    /*if (pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>())))
+        sync_cout << "rule50 = " << pos.rule50_count() << " ply = " << ss->ply << " limit = " 
+                  << shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>())  << sync_endl;*/
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -672,7 +671,7 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>()))
+            || pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>()))
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
                                                     : value_draw(pos.this_thread());
@@ -754,7 +753,7 @@ namespace {
             }
         }
 
-        if (pos.rule50_count() < 90)
+        if (pos.rule50_count() < shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>()) - 8)
             return ttValue;
     }
 
@@ -1461,7 +1460,7 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>()))
+    if (   pos.is_draw(ss->ply, shuffle_limit(pos.rule50_count(), ss->ply, pos.count<PAWN>(), pos.count<ALL_PIECES>()))
         || ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
 

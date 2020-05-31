@@ -1121,7 +1121,7 @@ bool Position::is_draw(int ply, int shuffle_limit) const {
 
   // Return a draw score if a position repeats once earlier but strictly
   // after the root, or repeats twice before or at the root.
-  return bool(st->repetition) && st->repetition < ply && shuffle_limit >= 99;
+  return st->repetition && st->repetition < ply;
 }
 
 

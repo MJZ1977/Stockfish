@@ -615,8 +615,8 @@ namespace {
 
     // If opponent is shuffling for several moves without pushing our king to move, we can hope for a draw
     ss->ksq = pos.square<KING>(pos.side_to_move());
-    if (   std::min(ss->ply,pos.rule50_count()) > 22
-        && ss->ksq == (ss-22)->ksq
+    if (   std::min(ss->ply,pos.rule50_count()) > 18 + 4 * (pos.non_pawn_material() < 5000)
+        && ss->ksq == (ss-(18 + 4 * (pos.non_pawn_material() < 5000)))->ksq
         && beta < 0
         && (depth < 8 || std::min(ss->ply,pos.rule50_count()) > 36))
     {

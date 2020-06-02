@@ -79,6 +79,8 @@ namespace {
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
+  int kD_coef[2][7] = {{185, 148, 69, 24, 873, 48, 37}, {185, 148, 69, 24, 873, 48, 37}};
+  TUNE(SetRange(0, 1200), kD_coef);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;
@@ -458,19 +460,20 @@ namespace {
 
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
+    bool alignedKings = distance<File>(ksq, pos.square<KING>(Them)) <= 1;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
-                 + 148 * popcount(unsafeChecks)
+                 + kD_coef[alignedKings][0] * popcount(kingRing[Us] & weak)
+                 + kD_coef[alignedKings][1] * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
-                 +  69 * kingAttacksCount[Them]
-                 +   3 * kingFlankAttack * kingFlankAttack / 8
+                 + kD_coef[alignedKings][2] * kingAttacksCount[Them]
+                 + kD_coef[alignedKings][3] * kingFlankAttack * kingFlankAttack / 64
                  +       mg_value(mobility[Them] - mobility[Us])
-                 - 873 * !pos.count<QUEEN>(Them)
+                 - kD_coef[alignedKings][4] * !pos.count<QUEEN>(Them)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
-                 -   6 * mg_value(score) / 8
+                 - kD_coef[alignedKings][5] * mg_value(score) / 64
                  -   4 * kingFlankDefense
-                 +  37;
+                 + kD_coef[alignedKings][6];
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

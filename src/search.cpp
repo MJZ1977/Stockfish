@@ -974,14 +974,18 @@ moves_loop: // When in check, search starts from here
     singularLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
 
+    Move nextMove = mp.next_move(moveCountPruning);
+
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
-    while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
+    while (nextMove != MOVE_NONE)
     {
+      move = nextMove;
       assert(is_ok(move));
+      nextMove = mp.next_move(moveCountPruning);
 
       if (move == excludedMove)
           continue;
@@ -1073,7 +1077,9 @@ moves_loop: // When in check, search starts from here
       // then that move is singular and should be extended. To verify this we do
       // a reduced search on all the other moves but the ttMove and if the
       // result is lower than ttValue minus a margin then we will extend the ttMove.
-      if (    depth >= 6
+      if (move == ttMove && nextMove == MOVE_NONE)
+          extension = 1;
+      else if (    depth >= 6
           &&  move == ttMove
           && !rootNode
           && !excludedMove // Avoid recursive singular search

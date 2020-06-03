@@ -1092,7 +1092,7 @@ moves_loop: // When in check, search starts from here
           if (value < singularBeta)
           {
               extension = 1;
-              singularLMR = !ttCapture && (value > singularBeta - Value(60));
+              singularLMR = (value > singularBeta - Value(60));
               /*if (value < singularBeta - Value(100))
                  sync_cout << "Position = " << pos.fen() << " - ttMove = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
           }

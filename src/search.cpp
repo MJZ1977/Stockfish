@@ -1092,9 +1092,9 @@ moves_loop: // When in check, search starts from here
           if (value < singularBeta)
           {
               extension = 1;
-              singularLMR = true;
-              //if (ttCapture)
-              //   sync_cout << "Position = " << pos.fen() << " - ttMove = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+              singularLMR = !ttCapture && (value < singularBeta - Value(60));
+              /*if (value < singularBeta - Value(100))
+                 sync_cout << "Position = " << pos.fen() << " - ttMove = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
           }
 
           // Multi-cut pruning
@@ -1200,7 +1200,7 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)
-          if (singularLMR && !ttCapture)
+          if (singularLMR)
               r -= 1 + formerPv;
 
           if (!captureOrPromotion)

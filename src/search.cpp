@@ -1092,8 +1092,17 @@ moves_loop: // When in check, search starts from here
           if (value < singularBeta)
           {
               extension = 1;
-              singularLMR = (value > singularBeta - Value(60));
-              /*if (value < singularBeta - Value(100))
+              if (depth <= 8)
+                 singularLMR = true;
+              else
+              {
+                 singularBeta -= Value(60);
+                 ss->excludedMove = move;
+                 value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
+                 ss->excludedMove = MOVE_NONE;
+                 singularLMR = (value >= singularBeta);
+              }
+              /*if (!singularLMR)
                  sync_cout << "Position = " << pos.fen() << " - ttMove = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
           }
 

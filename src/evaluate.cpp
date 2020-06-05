@@ -79,7 +79,7 @@ namespace {
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
-  constexpr int kD_coef[2][7] = {{190, 152, 69, 24, 893, 48, 47}, {180, 144, 69, 24, 853, 48, 27}};
+  constexpr int kD_coef[2][7] = {{191, 152, 72, 20, 868, 46, 37}, {176, 148, 67, 23, 863, 50, 42}};
   
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;

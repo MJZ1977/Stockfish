@@ -964,6 +964,7 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    Move secondMove = MOVE_NONE;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -1103,6 +1104,10 @@ moves_loop: // When in check, search starts from here
                  value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
                  ss->excludedMove = MOVE_NONE;
                  singularQuietLMR = (value >= singularBeta);
+                 if (singularQuietLMR)
+                    secondMove = ss->currentMove;
+                 /*   sync_cout << "Position = " << pos.fen() << " - ttMove = " << UCI::move(move, pos.is_chess960()) 
+                              << " - Move2 = " << UCI::move(ss->currentMove, pos.is_chess960()) << sync_endl;*/
               }
           }
 
@@ -1198,7 +1203,7 @@ moves_loop: // When in check, search starts from here
               r++;
 
           // Decrease reduction if position is or has been on the PV (~10 Elo)
-          if (ttPv)
+          if (ttPv || move == secondMove)
               r -= 2;
 
           if (moveCountPruning && !formerPv)

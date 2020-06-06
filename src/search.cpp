@@ -1099,7 +1099,7 @@ moves_loop: // When in check, search starts from here
               singularQuietLMR = !ttCapture;
               if (depth >= 8 && singularQuietLMR)	// For quiet moves verify that ttMove is not clearly the best move
               {
-                 singularBeta -= Value(32);
+                 singularBeta -= Value(50);
                  ss->excludedMove = move;
                  value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
                  ss->excludedMove = MOVE_NONE;

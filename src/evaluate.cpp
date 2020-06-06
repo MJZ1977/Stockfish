@@ -814,7 +814,9 @@ namespace {
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
-    score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
+    bool unbalancedEG = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)) >= BishopValueMg
+                        && pos.non_pawn_material() <= EndgameLimit;
+    score += (pe->pawn_score(WHITE) - pe->pawn_score(BLACK)) * (8 + unbalancedEG) / 8;
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;

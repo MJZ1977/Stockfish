@@ -858,7 +858,7 @@ namespace {
 
     if (pos.non_pawn_material() < EndgameLimit - AA && abs(v) > BB)
     {
-        int k = 16 * (EndgameLimit - pos.non_pawn_material() - AA) / (EndgameLimit - AA);
+        int k = CC * (EndgameLimit - pos.non_pawn_material() - AA) / (EndgameLimit - AA);
         v = v > 0 ? BB + (64 + k) * (v - BB) / 64
                  : -BB + (64 + k) * (v + BB) / 64;
     }

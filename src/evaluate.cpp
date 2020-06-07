@@ -155,8 +155,8 @@ namespace {
   constexpr Score WeakQueenProtection = S( 15,  0);
 
     Value AA = Value(200);
-    Value BB = Value(200);
-    int CC = 24;
+    Value BB = Value(230);
+    int CC = 20;
     //TUNE(SetRange(40, 800), AA, SetRange(20, 400), BB, SetRange(2, 32), CC);
 
 

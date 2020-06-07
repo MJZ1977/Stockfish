@@ -154,6 +154,12 @@ namespace {
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
+    Value AA = Value(200);
+    Value BB = Value(200);
+    int CC = 16;
+    TUNE(SetRange(40, 800), AA, SetRange(20, 400), BB, SetRange(2, 32), CC);
+
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -849,6 +855,13 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
+
+    if (pos.non_pawn_material() < EndgameLimit - AA && abs(v) > BB)
+    {
+        int k = 16 * (EndgameLimit - pos.non_pawn_material() - AA) / (EndgameLimit - AA);
+        v = v > 0 ? BB + (64 + k) * (v - BB) / 64
+                 : -BB + (64 + k) * (v + BB) / 64;
+    }
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

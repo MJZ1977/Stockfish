@@ -157,7 +157,7 @@ namespace {
     Value AA = Value(200);
     Value BB = Value(200);
     int CC = 16;
-    TUNE(SetRange(40, 800), AA, SetRange(20, 400), BB, SetRange(2, 32), CC);
+    //TUNE(SetRange(40, 800), AA, SetRange(20, 400), BB, SetRange(2, 32), CC);
 
 
 #undef S

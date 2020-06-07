@@ -154,7 +154,6 @@ namespace {
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
-    Value AA = Value(200);
     Value BB = Value(230);
     int CC = 20;
     //TUNE(SetRange(40, 800), AA, SetRange(20, 400), BB, SetRange(2, 32), CC);
@@ -856,9 +855,9 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
-    if (pos.non_pawn_material() < EndgameLimit - AA && abs(v) > BB)
+    if (pos.non_pawn_material() < EndgameLimit && abs(v) > BB)
     {
-        int k = CC * (EndgameLimit - pos.non_pawn_material() - AA) / (EndgameLimit - AA);
+        int k = CC * (EndgameLimit - pos.non_pawn_material()) / EndgameLimit;
         v = v > 0 ? BB + (64 + k) * (v - BB) / 64
                  : -BB + (64 + k) * (v + BB) / 64;
     }

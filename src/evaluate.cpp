@@ -853,7 +853,7 @@ namespace {
     Value EG_th = Value(230);
     if (pos.non_pawn_material() < 3415 && abs(v) > EG_th)
     {
-        int k = 20 * (3415 - pos.non_pawn_material()) / 3415;
+        int k = 32 * (3415 - pos.non_pawn_material()) / 3415;
         v = v > 0 ? EG_th + (64 + k) * (v - EG_th) / 64
                  : -EG_th + (64 + k) * (v + EG_th) / 64;
     }

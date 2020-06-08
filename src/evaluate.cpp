@@ -403,9 +403,9 @@ namespace {
     if (b1)
         if (shift<Down>(b1) & pos.pieces(Us, PAWN))
         {
-           score -= make_score(60,55);
+           score -= make_score(70,66);
            if ((shift<EAST>(b1) | shift<WEST>(b1)) & pos.pieces(Us, PAWN))
-              score -= make_score(10, 15);
+              score -= make_score(0, 8);
         }
 
     // Attacked squares defended at most once by our queen or king

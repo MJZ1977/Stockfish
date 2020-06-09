@@ -233,9 +233,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
   if (b)
       if (shift<Down>(b) & ourPawns)
       {
-         bonus -= make_score(70, 64);
+         bonus -= make_score(67, 64);
          if ((shift<EAST>(b) | shift<WEST>(b)) & ourPawns)
-            bonus -= make_score(0, 12);
+            bonus -= make_score(6, 12);
       }
 
   return bonus;

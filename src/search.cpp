@@ -870,8 +870,11 @@ namespace {
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
 
         pos.do_null_move(st);
-
+        (ss+1)->currentMove = MOVE_NONE;
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        if (nullValue >= beta && pos.capture((ss+1)->currentMove))
+            sync_cout << "Position = " << pos.fen() 
+                     << " - threat = " << UCI::move((ss+1)->currentMove, pos.is_chess960()) << sync_endl;
 
         pos.undo_null_move();
 
@@ -957,6 +960,14 @@ namespace {
         ttMove = ttHit ? tte->move() : MOVE_NONE;
     }
 
+    /*if (   !PvNode
+        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
+           sync_cout << "Position = " << pos.fen() << " - depth = " << depth
+                     << " - eval = " << eval << " - static = " << ss->staticEval << " - beta = " << beta
+                     << " - ttValue = " << ttValue << " - ttdepth = " << tte->depth() << " - beta = " << beta
+                     << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;*/
+
 moves_loop: // When in check, search starts from here
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
@@ -1020,7 +1031,7 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = moveCount >= futility_move_count(improving, depth); 
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

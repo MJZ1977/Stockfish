@@ -814,7 +814,7 @@ namespace {
     if (pos.non_pawn_material() >= EndgameLimit)
         score += pos.this_thread()->contempt;
     else 
-        score += (pos.this_thread()->contempt * std::max(int(pos.non_pawn_material()) - 1867, 0)) / 2048;
+        score += (pos.this_thread()->contempt * std::max((int(pos.non_pawn_material()) - 1867) / 32, 0)) / 64;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);

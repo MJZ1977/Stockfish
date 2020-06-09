@@ -199,10 +199,15 @@ template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color Them = ~Us;
+  constexpr Direction Down       = pawn_push(Them);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us) & ~pawnAttacks[Them];
   Bitboard theirPawns = b & pos.pieces(Them);
+
+  Square s = make_square(Utility::clamp(file_of(ksq), FILE_B, FILE_G),
+                         Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
+  Bitboard kingRing = attacks_bb<KING>(s);
 
   Score bonus = make_score(5, 5);
 
@@ -223,6 +228,15 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
+
+  b = theirPawns & kingRing & (Us == WHITE? Rank3BB : Rank6BB);
+  if (b)
+      if (shift<Down>(b) & ourPawns)
+      {
+         bonus -= make_score(70, 64);
+         if ((shift<EAST>(b) | shift<WEST>(b)) & ourPawns)
+            bonus -= make_score(0, 12);
+      }
 
   return bonus;
 }

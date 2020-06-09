@@ -388,7 +388,6 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = ~Us;
-    constexpr Direction Down       = pawn_push(Them);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
@@ -399,14 +398,6 @@ namespace {
 
     // Init the score with king shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
-    b1 = pos.pieces(Them, PAWN) & kingRing[Us] & (Us == WHITE? Rank3BB : Rank6BB);
-    if (b1)
-        if (shift<Down>(b1) & pos.pieces(Us, PAWN))
-        {
-           score -= make_score(70,66);
-           if ((shift<EAST>(b1) | shift<WEST>(b1)) & pos.pieces(Us, PAWN))
-              score -= make_score(0, 8);
-        }
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]

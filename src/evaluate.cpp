@@ -630,6 +630,9 @@ namespace {
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;
+            bool halfBlock = !pos.empty(blockSq)
+                          && color_of(pos.piece_on(blockSq)) == Us; 
+                          //&& type_of(pos.piece_on(blockSq))  != PAWN;  //implicit for passed pawns?
 
             // Adjust bonus based on the king's proximity
             bonus += make_score(0, (  (king_proximity(Them, blockSq) * 19) / 4
@@ -640,7 +643,7 @@ namespace {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
             // If the pawn is free to advance, then increase the bonus
-            if (pos.empty(blockSq))
+            if (pos.empty(blockSq) || halfBlock)
             {
                 squaresToQueen = forward_file_bb(Us, s);
                 unsafeSquares = passed_pawn_span(Us, s);
@@ -662,7 +665,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
-                bonus += make_score(k * w, k * w);
+                bonus += make_score(1, 1) * (k * w / (1 + halfBlock));
             }
         } // r > RANK_3
 

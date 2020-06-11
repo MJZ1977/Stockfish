@@ -626,7 +626,7 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (pe->passed_pawns(Us) & pawn_attack_span(Us, s))
+        if (pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up))
             r = std::min(r + 1, 6);
 
         if (r > RANK_3)

@@ -627,7 +627,7 @@ namespace {
         Score bonus = PassedRank[r];
 
         if (pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up))
-            bonus += make_score(16, 16);
+            bonus += make_score( 0, 10);
 
         if (r > RANK_3)
         {

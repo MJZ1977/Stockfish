@@ -626,10 +626,6 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (   pos.non_pawn_material(Them) <= RookValueMg 
-            && bool(pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up)))
-            bonus += make_score( 0, 12);
-
         if (r > RANK_3)
         {
             int w = 5 * r - 13;
@@ -642,6 +638,9 @@ namespace {
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+
+            if ( pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up))
+                bonus += make_score(0, std::min(0, 4 * (4 - king_proximity(Us, blockSq + Up))));
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

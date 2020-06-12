@@ -626,7 +626,8 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up))
+        if (   pos.non_pawn_material(Them) <= RookValueMg 
+            && bool(pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up)))
             bonus += make_score( 0, 12);
 
         if (r > RANK_3)

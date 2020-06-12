@@ -173,7 +173,7 @@ namespace {
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
-    Value winnable(Score score) const;
+    Value winnable(Score score, bool NoCompensation) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -721,7 +721,7 @@ namespace {
   // A single value is derived from the mg and eg values and returned.
 
   template<Tracing T>
-  Value Evaluation<T>::winnable(Score score) const {
+  Value Evaluation<T>::winnable(Score score, bool NoCompensation) const {
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -742,6 +742,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    + 40 * NoCompensation
                     - 43 * almostUnwinnable
                     -110 ;
 
@@ -827,6 +828,8 @@ namespace {
 
     initialize<WHITE>();
     initialize<BLACK>();
+    int last_score = int(eg_value(score));
+    bool NoCompensation = abs(last_score) > 200;
 
     // Pieces evaluated first (also populates attackedBy, attackedBy2).
     // Note that the order of evaluation of the terms is left unspecified
@@ -836,15 +839,31 @@ namespace {
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
     score += mobility[WHITE] - mobility[BLACK];
+    if (NoCompensation)
+    {
+        NoCompensation = NoCompensation && (int(eg_value(score)) * 8 / last_score >= 7);
+        last_score = int(eg_value(score));
+    }
 
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
+            + threats<WHITE>() - threats<BLACK>();
+    if (NoCompensation)
+    {
+        NoCompensation = NoCompensation && (int(eg_value(score)) * 8 / last_score >= 7);
+        last_score = int(eg_value(score));
+    }
+
+    score += passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
+    if (NoCompensation)
+    {
+        NoCompensation = NoCompensation && (int(eg_value(score)) * 8 / last_score >= 7);
+        last_score = int(eg_value(score));
+    }
 
     // Derive single value from mg and eg parts of score
-    v = winnable(score);
+    v = winnable(score, NoCompensation);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

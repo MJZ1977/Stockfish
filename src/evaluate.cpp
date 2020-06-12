@@ -640,7 +640,7 @@ namespace {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
             if ( pe->passed_pawns(Us) & pawn_attack_span(Us, s - Up))
-                bonus += make_score(0, std::max(0, 4 * (4 - king_proximity(Us, blockSq + Up))));
+                bonus += make_score(0, std::max(0, 6 * (4 - king_proximity(Us, blockSq))));
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

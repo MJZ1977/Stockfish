@@ -829,7 +829,7 @@ namespace {
     initialize<WHITE>();
     initialize<BLACK>();
     int last_score = int(eg_value(score));
-    bool NoCompensation = abs(last_score) > 200;
+    bool NoCompensation = abs(last_score) > 300;
 
     // Pieces evaluated first (also populates attackedBy, attackedBy2).
     // Note that the order of evaluation of the terms is left unspecified

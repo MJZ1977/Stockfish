@@ -1160,6 +1160,9 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2;
 
+          if (ttPv && alpha > Value(360) && tte->depth() >= depth - 2)
+              r++;
+
           if (moveCountPruning && !formerPv)
               r++;
 

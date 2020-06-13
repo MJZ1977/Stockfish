@@ -77,6 +77,18 @@ namespace {
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
 
+    int OCB_complex = 2;
+    int CC = 110;
+    int A1 = 72;
+    int A2 = 16;
+    int B1 = 88;
+    int B2 = 12;
+    TUNE(SetRange(-40, 60), OCB_complex);
+    TUNE(SetRange( 60, 140), CC);
+    TUNE(SetRange( 40, 120), A1, B1);
+    TUNE(SetRange( 6, 20), A2, B2);
+
+
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
@@ -735,6 +747,8 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    bool OCB = pos.opposite_bishops();
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
@@ -742,8 +756,9 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    - OCB_complex * OCB
                     - 43 * almostUnwinnable
-                    -110 ;
+                    - CC ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -765,13 +780,13 @@ namespace {
     // If scale is not already specific, scale down the endgame via general heuristics
     if (sf == SCALE_FACTOR_NORMAL)
     {
-        if (pos.opposite_bishops())
+        if (OCB)
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = (A1 + A2 * popcount(pe->passed_pawns(strongSide)))/4;
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sf = (B1 + B2 * pos.count<ALL_PIECES>(strongSide))/4;
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

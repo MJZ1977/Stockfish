@@ -744,7 +744,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 10 * pe->doubled_isolated(strongSide)
+                    - 16 * pe->doubled_isolated(strongSide)
                     - 43 * almostUnwinnable
                     -108 ;
 

@@ -735,6 +735,8 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    Color strongSide = eg_value(score) > VALUE_DRAW ? WHITE : BLACK;
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
@@ -742,8 +744,9 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    - 10 * pe->doubled_isolated(strongSide)
                     - 43 * almostUnwinnable
-                    -110 ;
+                    -108 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -759,7 +762,6 @@ namespace {
 
     // Compute the scale factor for the winning side
 
-    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
@@ -769,7 +771,8 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * std::max(0, 
+                     (pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) - pe->doubled_isolated(strongSide)));
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }

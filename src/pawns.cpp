@@ -75,7 +75,7 @@ namespace {
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubled;
+    bool backward, passed, doubled, doubled2;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -84,6 +84,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
+    e->doubledIsolated[Us] = 0;
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
@@ -103,6 +104,7 @@ namespace {
         lever      = theirPawns & pawn_attacks_bb(Us, s);
         leverPush  = theirPawns & pawn_attacks_bb(Us, s + Up);
         doubled    = ourPawns   & (s - Up);
+        doubled2   = ourPawns   & forward_file_bb(Us, s);
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
@@ -112,6 +114,8 @@ namespace {
         backward =  !(neighbours & forward_ranks_bb(Them, s + Up))
                   && (leverPush | blocked);
 
+        if (doubled2 && !bool(neighbours))
+            e->doubledIsolated[Us] += 1;
         // Compute additional span if pawn is not backward nor blocked
         if (!backward && !blocked)
             e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
@@ -127,7 +131,7 @@ namespace {
                 || (   stoppers == blocked && r >= RANK_5
                     && (shift<Up>(support) & ~(theirPawns | doubleAttackThem)));
 
-        passed &= !(forward_file_bb(Us, s) & ourPawns);
+        passed &= !doubled2;
 
         // Passed pawns will be properly scored later in evaluation when we have
         // full attack info.

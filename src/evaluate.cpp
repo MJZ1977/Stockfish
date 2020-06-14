@@ -771,8 +771,7 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * std::max(0, 
-                     (pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) - pe->doubled_isolated(strongSide)));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }

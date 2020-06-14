@@ -744,7 +744,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 10 * pe->doubled_isolated(strongSide)
+                    - 16 * pe->doubled_isolated(strongSide)
                     - 43 * almostUnwinnable
                     -108 ;
 
@@ -771,8 +771,8 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * std::max(0, 
-                     (pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) - pe->doubled_isolated(strongSide)));
+                sf = (35 + 7 * std::max(0, 
+                     (pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) - pe->doubled_isolated(strongSide)))) / 2;
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }

@@ -744,9 +744,9 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 24 * pe->doubled_isolated(strongSide)
+                    - 14 * pe->doubled_isolated(strongSide)
                     - 43 * almostUnwinnable
-                    -106 ;
+                    -108 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

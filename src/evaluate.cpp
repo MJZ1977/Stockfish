@@ -123,7 +123,7 @@ namespace {
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
+    S(0, 0), S( 9, 28), S(18, 33), S(16, 43), S(63, 72), S(169, 177), S(278, 260)
   };
 
   // Assorted bonuses and penalties
@@ -662,7 +662,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
-                bonus += make_score(k * w * 7 / 8, k * w * 9 / 8);
+                bonus += make_score(k * w * 13 / 16, k * w);
             }
         } // r > RANK_3
 

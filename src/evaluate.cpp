@@ -77,6 +77,11 @@ namespace {
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
 
+  int MG_coef = 48;
+  int EG_coef = 80;
+  TUNE(SetRange(8, 100), MG_coef, EG_coef);
+
+
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
@@ -662,7 +667,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
-                bonus += make_score(k * w * 3 / 4, k * w * 5 / 4);
+                bonus += make_score(k * w * MG_coef / 64, k * w * EG_coef / 64);
             }
         } // r > RANK_3
 

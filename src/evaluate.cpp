@@ -662,7 +662,7 @@ namespace {
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
-                bonus += make_score(k * w * 7 / 8, k * w * 9 / 8);
+                bonus += make_score(k * w * 3 / 4, k * w * 5 / 4);
             }
         } // r > RANK_3
 

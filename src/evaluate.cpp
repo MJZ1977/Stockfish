@@ -121,11 +121,6 @@ namespace {
     S(0, 0), S(3, 46), S(37, 68), S(42, 60), S(0, 38), S(58, 41)
   };
 
-  // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
-  constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
-  };
-
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score BishopOnKingRing    = S( 24,  0);
@@ -598,6 +593,9 @@ namespace {
       return std::min(distance(pos.square<KING>(c), s), 5);
     };
 
+    if (pos.non_pawn_material(Them) < 6000)
+       return SCORE_ZERO;
+
     Bitboard b, bb, squaresToQueen, unsafeSquares, blockedPassers, helpers;
     Score score = SCORE_ZERO;
 
@@ -624,9 +622,9 @@ namespace {
 
         int r = relative_rank(Us, s);
 
-        Score bonus = PassedRank[r];
+        Score bonus = SCORE_ZERO;
 
-        if (r > RANK_3 && pos.non_pawn_material(Them) < 6000)
+        if (r > RANK_3)
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;

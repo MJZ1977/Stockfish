@@ -629,6 +629,8 @@ namespace {
         if (r > RANK_3)
         {
             int w = 5 * r - 13;
+            if (pos.non_pawn_material(Them) <= RookValueMg)
+                w++;
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity

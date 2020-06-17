@@ -1102,6 +1102,18 @@ moves_loop: // When in check, search starts from here
                && pos.non_pawn_material() <= 2 * RookValueMg)
           extension = 1;
 
+      // If last opponent move increased its staticEval, the move is potentially dangerous and should be extended
+      else if (!rootNode
+               && PvNode
+               && depth < 8
+               && ss->staticEval + (ss-1)->staticEval < -Value(400)
+               && !ss->inCheck
+               && !pos.captured_piece())
+          extension = 1;
+          //sync_cout << pos.fen() << "Lastmove = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+
+
+
       // Castling extension
       if (type_of(move) == CASTLING)
           extension = 1;

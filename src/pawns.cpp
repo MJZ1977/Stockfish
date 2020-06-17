@@ -133,7 +133,7 @@ namespace {
         // full attack info.
         if (passed)
             e->passedPawns[Us] |= s;
-        else if (popcount(neighbours) > popcount(stoppers))
+        else if (popcount(neighbours & forward_ranks_bb(Us, s - Up)) > popcount(stoppers))
             score += make_score(0, 8);
 
         // Score this pawn

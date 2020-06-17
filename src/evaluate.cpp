@@ -626,7 +626,7 @@ namespace {
 
         Score bonus = PassedRank[r];
 
-        if (r > RANK_3)
+        if (r > RANK_3 && pos.non_pawn_material(Them) < 6000)
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;

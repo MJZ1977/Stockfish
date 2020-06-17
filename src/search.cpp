@@ -1106,7 +1106,7 @@ moves_loop: // When in check, search starts from here
       else if (!rootNode
                && PvNode
                && depth < 8
-               && ss->staticEval + (ss-1)->staticEval < -Value(400)
+               && ss->staticEval + (ss-1)->staticEval < -Value(300)
                && !ss->inCheck
                && !pos.captured_piece())
           extension = 1;

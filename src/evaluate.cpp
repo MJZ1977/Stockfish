@@ -593,7 +593,7 @@ namespace {
       return std::min(distance(pos.square<KING>(c), s), 5);
     };
 
-    if (pos.non_pawn_material(Them) < 6000)
+    if (pos.non_pawn_material(Them) > 6000)
        return SCORE_ZERO;
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, blockedPassers, helpers;

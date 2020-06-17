@@ -1105,6 +1105,7 @@ moves_loop: // When in check, search starts from here
       // If last opponent move increased its staticEval, the move is potentially dangerous and should be extended
       else if (!rootNode
                && PvNode
+               && move == ttMove
                && depth < 8
                && ss->staticEval + (ss-1)->staticEval < -Value(400)
                && !ss->inCheck

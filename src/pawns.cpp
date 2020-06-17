@@ -134,7 +134,7 @@ namespace {
         if (passed)
             e->passedPawns[Us] |= s;
         else if (popcount(neighbours & forward_ranks_bb(Us, s - Up)) > popcount(stoppers))
-            score += make_score(0, 8);
+            score += make_score(0, 6);
 
         // Score this pawn
         if (support | phalanx)

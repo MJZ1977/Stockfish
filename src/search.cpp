@@ -1104,13 +1104,15 @@ moves_loop: // When in check, search starts from here
 
       // If last opponent move increased its staticEval, the move is potentially dangerous and should be extended
       else if (!rootNode
-               && PvNode
-               && depth < 6
+               && move == ttMove
+               && depth < 8
                && ss->staticEval + (ss-1)->staticEval < -Value(240)
                && !ss->inCheck
                && !pos.captured_piece())
           extension = 1;
-          //sync_cout << pos.fen() << "Lastmove = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+          /*sync_cout << pos.fen() 
+                    << " - ttMove = " << UCI::move(ttMove, pos.is_chess960())
+                    << " - Lastmove = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;*/
 
 
 

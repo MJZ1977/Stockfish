@@ -88,7 +88,7 @@ namespace {
 
     int Coef_cplx = 1;
     int Coef_SF = 1;
-    TUNE(SetRange(-40,40),Coef_cplx, SetRange(-6,6),Coef_cplx);
+    TUNE(SetRange(-40,40),Coef_cplx, SetRange(-6,6),Coef_SF);
 
 
 #define S(mg, eg) make_score(mg, eg)

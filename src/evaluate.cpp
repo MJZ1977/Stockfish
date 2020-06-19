@@ -86,6 +86,11 @@ namespace {
   constexpr int BishopSafeCheck = 645;
   constexpr int KnightSafeCheck = 792;
 
+    int Coef_cplx = 1;
+    int Coef_SF = 1;
+    TUNE(SetRange(-20,20),Coef_cplx, SetRange(-6,6),Coef_cplx);
+
+
 #define S(mg, eg) make_score(mg, eg)
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -735,6 +740,9 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    Color strongSide = eg_value(score) > VALUE_DRAW ? WHITE : BLACK;
+    bool materialAdvtg = (pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide)) > 200;
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
@@ -743,6 +751,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
+                    + Coef_cplx * materialAdvtg
                     -110 ;
 
     Value mg = mg_value(score);
@@ -759,7 +768,6 @@ namespace {
 
     // Compute the scale factor for the winning side
 
-    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
@@ -774,7 +782,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide) + Coef_SF * materialAdvtg);
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

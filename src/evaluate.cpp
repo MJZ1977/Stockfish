@@ -86,11 +86,6 @@ namespace {
   constexpr int BishopSafeCheck = 645;
   constexpr int KnightSafeCheck = 792;
 
-    int Coef_cplx = 1;
-    int Coef_SF = 1;
-    TUNE(SetRange(-40,40),Coef_cplx, SetRange(-6,6),Coef_SF);
-
-
 #define S(mg, eg) make_score(mg, eg)
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -751,7 +746,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    + Coef_cplx * materialAdvtg
+                    -  5 * materialAdvtg
                     -110 ;
 
     Value mg = mg_value(score);
@@ -782,7 +777,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide) + Coef_SF * materialAdvtg);
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

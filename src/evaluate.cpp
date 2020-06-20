@@ -180,7 +180,6 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
-    bool unclear;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -234,7 +233,6 @@ namespace {
     // Squares occupied by those pawns, by our king or queen, by blockers to attacks on our king
     // or controlled by enemy pawns are excluded from the mobility area.
     mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pos.blockers_for_king(Us) | pe->pawn_attacks(Them));
-    unclear = false;
 
     // Initialize attackedBy[] for king and pawns
     attackedBy[Us][KING] = attacks_bb<KING>(ksq);
@@ -484,9 +482,6 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
 
-    //if (mg_value(score) < -Value(300))
-    //    unclear = true;
-
     if (T)
         Trace::add(KING, Us, score);
 
@@ -674,9 +669,6 @@ namespace {
         score += bonus - PassedFile * edge_distance(file_of(s));
     }
 
-    //if (mg_value(score) < -Value(300))
-    //    unclear = true;
-
     if (T)
         Trace::add(PASSED, Us, score);
 
@@ -832,7 +824,6 @@ namespace {
        return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here
-    //unclear = false;
 
     initialize<WHITE>();
     initialize<BLACK>();
@@ -872,7 +863,7 @@ namespace {
 
     // Side to move point of view
     v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
-    if (unclear)
+    if (pos.non_pawn_material() > 8000 && abs(mg_value(score) - eg_value(score)) > Value(400))
        v += 3;
 
     return v;

@@ -790,7 +790,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / 512;
+            int bonus = 0;-(ss-1)->statScore / 512;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -800,6 +800,8 @@ namespace {
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
 
+    if (ss->staticEval % 16 == 3)
+        sync_cout << pos.fen() << sync_endl;
     // Step 7. Razoring (~1 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth == 1

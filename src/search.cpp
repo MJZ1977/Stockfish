@@ -1089,7 +1089,7 @@ moves_loop: // When in check, search starts from here
      // if position is unclear, extend ttMove
      else if (move == ttMove
               && ss->staticEval % 16 == 1 
-              && depth < 12
+              && depth < 5
               && ss->ply < thisThread->rootDepth * 2)	//to avoid long searchs
           extension = 1;
 

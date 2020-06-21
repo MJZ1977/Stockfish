@@ -1164,7 +1164,7 @@ moves_loop: // When in check, search starts from here
               r -= 2;
           
           // if position is unclear, less reduction in variants
-          if (ss->staticEval % 16 == 3 && depth < 12)
+          if (ss->staticEval % 16 == 3 && depth < 7)
              r--;
 
           if (moveCountPruning && !formerPv)

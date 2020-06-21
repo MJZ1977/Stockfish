@@ -941,6 +941,8 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    //if (ss->staticEval % 16 == 3)
+    //   sync_cout << pos.fen() << sync_endl;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);

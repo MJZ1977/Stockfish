@@ -940,7 +940,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    //if (ss->staticEval % 16 == 3)
+    //if (ss->staticEval % 16 == 1)
     //   sync_cout << pos.fen() << sync_endl;
 
     // Mark this node as being searched
@@ -1086,6 +1086,13 @@ moves_loop: // When in check, search starts from here
           }
       }
 
+     // if position is unclear, extend ttMove
+     else if (move == ttMove
+              && ss->staticEval % 16 == 1 
+              && depth < 12
+              && ss->ply < thisThread->rootDepth * 2)	//to avoid long searchs
+          extension = 1;
+
       // Check extension (~2 Elo)
       else if (    givesCheck
                && (pos.is_discovery_check_on_king(~us, move) || pos.see_ge(move)))
@@ -1160,10 +1167,6 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2;
           
-          // if position is unclear, less reduction in variants
-          if (ss->staticEval % 16 == 3 && depth < 12)
-             r--;
-
           if (moveCountPruning && !formerPv)
               r++;
 

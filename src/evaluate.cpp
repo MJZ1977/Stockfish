@@ -863,7 +863,7 @@ namespace {
 
     // Side to move point of view
     v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
-    if (pos.non_pawn_material() > 8000 && abs(mg_value(score) - eg_value(score)) > Value(400))
+    if (pos.non_pawn_material() > 8000 && abs(mg_value(score) - eg_value(score)) > Value(300))
        v += 3;
 
     return v;

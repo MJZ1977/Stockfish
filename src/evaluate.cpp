@@ -377,7 +377,7 @@ namespace {
 
             // Bonus for queen on weak square in enemy camp
             if (relative_rank(Us, s) > RANK_4 && (~pe->pawn_attacks_span(Them) & s))
-                score += QueenInfiltration;    
+                score += QueenInfiltration;
         }
     }
     if (T)
@@ -785,6 +785,12 @@ namespace {
     v =  mg * int(me->game_phase())
        + eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sf) / SCALE_FACTOR_NORMAL;
     v /= PHASE_MIDGAME;
+
+    if (abs(v) > Value(300))
+    {
+		if (4 * mg / v >= 3 && 4 * eg / v >= 3)
+		   v += v / 8;
+	}
 
     if (T)
     {

@@ -969,7 +969,7 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 	                                    thisThread->rootMoves.end(), move);
-	      candidateMove = rm.score > alpha - Value(200);
+	      candidateMove = rm.score > alpha - Value(160);
       }
 
       ss->moveCount = ++moveCount;

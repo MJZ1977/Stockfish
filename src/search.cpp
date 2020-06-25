@@ -931,6 +931,7 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    bool candidateMove = false;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -963,6 +964,13 @@ moves_loop: // When in check, search starts from here
       if (rootNode && !std::count(thisThread->rootMoves.begin() + thisThread->pvIdx,
                                   thisThread->rootMoves.begin() + thisThread->pvLast, move))
           continue;
+
+      if (rootNode)
+      {
+          RootMove& rm = *std::find(thisThread->rootMoves.begin(),
+	                                    thisThread->rootMoves.end(), move);
+	      candidateMove = rm.score > alpha - Value(200);
+      }
 
       ss->moveCount = ++moveCount;
 
@@ -1141,7 +1149,8 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR, ~200 Elo). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3
-          &&  moveCount > 1 + 2 * rootNode
+          && moveCount > 1 + 2 * rootNode
+          && !candidateMove
           && (!rootNode || thisThread->best_move_count(move) == 0)
           && (  !captureOrPromotion
               || moveCountPruning
@@ -1301,7 +1310,10 @@ moves_loop: // When in check, search starts from here
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
-              rm.score = -VALUE_INFINITE;
+              rm.score = std::max(-VALUE_INFINITE, rm.score - Value(20));
+
+          //if (candidateMove)
+          //   sync_cout << "move = " << UCI::move(move, pos.is_chess960()) << " - value = " << rm.score << sync_endl;
       }
 
       if (value > bestValue)

@@ -969,7 +969,7 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
 	                                    thisThread->rootMoves.end(), move);
-	      candidateMove = rm.score > alpha - Value(160);
+	      candidateMove = rm.score > alpha - Value(800);
       }
 
       ss->moveCount = ++moveCount;
@@ -1310,7 +1310,7 @@ moves_loop: // When in check, search starts from here
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
-              rm.score = std::max(-VALUE_INFINITE, rm.score - Value(20));
+              rm.score = std::max(-VALUE_INFINITE, rm.score - Value(80));
 
           //if (candidateMove)
           //   sync_cout << "move = " << UCI::move(move, pos.is_chess960()) << " - value = " << rm.score << sync_endl;

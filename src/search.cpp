@@ -944,7 +944,7 @@ moves_loop: // When in check, search starts from here
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     goodTTCapture = ttCapture 
-                 && PieceValue[MG][type_of(movedPiece)] + BishopValueMg < PieceValue[MG][type_of(pos.piece_on(to_sq(move)))] + KnightValueMg;
+                 && PieceValue[MG][type_of(pos.moved_piece(ttMove))] + BishopValueMg < PieceValue[MG][type_of(pos.piece_on(to_sq(ttMove)))] + KnightValueMg;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);

@@ -1043,7 +1043,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 14. Extensions (~75 Elo)
 
-      if (goodTTCapture)
+      if (goodTTCapture && move == ttMove)
          extension = 1;
 
       // Singular extension search (~70 Elo). If all moves but one fail low on a

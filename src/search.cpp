@@ -599,7 +599,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning,
-         ttCapture, singularQuietLMR;
+         ttCapture, singularQuietLMR, goodTTCapture;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -943,6 +943,8 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    goodTTCapture = ttCapture 
+                 && PieceValue[MG][type_of(movedPiece)] + BishopValueMg < PieceValue[MG][type_of(pos.piece_on(to_sq(move)))] + KnightValueMg;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1178,7 +1180,7 @@ moves_loop: // When in check, search starts from here
           {
               // Increase reduction if ttMove is a capture (~5 Elo)
               if (ttCapture)
-                  r++;
+                  r += 1 + goodTTCapture;
 
               // Increase reduction for cut nodes (~10 Elo)
               if (cutNode)

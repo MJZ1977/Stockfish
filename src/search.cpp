@@ -63,6 +63,9 @@ namespace {
 
   constexpr uint64_t TtHitAverageWindow     = 4096;
   constexpr uint64_t TtHitAverageResolution = 1024;
+  int AA = 570;
+  int BB = 248;
+  TUNE(SetRange(400,1200), AA, SetRange(200,300), BB);
 
   // Razor and futility margins
   constexpr int RazorMargin = 527;
@@ -75,7 +78,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 570) / 1024 + (!i && r > 1018);
+    return (r + AA) / 1024 + (!i && r > 1018);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -194,7 +197,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int((24.8 + std::log(Threads.size())) * std::log(i));
+      Reductions[i] = int((double(BB) * 0.1 + std::log(Threads.size())) * std::log(i));
 }
 
 

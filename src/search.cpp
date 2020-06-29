@@ -1391,8 +1391,8 @@ moves_loop: // When in check, search starts from here
     /*if (bestValue <= alpha && (ss-1)->ttPv && !ss->ttPv)
         sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;*/
     if (bestValue <= alpha)
-        ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 4);
-    else if (depth > 4)
+        ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 3);
+    else if (depth > 3)
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))

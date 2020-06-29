@@ -644,7 +644,7 @@ namespace {
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     (ss+1)->ply = ss->ply + 1;
-    //(ss+1)->ttPv = false;
+    (ss+1)->ttPv = false;
     (ss+1)->excludedMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
@@ -1390,7 +1390,10 @@ moves_loop: // When in check, search starts from here
 
     /*if (bestValue <= alpha && (ss-1)->ttPv && !ss->ttPv)
         sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;*/
-    ss->ttPv = ss->ttPv || (bestValue <= alpha && (ss-1)->ttPv && depth > 4);
+    if (bestValue <= alpha)
+        ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 4);
+    else if (depth > 4)
+        ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ss->ttPv,

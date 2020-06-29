@@ -80,12 +80,6 @@ namespace {
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
-  // Penalties for enemy's safe checks
-  constexpr int QueenSafeCheck  = 772;
-  constexpr int RookSafeCheck   = 1084;
-  constexpr int BishopSafeCheck = 645;
-  constexpr int KnightSafeCheck = 792;
-
 #define S(mg, eg) make_score(mg, eg)
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -399,8 +393,7 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
-    Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
+    Bitboard weak, b1, b2, b3, safe;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -416,48 +409,6 @@ namespace {
     safe  = ~pos.pieces(Them);
     safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
 
-    b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
-    b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
-
-    // Enemy rooks checks
-    rookChecks = b1 & safe & attackedBy[Them][ROOK];
-    if (rookChecks)
-        kingDanger += more_than_one(rookChecks) ? RookSafeCheck * 175/100
-                                                : RookSafeCheck;
-    else
-        unsafeChecks |= b1 & attackedBy[Them][ROOK];
-
-    // Enemy queen safe checks: we count them only if they are from squares from
-    // which we can't give a rook check, because rook checks are more valuable.
-    queenChecks =  (b1 | b2)
-                 & attackedBy[Them][QUEEN]
-                 & safe
-                 & ~attackedBy[Us][QUEEN]
-                 & ~rookChecks;
-    if (queenChecks)
-        kingDanger += more_than_one(queenChecks) ? QueenSafeCheck * 145/100
-                                                 : QueenSafeCheck;
-
-    // Enemy bishops checks: we count them only if they are from squares from
-    // which we can't give a queen check, because queen checks are more valuable.
-    bishopChecks =  b2
-                  & attackedBy[Them][BISHOP]
-                  & safe
-                  & ~queenChecks;
-    if (bishopChecks)
-        kingDanger += more_than_one(bishopChecks) ? BishopSafeCheck * 3/2
-                                                  : BishopSafeCheck;
-    else
-        unsafeChecks |= b2 & attackedBy[Them][BISHOP];
-
-    // Enemy knights checks
-    knightChecks = attacks_bb<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
-    if (knightChecks & safe)
-        kingDanger += more_than_one(knightChecks & safe) ? KnightSafeCheck * 162/100
-                                                         : KnightSafeCheck;
-    else
-        unsafeChecks |= knightChecks;
-
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
@@ -469,7 +420,6 @@ namespace {
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
-                 + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8

@@ -140,6 +140,8 @@ namespace {
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
+  constexpr Score KnightAttacks       = S(  3,  3);
+  constexpr Score KnightOnQueen       = S( 16, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 11,  8);
@@ -156,10 +158,6 @@ namespace {
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
   constexpr Score WeakQueen           = S( 56, 15);
-
-  constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score KnightAttacks       = S( 3, 3);
-  //TUNE(SetRange(0, 30), KnightOnQueen, KnightAttacks);
 
 #undef S
 

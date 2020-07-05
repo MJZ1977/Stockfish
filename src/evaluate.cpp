@@ -158,8 +158,8 @@ namespace {
   constexpr Score WeakQueen           = S( 56, 15);
 
   Score KnightOnQueen       = S( 16, 11);
-  Score KnightAttacks       = S( 6, 6);
-  TUNE(SetRange(0, 30), KnightOnQueen, KnightAttacks);
+  Score KnightAttacks       = S( 3, 3);
+  //TUNE(SetRange(0, 30), KnightOnQueen, KnightAttacks);
 
 #undef S
 

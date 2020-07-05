@@ -140,7 +140,6 @@ namespace {
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
-  constexpr Score KnightOnQueen       = S( 16, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 11,  8);
@@ -158,6 +157,9 @@ namespace {
   constexpr Score WeakQueenProtection = S( 14,  0);
   constexpr Score WeakQueen           = S( 56, 15);
 
+  Score KnightOnQueen       = S( 16, 11);
+  Score KnightAttacks       = S( 6, 6);
+  TUNE(SetRange(0, 30), KnightOnQueen, KnightAttacks);
 
 #undef S
 
@@ -581,6 +583,16 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+
+    // Bonus for knight threats on next move
+    b = attackedBy[Us][KNIGHT] & mobilityArea[Us] & ~stronglyProtected;
+    nonPawnEnemies = pos.pieces(Them, QUEEN, ROOK) | pos.pieces(Them, KING);
+    while (b)
+    {
+        int attackCount = popcount(attacks_bb<KNIGHT>(pop_lsb(&b)) & nonPawnEnemies);
+        score += KnightAttacks * (attackCount * attackCount);
+    }
+    
 
     if (T)
         Trace::add(THREAT, Us, score);

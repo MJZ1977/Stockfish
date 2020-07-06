@@ -175,7 +175,7 @@ namespace {
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
-    template<Color Us> Score threats() const;
+    template<Color Us> Score threats(bool closeScore) const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     Value winnable(Score score) const;
@@ -496,7 +496,7 @@ namespace {
   // attacking and the attacked pieces.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::threats() const {
+  Score Evaluation<T>::threats(bool closeScore) const {
 
     constexpr Color     Them     = ~Us;
     constexpr Direction Up       = pawn_push(Us);
@@ -507,6 +507,22 @@ namespace {
 
     // Non-pawn enemies
     nonPawnEnemies = pos.pieces(Them) & ~pos.pieces(PAWN);
+
+    // Protected or unattacked squares
+    safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];
+
+    // Bonus for attacking enemy pieces with our relatively safe pawns
+    b = pos.pieces(Us, PAWN) & safe;
+    b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
+    score += ThreatBySafePawn * popcount(b);
+
+    if (!closeScore)
+    {
+       score += Hanging * popcount(nonPawnEnemies & attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES]);
+       if (T)
+          Trace::add(THREAT, Us, score);
+       return score;
+    }
 
     // Squares strongly protected by the enemy, either because they defend the
     // square with a pawn, or because they defend the square twice and we don't.
@@ -546,14 +562,6 @@ namespace {
        & ~stronglyProtected
        &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(b);
-
-    // Protected or unattacked squares
-    safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];
-
-    // Bonus for attacking enemy pieces with our relatively safe pawns
-    b = pos.pieces(Us, PAWN) & safe;
-    b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
-    score += ThreatBySafePawn * popcount(b);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
@@ -834,7 +842,7 @@ namespace {
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
 
-    bool closeScore = (abs(v) < Value(1200) + pos.non_pawn_material() / 64);
+    bool closeScore = (abs(v) < Value(900) + pos.non_pawn_material() / 64);
 
     // Main evaluation begins here
     initialize<WHITE>();
@@ -851,11 +859,11 @@ namespace {
 
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
+            + threats<WHITE>(closeScore) - threats<BLACK>(closeScore)
             + passed< WHITE>() - passed< BLACK>();
 
     if (closeScore)
-      score += threats<WHITE>() - threats<BLACK>()
-             + space<  WHITE>() - space<  BLACK>();
+      score += space<  WHITE>() - space<  BLACK>();
 
     // Derive single value from mg and eg parts of score
     v = winnable(score);

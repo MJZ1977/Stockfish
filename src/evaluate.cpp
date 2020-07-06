@@ -176,7 +176,7 @@ namespace {
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
     template<Color Us> Score threats(bool closeScore) const;
-    template<Color Us> Score passed() const;
+    template<Color Us> Score passed(bool closeScore) const;
     template<Color Us> Score space() const;
     Value winnable(Score score) const;
 
@@ -600,11 +600,12 @@ namespace {
   // pawns of the given color.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::passed() const {
+  Score Evaluation<T>::passed(bool closeScore) const {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
+    constexpr Bitboard  LastRanks = (Us == WHITE ? Rank6BB | Rank7BB : Rank2BB | Rank3BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -614,6 +615,8 @@ namespace {
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
+    if (!closeScore)
+       b &= LastRanks;
 
     blockedPassers = b & shift<Down>(pos.pieces(Them, PAWN));
     if (blockedPassers)
@@ -860,7 +863,7 @@ namespace {
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>(closeScore) - threats<BLACK>(closeScore)
-            + passed< WHITE>() - passed< BLACK>();
+            + passed< WHITE>(closeScore) - passed< BLACK>(closeScore);
 
     if (closeScore)
       score += space<  WHITE>() - space<  BLACK>();

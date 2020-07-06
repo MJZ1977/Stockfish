@@ -842,7 +842,7 @@ namespace {
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
 
-    bool closeScore = (abs(v) < Value(900) + pos.non_pawn_material() / 64);
+    bool closeScore = (abs(v) < Value(820) + pos.non_pawn_material() / 64);
 
     // Main evaluation begins here
     initialize<WHITE>();

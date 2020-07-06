@@ -834,6 +834,8 @@ namespace {
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
 
+    bool closeScore = (abs(v) < Value(1000) + pos.non_pawn_material() / 64);
+
     // Main evaluation begins here
     initialize<WHITE>();
     initialize<BLACK>();
@@ -849,9 +851,11 @@ namespace {
 
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+            + passed< WHITE>() - passed< BLACK>();
+
+    if (closeScore)
+      score += threats<WHITE>() - threats<BLACK>()
+             + space<  WHITE>() - space<  BLACK>();
 
     // Derive single value from mg and eg parts of score
     v = winnable(score);

@@ -943,7 +943,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    goodStaticEval = ss->staticEval > beta + Value(300) && !ss->inCheck;
+    goodStaticEval = ss->staticEval > beta + Value(360) && !ss->inCheck;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);

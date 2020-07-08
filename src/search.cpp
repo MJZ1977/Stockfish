@@ -1369,8 +1369,9 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
-    /*if (bestValue < alpha && goodStaticEval)
-        sync_cout << pos.fen() << " - static = " << ss->staticEval << " - a = " << alpha
+    if (bestValue < alpha && goodStaticEval && depth > 5)
+        ss->staticEval = alpha;
+    /*    sync_cout << pos.fen() << " - static = " << ss->staticEval << " - a = " << alpha
                   << " - depth = " << depth << " - mct = " << moveCount
                   << " - bestmove = " << UCI::move(excludedMove, pos.is_chess960()) << sync_endl;*/
 

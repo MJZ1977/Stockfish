@@ -605,7 +605,7 @@ namespace {
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
-    constexpr Bitboard  LastRanks = (Us == WHITE ? Rank6BB | Rank7BB : Rank2BB | Rank3BB);
+    constexpr Bitboard  LastRanks = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB : Rank2BB | Rank3BB | Rank4BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -845,7 +845,7 @@ namespace {
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
 
-    bool closeScore = (abs(v) < Value(900) + pos.non_pawn_material() / 64);
+    bool closeScore = (abs(v) < Value(1000) + pos.non_pawn_material() / 64);
 
     // Main evaluation begins here
     initialize<WHITE>();

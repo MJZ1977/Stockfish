@@ -599,7 +599,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning,
-         ttCapture, singularQuietLMR;
+         ttCapture, singularQuietLMR, goodStaticEval;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -943,6 +943,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    goodStaticEval = ss->staticEval > beta + Value(300) && !ss->inCheck;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -987,7 +988,8 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = moveCount >= futility_move_count(improving, depth)
+                             && !goodStaticEval;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
@@ -1366,6 +1368,11 @@ moves_loop: // When in check, search starts from here
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
+
+    /*if (bestValue < alpha && ss->staticEval > beta + Value(400) && !ss->inCheck)
+        sync_cout << pos.fen() << " - static = " << ss->staticEval << " - a = " << alpha
+                  << " - depth = " << depth << " - mct = " << moveCount
+                  << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;*/
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

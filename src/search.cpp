@@ -943,7 +943,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-    goodStaticEval = ss->staticEval > beta + Value(260) && !ss->inCheck && !excludedMove;
+    goodStaticEval = ss->staticEval > beta + Value(360) && !ss->inCheck && !excludedMove;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1371,7 +1371,8 @@ moves_loop: // When in check, search starts from here
 
     if (bestValue < alpha && goodStaticEval && depth > 5)
         ss->staticEval = alpha;
-    /*    sync_cout << pos.fen() << " - static = " << ss->staticEval << " - a = " << alpha
+    /*if (bestValue < alpha && goodStaticEval)
+        sync_cout << pos.fen() << " - static = " << ss->staticEval << " - a = " << alpha
                   << " - depth = " << depth << " - mct = " << moveCount
                   << " - bestmove = " << UCI::move(excludedMove, pos.is_chess960()) << sync_endl;*/
 

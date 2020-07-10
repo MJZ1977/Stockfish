@@ -153,7 +153,7 @@ namespace {
   constexpr Score SliderOnQueen       = S( 60, 18);
   constexpr Score ThreatByKing        = S( 24, 89);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
-  constexpr Score ThreatBySafePawn    = S( 43, 23);
+  constexpr Score ThreatBySafePawn    = S( 85, 46);
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
   constexpr Score WeakQueen           = S( 56, 15);
@@ -553,7 +553,7 @@ namespace {
     // Bonus for attacking enemy pieces with our relatively safe pawns
     b = pos.pieces(Us, PAWN) & safe;
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
-    score += ThreatBySafePawn * std::max(0, 5 * popcount(b) - 1);
+    score += ThreatBySafePawn * std::max(0, 3 * popcount(b) - 1);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

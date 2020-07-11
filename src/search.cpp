@@ -1184,7 +1184,7 @@ moves_loop: // When in check, search starts from here
           if (ss->ttPv)
               r -= 2;
           else if (!rootNode && (ss-1)->ttPv)
-              r -= 2 * (thisThread->nodes % 4 == 1);
+              r -= 2 * (thisThread->nodes % 16 == 1);
 
           if (moveCountPruning && !formerPv)
               r++;

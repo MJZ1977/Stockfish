@@ -1183,7 +1183,7 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ss->ttPv)
               r -= 2;
-          else if (!rootNode && (ss-1)->ttPv)
+          else if ((ss-1)->ttPv)
               r -= 2 * (thisThread->nodes % 16 == 1);
 
           if (moveCountPruning && !formerPv)

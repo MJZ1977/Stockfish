@@ -644,7 +644,7 @@ namespace {
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     (ss+1)->ply = ss->ply + 1;
-    (ss+1)->excludedMove = bestMove = MOVE_NONE;
+    (ss+1)->excludedMove = (ss+1)->OppThreatMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
@@ -1385,7 +1385,15 @@ moves_loop: // When in check, search starts from here
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
+    
+    if (PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PieceValue[EG][pos.piece_on(from_sq(bestMove))] + 300 
+        && (ss-1)->currentMove == MOVE_NULL)
+           ss->OppThreatMove = bestMove;
 
+    if (ss->OppThreatMove)
+       sync_cout << pos.fen() 
+                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
+                  << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :
@@ -1690,7 +1698,9 @@ moves_loop: // When in check, search starts from here
         }
     }
     else
+    {
         captureHistory[moved_piece][to_sq(bestMove)][captured] << bonus1;
+    }
 
     // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
     if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))

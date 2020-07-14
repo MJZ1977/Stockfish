@@ -1397,8 +1397,7 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
     
-    if (PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PieceValue[EG][pos.piece_on(from_sq(bestMove))] + 300 
-        && (ss-1)->currentMove == MOVE_NULL)
+    if (pos.capture_or_promotion(bestMove) && (ss-1)->currentMove == MOVE_NULL)
            (ss-1)->OppThreatMove = bestMove;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
@@ -1705,9 +1704,7 @@ moves_loop: // When in check, search starts from here
         }
     }
     else
-    {
         captureHistory[moved_piece][to_sq(bestMove)][captured] << bonus1;
-    }
 
     // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
     if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))

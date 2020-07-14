@@ -124,7 +124,7 @@ void MovePicker::score() {
                        - (1 << 28);
       }
       if (oppThreatMove && (to_sq(m) == from_sq(oppThreatMove) || from_sq(m) == to_sq(oppThreatMove)))
-          m.value += 8000;
+          m.value += 16000;
    }
 }
 

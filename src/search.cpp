@@ -643,8 +643,9 @@ namespace {
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
+    ss->OppThreatMove = MOVE_NONE;
     (ss+1)->ply = ss->ply + 1;
-    (ss+1)->excludedMove = (ss+1)->OppThreatMove = bestMove = MOVE_NONE;
+    (ss+1)->excludedMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
@@ -960,6 +961,7 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers,
+                                      ss->OppThreatMove,
                                       ss->ply);
 
     value = bestValue;
@@ -968,6 +970,10 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
+    /*if (ss->OppThreatMove)
+       sync_cout << pos.fen() 
+                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
+                  << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;*/
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -987,6 +993,8 @@ moves_loop: // When in check, search starts from here
           continue;
 
       ss->moveCount = ++moveCount;
+      //if (ss->OppThreatMove && moveCount < 4)
+      //    sync_cout  << " currmove " << moveCount << " " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth
@@ -1391,12 +1399,8 @@ moves_loop: // When in check, search starts from here
     
     if (PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PieceValue[EG][pos.piece_on(from_sq(bestMove))] + 300 
         && (ss-1)->currentMove == MOVE_NULL)
-           ss->OppThreatMove = bestMove;
+           (ss-1)->OppThreatMove = bestMove;
 
-    if (ss->OppThreatMove)
-       sync_cout << pos.fen() 
-                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
-                  << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,
                   bestValue >= beta ? BOUND_LOWER :

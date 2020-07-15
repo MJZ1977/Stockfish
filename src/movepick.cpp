@@ -123,8 +123,8 @@ void MovePicker::score() {
                        + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                        - (1 << 28);
       }
-      if (depth < 7 && oppThreatMove && (to_sq(m) == from_sq(oppThreatMove) || from_sq(m) == to_sq(oppThreatMove)))
-          m.value += 16000 - 2000 * depth;
+      if (oppThreatMove && (to_sq(m) == from_sq(oppThreatMove) || from_sq(m) == to_sq(oppThreatMove)))
+          m.value += 1000 * (1 + depth);
    }
 }
 

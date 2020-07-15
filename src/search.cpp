@@ -967,7 +967,7 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
-    /*if (ss->OppThreatMove)
+    /*if (ss->OppThreatMove && depth < 8 && !excludedMove)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
                   << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;*/
@@ -990,7 +990,7 @@ moves_loop: // When in check, search starts from here
           continue;
 
       ss->moveCount = ++moveCount;
-      //if (ss->OppThreatMove && moveCount < 4)
+      //if (ss->OppThreatMove && moveCount < 6 && depth < 8 && !excludedMove)
       //    sync_cout  << " currmove " << moveCount << " " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)

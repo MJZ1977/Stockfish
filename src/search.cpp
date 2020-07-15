@@ -951,7 +951,7 @@ moves_loop: // When in check, search starts from here
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
     int MCP_limit = futility_move_count(improving, depth);
-    if (!ss->inCheck && !excludedMove)
+    if (depth < 7 !ss->inCheck && !excludedMove)
         MCP_limit += std::max(int(ss->staticEval - beta), 0) / 64;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,

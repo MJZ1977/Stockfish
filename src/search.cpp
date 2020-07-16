@@ -955,6 +955,11 @@ moves_loop: // When in check, search starts from here
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
     Move retreatMove = thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)];
+    if (ss->killers[0] != retreatMove)
+    {
+        ss->killers[1] = ss->killers[0];
+        ss->killers[0] = retreatMove;
+    }
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -962,7 +967,6 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers,
-                                      retreatMove,
                                       ss->ply);
 
     value = bestValue;
@@ -971,11 +975,11 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
-    if (ss->OppThreatMove && depth < 8 && !excludedMove)
+    /*if (ss->OppThreatMove && depth < 8 && !excludedMove)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
                   << " - counter = " << UCI::move(countermove, pos.is_chess960())
-                  << " - retreat = " << UCI::move(retreatMove, pos.is_chess960()) << sync_endl;
+                  << " - retreat = " << UCI::move(retreatMove, pos.is_chess960()) << sync_endl;*/
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

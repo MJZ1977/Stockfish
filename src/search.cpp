@@ -953,13 +953,15 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-4)->continuationHistory,
                                           nullptr                   , (ss-6)->continuationHistory };
 
-    Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
-    Move retreatMove = thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)];
-    if (retreatMove && ss->killers[0] != retreatMove)
+    Move countermove = ss->OppThreatMove? 
+             thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] : MOVE_NONE;
+    if (countermove == MOVE_NONE)
+        countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    /*if (retreatMove && ss->killers[0] != retreatMove)
     {
         ss->killers[1] = ss->killers[0];
         ss->killers[0] = retreatMove;
-    }
+    }*/
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -975,7 +977,7 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
-    /*if (ss->OppThreatMove && depth < 8 && !excludedMove)
+    /*if (ss->OppThreatMove)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
                   << " - counter = " << UCI::move(countermove, pos.is_chess960())
@@ -1403,7 +1405,9 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
     
-    if (pos.capture_or_promotion(bestMove) && (ss-1)->currentMove == MOVE_NULL)
+    if (pos.capture_or_promotion(bestMove) 
+     && (ss-1)->currentMove == MOVE_NULL
+     && PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PawnValueEg)
            (ss-1)->OppThreatMove = bestMove;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
@@ -1698,11 +1702,11 @@ moves_loop: // When in check, search starts from here
     bonus2 = bestValue > beta + PawnValueMg ? bonus1               // larger bonus
                                             : stat_bonus(depth);   // smaller bonus
 
-    if (ss->OppThreatMove && !ss->excludedMove && to_sq(ss->OppThreatMove) == from_sq(bestMove))
-        thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] = bestMove;
     if (!pos.capture_or_promotion(bestMove))
     {
-        update_quiet_stats(pos, ss, bestMove, bonus2, depth);
+       if (ss->OppThreatMove && !ss->excludedMove && to_sq(ss->OppThreatMove) == from_sq(bestMove))
+           thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] = bestMove;
+       update_quiet_stats(pos, ss, bestMove, bonus2, depth);
 
         // Decrease all the non-best quiet moves
         for (int i = 0; i < quietCount; ++i)

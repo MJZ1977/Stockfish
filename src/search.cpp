@@ -951,6 +951,7 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    Move retreatMove = thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)];
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -958,7 +959,7 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers,
-                                      ss->OppThreatMove,
+                                      retreatMove,
                                       ss->ply);
 
     value = bestValue;
@@ -970,7 +971,7 @@ moves_loop: // When in check, search starts from here
     /*if (ss->OppThreatMove && depth < 8 && !excludedMove)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
-                  << " - bestmove = " << UCI::move(bestMove, pos.is_chess960()) << sync_endl;*/
+                  << " - bestmove = " << UCI::move(retreatMove, pos.is_chess960()) << sync_endl;*/
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1689,6 +1690,8 @@ moves_loop: // When in check, search starts from here
     bonus2 = bestValue > beta + PawnValueMg ? bonus1               // larger bonus
                                             : stat_bonus(depth);   // smaller bonus
 
+    if (ss->OppThreatMove && !ss->excludedMove && to_sq(ss->OppThreatMove) == from_sq(bestMove))
+        thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] = bestMove;
     if (!pos.capture_or_promotion(bestMove))
     {
         update_quiet_stats(pos, ss, bestMove, bonus2, depth);

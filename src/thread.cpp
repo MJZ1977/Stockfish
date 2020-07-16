@@ -69,6 +69,7 @@ int Thread::best_move_count(Move move) const {
 void Thread::clear() {
 
   counterMoves.fill(MOVE_NONE);
+  counterMoves2.fill(MOVE_NONE);
   mainHistory.fill(0);
   lowPlyHistory.fill(0);
   captureHistory.fill(0);

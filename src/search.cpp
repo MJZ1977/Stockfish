@@ -955,7 +955,7 @@ moves_loop: // When in check, search starts from here
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
     Move retreatMove = thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)];
-    if (ss->killers[0] != retreatMove)
+    if (retreatMove && ss->killers[0] != retreatMove)
     {
         ss->killers[1] = ss->killers[0];
         ss->killers[0] = retreatMove;

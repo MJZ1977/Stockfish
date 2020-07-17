@@ -954,8 +954,9 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
-    Move retreatMove = ss->OppThreatMove? 
-             thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] : MOVE_NONE;
+    if (!ttMove)
+         ttMove = ss->OppThreatMove? 
+                 thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] : MOVE_NONE;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -971,7 +972,7 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
-    /*if (ss->OppThreatMove)
+    /*if (retreatMove && !ttMove)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960())
                   << " - counter = " << UCI::move(countermove, pos.is_chess960())
@@ -1190,10 +1191,6 @@ moves_loop: // When in check, search starts from here
           // Reduction if other threads are searching this position
           if (th.marked())
               r++;
-
-          // Decrease reduction for retreat moves
-          if (move == retreatMove)
-              r--;
 
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ttPv)

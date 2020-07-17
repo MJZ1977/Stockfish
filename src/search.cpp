@@ -953,15 +953,9 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-4)->continuationHistory,
                                           nullptr                   , (ss-6)->continuationHistory };
 
-    Move countermove = ss->OppThreatMove? 
+    Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    Move retreatMove = ss->OppThreatMove? 
              thisThread->counterMoves2[pos.piece_on(to_sq(ss->OppThreatMove))][to_sq(ss->OppThreatMove)] : MOVE_NONE;
-    if (countermove == MOVE_NONE)
-        countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
-    /*if (retreatMove && ss->killers[0] != retreatMove)
-    {
-        ss->killers[1] = ss->killers[0];
-        ss->killers[0] = retreatMove;
-    }*/
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -1196,6 +1190,10 @@ moves_loop: // When in check, search starts from here
           // Reduction if other threads are searching this position
           if (th.marked())
               r++;
+
+          // Decrease reduction for retreat moves
+          if (move == retreatMove)
+              r--;
 
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ttPv)

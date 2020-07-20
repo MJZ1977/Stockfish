@@ -284,6 +284,29 @@ template ExtMove* generate<CAPTURES>(const Position&, ExtMove*);
 template ExtMove* generate<QUIETS>(const Position&, ExtMove*);
 template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*);
 
+// Generate quiet moves given an initial square Sq
+ExtMove* generate_QbySq(const Position& pos, Square sq, ExtMove* moveList) {
+
+   Color us = pos.side_to_move();
+   PieceType Ptype = type_of(pos.piece_on(sq));
+
+   if (us == WHITE)
+       switch (Ptype) {
+         case KNIGHT : moveList = generate_moves<WHITE, KNIGHT, false>(pos, moveList, ~pos.pieces());
+         case BISHOP : moveList = generate_moves<WHITE, BISHOP, false>(pos, moveList, ~pos.pieces());
+         case ROOK   : moveList = generate_moves<WHITE, ROOK  , false>(pos, moveList, ~pos.pieces());
+         case QUEEN  : moveList = generate_moves<WHITE, QUEEN , false>(pos, moveList, ~pos.pieces());
+      }
+    else
+      switch (Ptype) {
+         case KNIGHT : moveList = generate_moves<BLACK, KNIGHT, false>(pos, moveList, ~pos.pieces());
+         case BISHOP : moveList = generate_moves<BLACK, BISHOP, false>(pos, moveList, ~pos.pieces());
+         case ROOK   : moveList = generate_moves<BLACK, ROOK  , false>(pos, moveList, ~pos.pieces());
+         case QUEEN  : moveList = generate_moves<BLACK, QUEEN , false>(pos, moveList, ~pos.pieces());
+      }
+
+   return moveList;
+}
 
 /// generate<QUIET_CHECKS> generates all pseudo-legal non-captures.
 /// Returns a pointer to the end of the move list.

@@ -957,11 +957,11 @@ moves_loop: // When in check, search starts from here
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
 
-    if (threatMove)
+    /*if (threatMove)
        sync_cout << pos.fen()
                   << " - threatMove = " << UCI::move(threatMove, pos.is_chess960())
                   << " - counter = " << UCI::move(countermove, pos.is_chess960())
-                  << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;
+                  << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;*/
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -980,7 +980,7 @@ moves_loop: // When in check, search starts from here
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
-    while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
+    while ((move = mp.next_move(moveCountPruning, threatMove)) != MOVE_NONE)
     {
       assert(is_ok(move));
 

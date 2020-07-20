@@ -594,7 +594,7 @@ namespace {
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, threatMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probcutBeta;
     bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
@@ -607,6 +607,7 @@ namespace {
     Thread* thisThread = pos.this_thread();
     ss->inCheck = pos.checkers();
     priorCapture = pos.captured_piece();
+    threatMove = MOVE_NONE;
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
@@ -839,10 +840,12 @@ namespace {
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
+        (ss+1)->currentMove = MOVE_NONE;
 
         pos.do_null_move(st);
 
         Value nullValue = -search<NonPV>(pos, ss+1, -beta, -beta+1, depth-R, !cutNode);
+        threatMove = (ss+1)->currentMove;
 
         pos.undo_null_move();
 
@@ -953,6 +956,12 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-6)->continuationHistory };
 
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+
+    if (threatMove)
+       sync_cout << pos.fen()
+                  << " - threatMove = " << UCI::move(threatMove, pos.is_chess960())
+                  << " - counter = " << UCI::move(countermove, pos.is_chess960())
+                  << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->lowPlyHistory,
@@ -1388,6 +1397,14 @@ moves_loop: // When in check, search starts from here
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
+
+    if (  (ss-1)->currentMove == MOVE_NULL
+       && pos.capture_or_promotion(bestMove)
+       && PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PawnValueEg)
+             ss->currentMove = bestMove;
+    else if ((ss-1)->currentMove == MOVE_NULL)
+             ss->currentMove = MOVE_NONE;
+
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ttPv,

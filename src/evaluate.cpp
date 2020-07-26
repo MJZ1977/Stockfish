@@ -119,6 +119,11 @@ namespace {
     S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
+  int PassedOverseer[PIECE_TYPE_NB] = {
+    0, 0, 0, 0, 0, 0
+  };
+  TUNE(SetRange(-60,60), PassedOverseer);
+
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
   constexpr Score RookOnFile[] = { S(19, 7), S(48, 29) };
@@ -650,6 +655,14 @@ namespace {
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+
+            // If opponent have only 2 remaining non pawn pieces, adjust in function of these pieces
+            bb = pos.pieces(Them) & ~pos.pieces(Them, PAWN, KING);
+            if (popcount(bb) <= 2)
+            {
+                while (bb)
+                   bonus += make_score(0, PassedOverseer[type_of(pos.piece_on(pop_lsb(&bb)))]);
+            } 
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

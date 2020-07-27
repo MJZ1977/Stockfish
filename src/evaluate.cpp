@@ -661,8 +661,8 @@ namespace {
             if (popcount(bb) <= 2)
             {
                 while (bb)
-                   bonus += make_score(0, PassedOverseer[type_of(pos.piece_on(pop_lsb(&bb)))]);
-            } 
+                   bonus += make_score(0, (PassedOverseer[type_of(pos.piece_on(pop_lsb(&bb)))] * r) / 4);
+            }
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

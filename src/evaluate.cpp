@@ -119,15 +119,15 @@ namespace {
     S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
-  int PassedOverseer[PIECE_TYPE_NB] = {
-    0, 0, 0, 0, 0, 0
+  constexpr int PassedOverseer[PIECE_TYPE_NB] = {
+    0, 0, 5, 5, 1, -8
   };
-  TUNE(SetRange(-60,60), PassedOverseer);
+  /*TUNE(SetRange(-60,60), PassedOverseer);
   int kk1 = 280;
   int kk2 = 160;
   int kk3 = 72;
   int kk4 = 40;
-  TUNE(kk1, kk2, kk3, kk4);
+  TUNE(kk1, kk2, kk3, kk4);*/
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
@@ -683,16 +683,16 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? kk1 :
-                        !(unsafeSquares & squaresToQueen) ? kk2 :
-                        !(unsafeSquares & blockSq)        ? kk3 :
+                int k = !unsafeSquares                    ? 34 :
+                        !(unsafeSquares & squaresToQueen) ? 21 :
+                        !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;
 
                 // Assign a larger bonus if the block square is defended
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
-                    k += kk4;
+                    k += 5;
 
-                bonus += make_score(k * w / 8, k * w / 8);
+                bonus += make_score(k * w, k * w);
             }
         } // r > RANK_3
 

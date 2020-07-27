@@ -119,10 +119,10 @@ namespace {
     S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
-  int PassedOverseer[PIECE_TYPE_NB] = {
-    0, 0, 0, 0, 0, 0
+  constexpr int PassedOverseer[PIECE_TYPE_NB] = {
+    0, 0, 6, 0, 0, -10
   };
-  TUNE(SetRange(-60,60), PassedOverseer);
+  // TUNE(SetRange(-60,60), PassedOverseer);
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
@@ -660,9 +660,10 @@ namespace {
             bb = pos.pieces(Them) & ~pos.pieces(Them, PAWN, KING);
             if (popcount(bb) <= 2)
             {
+                bb &= pos.pieces(Them, QUEEN, KNIGHT);
                 while (bb)
                    bonus += make_score(0, PassedOverseer[type_of(pos.piece_on(pop_lsb(&bb)))]);
-            } 
+            }
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

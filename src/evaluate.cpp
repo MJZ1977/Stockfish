@@ -120,7 +120,7 @@ namespace {
   };
 
   constexpr int PassedOverseer[PIECE_TYPE_NB] = {
-    0, 0, 5, 5, 1, -8
+    0, 0, 4, 7, 4, -10
   };
   /*TUNE(SetRange(-60,60), PassedOverseer);
   int kk1 = 280;
@@ -684,7 +684,7 @@ namespace {
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
                 int k = !unsafeSquares                    ? 34 :
-                        !(unsafeSquares & squaresToQueen) ? 21 :
+                        !(unsafeSquares & squaresToQueen) ? 20 :
                         !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;
 

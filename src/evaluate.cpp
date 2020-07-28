@@ -120,7 +120,7 @@ namespace {
   };
 
   constexpr int PassedOverseer[PIECE_TYPE_NB] = {
-    0, 0, 4, 8, 4, -10
+    0, 0, 3, 6, 3, -15
   };
   /*TUNE(SetRange(-60,60), PassedOverseer);
   int kk1 = 280;
@@ -683,7 +683,7 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? 31 :
+                int k = !unsafeSquares                    ? 34 :
                         !(unsafeSquares & squaresToQueen) ? 20 :
                         !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;

@@ -618,6 +618,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, blockedPassers, helpers;
     Score score = SCORE_ZERO;
+    bool OCB = pos.opposite_bishops();
 
     b = pe->passed_pawns(Us);
 
@@ -658,8 +659,8 @@ namespace {
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
 
             // If OCB, bonus if our king is much closer to blockSq + Up
-            if (pos.opposite_bishops())
-                bonus += make_score(0, 40 * std::max(0, king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up) - 1));
+            if (OCB)
+                bonus += make_score(0, std::max(0, king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up) - 1) * 4 * w);
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

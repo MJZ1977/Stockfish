@@ -120,7 +120,7 @@ namespace {
   };
 
   constexpr int PassedOverseer[PIECE_TYPE_NB] = {
-    0, 0, 3, 8, 3, -15
+    0, 0, 3, 4, 3, -15
   };
   /*TUNE(SetRange(-60,60), PassedOverseer);
   int kk1 = 280;

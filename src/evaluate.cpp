@@ -659,7 +659,7 @@ namespace {
 
             // If OCB, bonus if our king is much closer to blockSq + Up
             if (pos.opposite_bishops())
-                bonus += make_score(0, 30 * std::max(0, king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up) - 1));
+                bonus += make_score(0, 40 * std::max(0, king_proximity(Them, blockSq + Up) - king_proximity(Us, blockSq + Up) - 1));
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

@@ -618,7 +618,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, blockedPassers, helpers;
     Score score = SCORE_ZERO;
-    bool OCB = pos.opposite_bishops();
+    bool OCB = pos.opposite_bishops() && pos.non_pawn_material() == 2 * BishopValueMg;
 
     b = pe->passed_pawns(Us);
 

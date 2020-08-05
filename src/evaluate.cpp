@@ -940,7 +940,9 @@ make_v:
 
 Value Eval::evaluate(const Position& pos) {
 
-  if (Eval::useNNUE)
+  Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
+  balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
+  if (Eval::useNNUE && abs(balance) < Value(600))
       return NNUE::evaluate(pos);
   else
       return Evaluation<NO_TRACE>(pos).value();
@@ -960,8 +962,10 @@ std::string Eval::trace(const Position& pos) {
   ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
 
   Value v;
+  Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
+  balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
 
-  if (Eval::useNNUE)
+  if (Eval::useNNUE && abs(balance) < Value(600))
   {
       v = NNUE::evaluate(pos);
   }

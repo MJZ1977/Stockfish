@@ -942,7 +942,7 @@ Value Eval::evaluate(const Position& pos) {
 
   Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
   balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
-  if (Eval::useNNUE && abs(balance) < Value(600))
+  if (Eval::useNNUE && abs(balance) < Value(400))
       return NNUE::evaluate(pos);
   else
       return Evaluation<NO_TRACE>(pos).value();
@@ -965,7 +965,7 @@ std::string Eval::trace(const Position& pos) {
   Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
   balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
 
-  if (Eval::useNNUE && abs(balance) < Value(600))
+  if (Eval::useNNUE && abs(balance) < Value(400))
   {
       v = NNUE::evaluate(pos);
   }

@@ -110,6 +110,7 @@ namespace {
   constexpr Value LazyThreshold1  = Value(1400);
   constexpr Value LazyThreshold2  = Value(1300);
   constexpr Value SpaceThreshold = Value(12222);
+  constexpr Value NNUEThreshold   =  Value(300);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
@@ -942,7 +943,7 @@ Value Eval::evaluate(const Position& pos) {
 
   Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
   balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
-  if (Eval::useNNUE && abs(balance) < Value(400))
+  if (Eval::useNNUE && abs(balance) < NNUEThreshold)
       return NNUE::evaluate(pos);
   else
       return Evaluation<NO_TRACE>(pos).value();
@@ -965,7 +966,7 @@ std::string Eval::trace(const Position& pos) {
   Value balance = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK);
   balance += 200 * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
 
-  if (Eval::useNNUE && abs(balance) < Value(400))
+  if (Eval::useNNUE && abs(balance) < NNUEThreshold)
   {
       v = NNUE::evaluate(pos);
   }

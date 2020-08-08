@@ -61,11 +61,19 @@ namespace {
 
   constexpr uint64_t TtHitAverageWindow     = 4096;
   constexpr uint64_t TtHitAverageResolution = 1024;
+  int k_fut = 227;
+  int kk1 = 570;
+  int kk2 = 1018;
 
   // Razor and futility margins
-  constexpr int RazorMargin = 527;
+  int RazorMargin = 527;
+  int NMP1 = 200;
+  int NMP2 = 28;
+  TUNE(SetRange(120,300), k_fut, NMP1, SetRange(400,800), kk1, RazorMargin);
+  TUNE(SetRange(500,1600), kk2);
+  TUNE(SetRange(24,36), NMP2);
   Value futility_margin(Depth d, bool improving) {
-    return Value(227 * (d - improving));
+    return Value(k_fut * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -827,7 +835,7 @@ namespace {
         && (ss-1)->statScore < 23824
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 33 * depth - 33 * improving + 112 * ttPv + 311
+        &&  ss->staticEval >= beta - NMP2 * depth - NMP2 * improving + 94 * ttPv + NMP1
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

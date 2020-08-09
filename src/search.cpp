@@ -63,7 +63,7 @@ namespace {
   constexpr uint64_t TtHitAverageResolution = 1024;
 
   // Razor and futility margins
-  constexpr int RazorMargin = 527;
+  constexpr int RazorMargin = 520;
   Value futility_margin(Depth d, bool improving) {
     return Value(227 * (d - improving));
   }
@@ -73,7 +73,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 570) / 1024 + (!i && r > 1018);
+    return (r + 564) / 1024 + (!i && r > 1010);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -827,7 +827,7 @@ namespace {
         && (ss-1)->statScore < 23824
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 28 * depth - 28 * improving + 94 * ttPv + 200
+        &&  ss->staticEval >= beta - 28 * depth - 28 * improving + 94 * ttPv + 178
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

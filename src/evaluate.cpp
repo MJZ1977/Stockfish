@@ -950,7 +950,7 @@ Value Eval::evaluate(const Position& pos) {
       else
       {
          v = Evaluation<NO_TRACE>(pos).value();
-         return abs(v) > NNUEThreshold / 2 ? v : NNUE::evaluate(pos) + Tempo;
+         return abs(v) > NNUEThreshold / 4 ? v : NNUE::evaluate(pos) + Tempo;
       }
   }
   return Evaluation<NO_TRACE>(pos).value();

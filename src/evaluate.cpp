@@ -947,6 +947,11 @@ Value Eval::evaluate(const Position& pos) {
       // Take NNUE eval only on balanced positions
       if (abs(v) < NNUEThreshold)
          return NNUE::evaluate(pos) + Tempo;
+      else
+      {
+         v = Evaluation<NO_TRACE>(pos).value();
+         return abs(v) > NNUEThreshold / 2 ? v : NNUE::evaluate(pos) + Tempo;
+      }
   }
   return Evaluation<NO_TRACE>(pos).value();
 }

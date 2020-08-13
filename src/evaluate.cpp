@@ -796,6 +796,14 @@ namespace {
                     - 43 * almostUnwinnable
                     -110 ;
 
+    // big increase in complexity if the position is already over
+    if (   pos.non_pawn_material() <= 2 * RookValueMg
+        && pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
+        && abs(pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > 1
+        && pawnsOnBothFlanks
+        && !pos.opposite_bishops())
+       complexity += 200;
+
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 

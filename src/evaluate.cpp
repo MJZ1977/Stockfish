@@ -803,7 +803,7 @@ namespace {
         && abs(pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > 1
         && pawnsOnBothFlanks
         && !pos.opposite_bishops())
-       complexity += 200;
+       complexity += 50 * pe->passed_count();
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

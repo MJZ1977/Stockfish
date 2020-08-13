@@ -116,6 +116,11 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
   constexpr Value NNUEThreshold  =   Value(575);
 
+    int coefR = 40;
+    int coefO = 60;
+    TUNE(SetRange(0,200),coefR,coefO);
+
+
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
@@ -196,7 +201,6 @@ namespace {
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
   constexpr Score WeakQueen           = S( 56, 15);
-
 
 #undef S
 
@@ -802,7 +806,8 @@ namespace {
         && abs(pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > 1
         && pawnsOnBothFlanks
         && !pos.opposite_bishops())
-       complexity += 50 * pe->passed_count();
+       complexity += pos.count<ROOK>(WHITE) == 0 ? coefO * pe->passed_count() :
+                                                   coefR * pe->passed_count();
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

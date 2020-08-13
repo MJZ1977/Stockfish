@@ -180,7 +180,7 @@ namespace {
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
-  constexpr Score KnightOnQueen       = S( 22, 14);
+  constexpr Score KnightOnQueen       = S( 26, 16);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 11,  8);

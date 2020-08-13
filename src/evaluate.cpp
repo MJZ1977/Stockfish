@@ -1001,8 +1001,10 @@ std::string Eval::trace(const Position& pos) {
 
   ss << "\nFinal evaluation: " << to_cp(v) << " (white side)\n";
 
+  v = NNUE::evaluate(pos);
+  v = pos.side_to_move() == WHITE ? v : -v;
   if (Eval::useNNUE)
-     ss << "\nNNUE evaluation : " << to_cp(NNUE::evaluate(pos)) << " (white side)\n";
+     ss << "\nNNUE evaluation : " << to_cp(v) << " (white side)\n";
 
   return ss.str();
 }

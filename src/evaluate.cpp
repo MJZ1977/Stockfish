@@ -639,7 +639,7 @@ namespace {
         {
             Square s = pop_lsb(&b);
             if (distance(pos.square<KING>(Us),s) < std::min(4,distance(pos.square<KING>(Them),s)))
-               score += make_score(0,16);
+               score += make_score(0,24);
         }
     }
 

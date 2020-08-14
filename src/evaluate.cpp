@@ -630,6 +630,20 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]) * (1 + queenImbalance);
     }
 
+    // Late EG : bonus if our king is close to weak opponent pawns
+    if ( pos.non_pawn_material() <= 2 * RookValueMg
+      && !pos.opposite_bishops())
+    {
+        b = pos.pieces(Them,PAWN) & ~pe->pawn_attacks_span(Them);
+        while (b)
+        {
+            Square s = pop_lsb(&b);
+            if (distance(pos.square<KING>(Us),s) < std::min(4,distance(pos.square<KING>(Them),s)-1))
+               score += make_score(0,10);
+        }
+    }
+
+
     if (T)
         Trace::add(THREAT, Us, score);
 

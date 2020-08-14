@@ -631,7 +631,7 @@ namespace {
     }
 
     // Late EG : bonus if our king is close to weak opponent pawns
-    if ( pos.non_pawn_material() <= 2 * RookValueMg
+    if ( pos.non_pawn_material() <= 2 * QueenValueMg
       && !pos.opposite_bishops())
     {
         b = pos.pieces(Them,PAWN) & ~pe->pawn_attacks_span(Them);

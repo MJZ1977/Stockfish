@@ -797,16 +797,17 @@ namespace {
                     - 43 * almostUnwinnable
                     -110 ;
 
-    // big increase in complexity if the position is already over
-    if (   pos.non_pawn_material() <= 2 * RookValueMg
-        && pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
-        && abs(pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > 1
-        && pawnsOnBothFlanks
-        && !pos.opposite_bishops())
-       complexity += 50 * pe->passed_count();
-
     Value mg = mg_value(score);
     Value eg = eg_value(score);
+
+    // big increase in complexity if the position is already over
+    if (   pos.non_pawn_material() <= 2 * RookValueMg
+        && abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)) < Value(100)
+        && abs(pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK)) > 1
+        && pos.count<PAWN>() > 4
+        && abs(eg) > Value(300)
+        && !pos.opposite_bishops())
+       complexity += int(abs(eg) - Value(300));
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus

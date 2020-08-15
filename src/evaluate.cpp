@@ -939,7 +939,8 @@ make_v:
 Value Eval::evaluate(const Position& pos) {
 
   bool classical = !Eval::useNNUE
-                ||  abs(eg_value(pos.psq_score())) >= NNUEThreshold;
+                ||  abs(eg_value(pos.psq_score())) >= NNUEThreshold
+                ||  pos.non_pawn_material > 2 * RookValueMg;
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()
                       : NNUE::evaluate(pos) * 5 / 4 + Tempo;
 

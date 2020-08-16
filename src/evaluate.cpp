@@ -652,6 +652,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, blockedPassers, helpers;
     Score score = SCORE_ZERO;
+    bool LateEG = pos.non_pawn_material(Them) <= RookValueMg;
 
     b = pe->passed_pawns(Us);
 
@@ -718,8 +719,8 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !bool(bb)                         ? 35 :
-                        !(unsafeSquares & squaresToQueen) ? 18 :
+                int k = !bool(bb)                         ? 32 + 4 * LateEG :
+                        !(unsafeSquares & squaresToQueen) ? 20 + 2 * LateEG :
                         !(unsafeSquares & blockSq)        ?  9 :
                                                              0 ;
 

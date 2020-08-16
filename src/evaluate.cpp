@@ -696,16 +696,24 @@ namespace {
             {
                 squaresToQueen = forward_file_bb(Us, s);
                 if (forward_file_bb(Them, s) & pos.pieces(Us, ROOK, QUEEN))
+                {
                     unsafeSquares = (pos.pieces(Them) | attackedBy2[Them]) & ~attackedBy[Us][ALL_PIECES];
+                    bb = squaresToQueen & (pos.pieces(Them) | attackedBy[Them][ALL_PIECES]);
+                }
                 else if (forward_file_bb(Them, s) & pos.pieces(Them, ROOK, QUEEN))
+                {
                     unsafeSquares = ~attackedBy[Us][ALL_PIECES]
                                   | (attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us])
                                   | attackedBy2[Them];
+                    bb = squaresToQueen & ~(attackedBy2[Us] & ~attackedBy[Them][ALL_PIECES]);
+                }
                 else
+                {
                     unsafeSquares = ((attackedBy[Them][ALL_PIECES] | pos.pieces(Them)) & ~attackedBy[Us][ALL_PIECES])
                                    | (attackedBy2[Them] & ~attackedBy2[Us]);
+                    bb = squaresToQueen & ~(attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES]);
+                }
 
-                bb = squaresToQueen & ~(attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES]);
 
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked

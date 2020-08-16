@@ -696,9 +696,12 @@ namespace {
             if (pos.empty(blockSq))
             {
                 squaresToQueen = forward_file_bb(Us, s);
-                bb = forward_file_bb(Them, s) & pos.pieces(Us, ROOK, QUEEN);
-                if (bb)
+                if (forward_file_bb(Them, s) & pos.pieces(Us, ROOK, QUEEN))
                     unsafeSquares = (pos.pieces(Them) | attackedBy2[Them]) & ~attackedBy[Us][ALL_PIECES];
+                else if (forward_file_bb(Them, s) & pos.pieces(Them, ROOK, QUEEN))
+                    unsafeSquares = ~attackedBy[Us][ALL_PIECES]
+                                  | (attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us])
+                                  | attackedBy2[Them];
                 else
                     unsafeSquares = ((attackedBy[Them][ALL_PIECES] | pos.pieces(Them)) & ~attackedBy[Us][ALL_PIECES])
                                    | (attackedBy2[Them] & ~attackedBy2[Us]);
@@ -714,8 +717,8 @@ namespace {
                                                              0 ;
 
                 // Assign a larger bonus if the block square is defended
-                if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
-                    k += 5;
+                //if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
+                //    k += 5;
 
                 bonus += make_score(k * w, k * w);
             }

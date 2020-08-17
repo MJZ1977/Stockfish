@@ -882,7 +882,9 @@ namespace {
         return abs(mg_value(score) + eg_value(score)) / 2 > lazyThreshold + pos.non_pawn_material() / 64;
     };
 
-    if (lazy_skip(LazyThreshold1))
+    bool easy_EG = (pos.non_pawn_material() <= 2 * RookValueMg) && (pe->passed_count() == 0);
+
+    if (lazy_skip(LazyThreshold1 - 200 * easy_EG))
         goto make_v;
 
     // Main evaluation begins here
@@ -902,7 +904,8 @@ namespace {
     score +=  king<   WHITE>() - king<   BLACK>()
             + passed< WHITE>() - passed< BLACK>();
 
-    if (lazy_skip(LazyThreshold2))
+    easy_EG = (pos.non_pawn_material() <= 2 * RookValueMg);
+    if (lazy_skip(LazyThreshold2 - 200 * easy_EG))
         goto make_v;
 
     score +=  threats<WHITE>() - threats<BLACK>()

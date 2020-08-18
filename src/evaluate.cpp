@@ -722,8 +722,6 @@ namespace {
                 int k = !bool(bb)                            ? 35 :
                         !(unsafeSquares & squaresToQueen)    ? 20 :
                         !(unsafeSquares & blockSq)           ? 12 :
-                        !(attackedBy[Them][ALL_PIECES] & blockSq)
-                     && !(forward_file_bb(Them, s) & pos.pieces(Them, ROOK, QUEEN))? 9 :
                                                                 0 ;
 
                 bonus += make_score(k * w, k * w);

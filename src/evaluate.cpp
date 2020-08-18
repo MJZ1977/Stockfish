@@ -838,6 +838,15 @@ namespace {
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
     }
 
+    // At late EG, increase SF if the position is almost lost for one side
+    if (sf >= 50 && pos.non_pawn_material() <= 3500)
+    {
+        int eg_thr = 240 + pos.non_pawn_material() / 16;
+        if (abs(eg) > eg_thr)
+           sf = sf * (16 + std::max(0, 8 - pos.non_pawn_material() / 512) *
+                           std::min(4, int(abs(eg) - eg_thr) / 128)) / 16;
+    }
+
     // Interpolate between the middlegame and (scaled by 'sf') endgame score
     v =  mg * int(me->game_phase())
        + eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sf) / SCALE_FACTOR_NORMAL;

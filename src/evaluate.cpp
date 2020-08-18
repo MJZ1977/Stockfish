@@ -719,14 +719,11 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !bool(bb)                         ? 35 :
-                        !(unsafeSquares & squaresToQueen) ? 20 :
-                        !(unsafeSquares & blockSq)        ?  9 :
-                                                             0 ;
-
-                // Assign a larger bonus if the block square is defended
-                //if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
-                //    k += 5;
+                int k = !bool(bb)                            ? 35 :
+                        !(unsafeSquares & squaresToQueen)    ? 20 :
+                        !(unsafeSquares & blockSq)           ? 12 :
+                        !(attackedBy[Them][ALL_PIECES] & blockSq) ? 9 :
+                                                                0 ;
 
                 bonus += make_score(k * w, k * w);
             }

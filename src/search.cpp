@@ -1414,7 +1414,7 @@ moves_loop: // When in check, search starts from here
     Key posKey;
     Move ttMove, move, bestMove;
     Depth ttDepth;
-    Value bestValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
+    Value bestValue, ClassicValue, value, ttValue, futilityValue, futilityBase, oldAlpha;
     bool ttHit, pvHit, givesCheck, captureOrPromotion;
     int moveCount;
 
@@ -1471,6 +1471,11 @@ moves_loop: // When in check, search starts from here
             // Never assume anything about values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
                 ss->staticEval = bestValue = evaluate(pos, false);
+
+            // DEBUG PURPOSE
+            ClassicValue = evaluate(pos, true);
+            if (int(ClassicValue) * int(bestValue) < -2500)
+              sync_cout << pos.fen() << " - Classic = " << ClassicValue << " - NNUE = " << bestValue << sync_endl;
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE

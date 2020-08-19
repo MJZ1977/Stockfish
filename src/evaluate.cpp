@@ -940,8 +940,8 @@ make_v:
 Value Eval::evaluate(const Position& pos, bool useClassic) {
 
   bool classical = !Eval::useNNUE
-                ||  useClassic
-                ||  abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
+                ||  useClassic;
+               // ||  abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()
                       : NNUE::evaluate(pos) * 5 / 4 + Tempo;
 
@@ -1002,7 +1002,7 @@ std::string Eval::trace(const Position& pos) {
 
   ss << "\nFinal evaluation: " << to_cp(v) << " (white side)\n";
 
-  v = NNUE::evaluate(pos);
+  v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
   v = pos.side_to_move() == WHITE ? v : -v;
   if (Eval::useNNUE)
      ss << "\nNNUE evaluation : " << to_cp(v) << " (white side)\n";

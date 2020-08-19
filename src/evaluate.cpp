@@ -584,7 +584,7 @@ namespace {
 
         // bonus for queen attacking weak by protected pawns
         b = pos.pieces(Them, PAWN) & weak & ~b;
-        score += make_score(6, 2) * popcount(b & attackedBy[Us][QUEEN]);
+        score += make_score(10, 4) * popcount(b & attackedBy[Us][QUEEN]);
 
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);

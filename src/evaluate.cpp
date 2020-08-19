@@ -460,42 +460,45 @@ namespace {
           & (~attackedBy[Us][ALL_PIECES] | attackedBy[Us][KING] | attackedBy[Us][QUEEN]);
 
     // Analyse the safe enemy's checks which are possible on next move
-    safe  = ~pos.pieces(Them);
-    safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
+    if (pos.side_to_move() == Them)
+    {
+      safe  = ~pos.pieces(Them);
+      safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
 
-    b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
-    b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
+      b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
+      b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
 
-    // Enemy rooks checks
-    rookChecks = b1 & attackedBy[Them][ROOK] & safe;
-    if (rookChecks)
-        kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)];
-    else
-        unsafeChecks |= b1 & attackedBy[Them][ROOK];
+      // Enemy rooks checks
+      rookChecks = b1 & attackedBy[Them][ROOK] & safe;
+      if (rookChecks)
+          kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)];
+      else
+          unsafeChecks |= b1 & attackedBy[Them][ROOK];
 
-    // Enemy queen safe checks: count them only if the checks are from squares from
-    // which opponent cannot give a rook check, because rook checks are more valuable.
-    queenChecks =  (b1 | b2) & attackedBy[Them][QUEEN] & safe
-                 & ~(attackedBy[Us][QUEEN] | rookChecks);
-    if (queenChecks)
-        kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)];
+      // Enemy queen safe checks: count them only if the checks are from squares from
+      // which opponent cannot give a rook check, because rook checks are more valuable.
+      queenChecks =  (b1 | b2) & attackedBy[Them][QUEEN] & safe
+                   & ~(attackedBy[Us][QUEEN] | rookChecks);
+      if (queenChecks)
+          kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)];
 
-    // Enemy bishops checks: count them only if they are from squares from which
-    // opponent cannot give a queen check, because queen checks are more valuable.
-    bishopChecks =  b2 & attackedBy[Them][BISHOP] & safe
-                  & ~queenChecks;
-    if (bishopChecks)
-        kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)];
+      // Enemy bishops checks: count them only if they are from squares from which
+      // opponent cannot give a queen check, because queen checks are more valuable.
+      bishopChecks =  b2 & attackedBy[Them][BISHOP] & safe
+                    & ~queenChecks;
+      if (bishopChecks)
+          kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)];
 
-    else
-        unsafeChecks |= b2 & attackedBy[Them][BISHOP];
+      else
+          unsafeChecks |= b2 & attackedBy[Them][BISHOP];
 
-    // Enemy knights checks
-    knightChecks = attacks_bb<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
-    if (knightChecks & safe)
-        kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)];
-    else
-        unsafeChecks |= knightChecks;
+      // Enemy knights checks
+      knightChecks = attacks_bb<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
+      if (knightChecks & safe)
+          kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)];
+      else
+          unsafeChecks |= knightChecks;
+    }
 
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.

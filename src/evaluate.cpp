@@ -123,7 +123,7 @@ namespace {
   // SafeCheck[PieceType][single/multiple] contains safe check bonus by piece type,
   // higher if multiple safe checks are possible for that piece type.
   constexpr int SafeCheck[][2] = {
-      {}, {}, {792, 1283}, {645, 967}, {1084, 1897}, {772, 1119}
+      {}, {}, {210, 340}, {171, 256}, {287, 502}, {204, 296}
   };
 
 #define S(mg, eg) make_score(mg, eg)
@@ -470,7 +470,7 @@ namespace {
     // Enemy rooks checks
     rookChecks = b1 & attackedBy[Them][ROOK] & safe;
     if (rookChecks)
-        kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)] * (4 - StM) / 4;
+        kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)] * (4 - StM);
     else
         unsafeChecks |= b1 & attackedBy[Them][ROOK];
 
@@ -479,14 +479,14 @@ namespace {
     queenChecks =  (b1 | b2) & attackedBy[Them][QUEEN] & safe
                  & ~(attackedBy[Us][QUEEN] | rookChecks);
     if (queenChecks)
-        kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)] * (4 - StM) / 4;
+        kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)] * (4 - StM);
 
     // Enemy bishops checks: count them only if they are from squares from which
     // opponent cannot give a queen check, because queen checks are more valuable.
     bishopChecks =  b2 & attackedBy[Them][BISHOP] & safe
                   & ~queenChecks;
     if (bishopChecks)
-        kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)] * (4 - StM) / 4;
+        kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)] * (4 - StM);
 
     else
         unsafeChecks |= b2 & attackedBy[Them][BISHOP];
@@ -494,7 +494,7 @@ namespace {
     // Enemy knights checks
     knightChecks = attacks_bb<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
     if (knightChecks & safe)
-        kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)] * (4 - StM) / 4;
+        kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)] * (4 - StM);
     else
         unsafeChecks |= knightChecks;
 

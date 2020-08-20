@@ -28,7 +28,7 @@ class Position;
 namespace Eval {
 
   std::string trace(const Position& pos);
-  Value evaluate(const Position& pos, bool useClassic);
+  Value evaluate(const Position& pos, bool PvNode);
 
   extern bool useNNUE;
   extern std::string eval_file_loaded;

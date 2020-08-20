@@ -546,6 +546,7 @@ namespace {
     constexpr Color     Them     = ~Us;
     constexpr Direction Up       = pawn_push(Us);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  LastRanks = (Us == WHITE ? Rank6BB | Rank7BB : Rank2BB | Rank3BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -582,9 +583,9 @@ namespace {
            | (nonPawnEnemies & attackedBy2[Us]);
         score += Hanging * popcount(weak & b);
 
-        // bonus for queen attacking weak by protected pawns
-        b = pos.pieces(Them, PAWN) & weak & ~b;
-        score += make_score(10, 4) * popcount(b & attackedBy[Us][QUEEN]);
+        // Additional bonus if weak piece is only protected by a rook at first ranks
+        b = pos.pieces(Them, PAWN) & weak & ~b & LastRanks;
+        score += make_score(6, 0) * popcount(b & attackedBy[Them][ROOK]);
 
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);

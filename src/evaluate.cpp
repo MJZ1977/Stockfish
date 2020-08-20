@@ -939,7 +939,7 @@ make_v:
 
 Value Eval::evaluate(const Position& pos, Value alpha) {
 
-  Value objective = std::clamp(alpha,-Value(500),Value(500));
+  Value objective = Utility::clamp(alpha,-Value(200),Value(200));
   bool classical = !Eval::useNNUE
                 ||  abs(eg_value(pos.side_to_move() == WHITE ? pos.psq_score() : -pos.psq_score()) - objective) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()

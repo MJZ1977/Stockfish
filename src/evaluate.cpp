@@ -938,14 +938,15 @@ make_v:
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
 
-Value Eval::evaluate(const Position& pos) {
+Value Eval::evaluate(const Position& pos, Value alpha) {
 
+  Value objective = std::clamp(alpha,-Value(500),Value(500));
   bool classical = !Eval::useNNUE
-                ||  abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
+                ||  abs(eg_value(pos.psq_score())) * 16 > objective + NNUEThreshold1 * (16 + pos.rule50_count());
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()
                       : NNUE::evaluate(pos) * 5 / 4 + Tempo;
 
-  if (classical && Eval::useNNUE && abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count()))
+  if (classical && Eval::useNNUE && abs(v) * 16 < objective + NNUEThreshold2 * (16 + pos.rule50_count()))
       v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
 
   // Damp down the evaluation linearly when shuffling

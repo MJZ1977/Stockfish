@@ -224,12 +224,14 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
   {
       b = ourPawns & file_bb(f);
       int ourRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
+      int d = edge_distance(f);
+      bonus += make_score(ShelterStrength[d][ourRank], 0);
+
+      if (b && (ourRank == relative_rank(Us, frontmost_sq(Us, b)) - 1))
+          bonus += make_score(ShelterStrength[d][ourRank] / 2, 0);
 
       b = theirPawns & file_bb(f);
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
-
-      int d = edge_distance(f);
-      bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm[theirRank];

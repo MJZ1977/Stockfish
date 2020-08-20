@@ -781,7 +781,7 @@ namespace {
         // Never assume anything about values stored in TT
         ss->staticEval = eval = tte->eval();
         if (eval == VALUE_NONE)
-            ss->staticEval = eval = evaluate(pos, PvNode);
+            ss->staticEval = eval = evaluate(pos, ttPv);
 
         if (eval == VALUE_DRAW)
             eval = value_draw(thisThread);
@@ -794,7 +794,7 @@ namespace {
     else
     {
         if ((ss-1)->currentMove != MOVE_NULL)
-            ss->staticEval = eval = evaluate(pos, PvNode);
+            ss->staticEval = eval = evaluate(pos, ttPv);
         else
             ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;
 
@@ -1470,7 +1470,7 @@ moves_loop: // When in check, search starts from here
         {
             // Never assume anything about values stored in TT
             if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
-                ss->staticEval = bestValue = evaluate(pos, PvNode);
+                ss->staticEval = bestValue = evaluate(pos, PvNode || pvHit);
 
             // Can ttValue be used as a better position evaluation?
             if (    ttValue != VALUE_NONE
@@ -1479,7 +1479,7 @@ moves_loop: // When in check, search starts from here
         }
         else
             ss->staticEval = bestValue =
-            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos, PvNode)
+            (ss-1)->currentMove != MOVE_NULL ? evaluate(pos, PvNode || pvHit)
                                              : -(ss-1)->staticEval + 2 * Tempo;
 
         // Stand pat. Return immediately if static value is at least beta

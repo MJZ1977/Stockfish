@@ -227,8 +227,13 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
       int d = edge_distance(f);
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
-      if (b && (ourRank == relative_rank(Us, frontmost_sq(Us, b)) - 1))
+      if (more_than_one(b))
+      {
+		  Square Sq = frontmost_sq(Us, b);
+		  if ( (pawnAttacks[Us] & Sq)
+		    && (ourRank == relative_rank(Us, Sq) - 1))
           bonus += make_score(ShelterStrength[d][ourRank] / 2, 0);
+	  }
 
       b = theirPawns & file_bb(f);
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;

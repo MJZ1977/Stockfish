@@ -232,7 +232,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
 		  Square Sq = frontmost_sq(Us, b);
 		  if ( (pawnAttacks[Us] & Sq)
 		    && (ourRank == relative_rank(Us, Sq) - 1))
-          bonus += make_score(ShelterStrength[d][ourRank] / 2, 0);
+          bonus += make_score(ShelterStrength[d][ourRank], 0);
 	  }
 
       b = theirPawns & file_bb(f);

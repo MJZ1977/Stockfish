@@ -842,7 +842,7 @@ namespace {
     if (sf >= 50 && pos.non_pawn_material() <= 7200)
     {
         int eg_thr = 320 + pos.non_pawn_material() / 64;
-        if (abs(eg) > eg_thr)
+        if (abs(eg) >= eg_thr + 128)
            sf = sf * (16 + std::max(0, 8 - pos.non_pawn_material() / 1024) *
                            std::min(4, int(abs(eg) - eg_thr) / 128)) / 16;
     }

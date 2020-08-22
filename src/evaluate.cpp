@@ -471,7 +471,7 @@ namespace {
     // Enemy rooks checks
     rookChecks = b1 & attackedBy[Them][ROOK] & safe;
     if (rookChecks)
-        kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)] + canCastle * 20;
+        kingDanger += SafeCheck[ROOK][more_than_one(rookChecks)] + canCastle * 30;
     else
         unsafeChecks |= b1 & attackedBy[Them][ROOK];
 
@@ -480,14 +480,14 @@ namespace {
     queenChecks =  (b1 | b2) & attackedBy[Them][QUEEN] & safe
                  & ~(attackedBy[Us][QUEEN] | rookChecks);
     if (queenChecks)
-        kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)] + canCastle * 20;
+        kingDanger += SafeCheck[QUEEN][more_than_one(queenChecks)] + canCastle * 30;
 
     // Enemy bishops checks: count them only if they are from squares from which
     // opponent cannot give a queen check, because queen checks are more valuable.
     bishopChecks =  b2 & attackedBy[Them][BISHOP] & safe
                   & ~queenChecks;
     if (bishopChecks)
-        kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)] + canCastle * 20;
+        kingDanger += SafeCheck[BISHOP][more_than_one(bishopChecks)] + canCastle * 30;
 
     else
         unsafeChecks |= b2 & attackedBy[Them][BISHOP];
@@ -495,7 +495,7 @@ namespace {
     // Enemy knights checks
     knightChecks = attacks_bb<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
     if (knightChecks & safe)
-        kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)] + canCastle * 30;
+        kingDanger += SafeCheck[KNIGHT][more_than_one(knightChecks & safe)] + canCastle * 45;
     else
         unsafeChecks |= knightChecks;
 

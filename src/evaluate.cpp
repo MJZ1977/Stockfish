@@ -841,7 +841,7 @@ namespace {
     // At late EG, increase SF if the position is almost lost for one side
     if (sf >= 50 && pos.non_pawn_material() <= 7200)
     {
-        int eg_thr = 240 + pos.non_pawn_material() / 64;
+        int eg_thr = 320 + pos.non_pawn_material() / 64;
         if (abs(eg) > eg_thr)
            sf = sf * (16 + std::max(0, 8 - pos.non_pawn_material() / 1024) *
                            std::min(4, int(abs(eg) - eg_thr) / 128)) / 16;

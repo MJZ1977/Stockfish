@@ -597,8 +597,13 @@ namespace {
     safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];
 
     // Bonus for attacking enemy pieces with our relatively safe pawns
-    b = pos.pieces(Us, PAWN) & safe;
-    b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
+    if (pos.side_to_move() == Us)
+       b = attackedBy[Us][PAWN] & nonPawnEnemies;
+    else
+    {
+       b = pos.pieces(Us, PAWN) & safe;
+       b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
+    }
     score += ThreatBySafePawn * popcount(b);
 
     // Find squares where our pawns can push on the next move
@@ -884,7 +889,10 @@ namespace {
         return abs(mg_value(score) + eg_value(score)) / 2 > lazyThreshold + pos.non_pawn_material() / 64;
     };
 
-    if (lazy_skip(LazyThreshold1))
+    bool pawnAttacks = (pe->pawn_attacks(WHITE) & (pos.pieces(BLACK) ^ pos.pieces(BLACK, PAWN)))
+                    |  (pe->pawn_attacks(BLACK) & (pos.pieces(WHITE) ^ pos.pieces(WHITE, PAWN)));
+
+    if (lazy_skip(LazyThreshold1) && !pawnAttacks)
         goto make_v;
 
     // Main evaluation begins here
@@ -904,7 +912,7 @@ namespace {
     score +=  king<   WHITE>() - king<   BLACK>()
             + passed< WHITE>() - passed< BLACK>();
 
-    if (lazy_skip(LazyThreshold2))
+    if (lazy_skip(LazyThreshold2) && !pawnAttacks)
         goto make_v;
 
     score +=  threats<WHITE>() - threats<BLACK>()

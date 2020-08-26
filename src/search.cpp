@@ -201,7 +201,7 @@ void Search::init() {
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((22.0 + std::log(Threads.size())) * std::log(i));
   for (int i = 0; i < 9; ++i)
-      Futility_table[i] = int(CC + AA * std::pow(double(i), double(BB) / 128.0));
+      Futility_table[i] = CC + int(AA * std::pow(double(i), double(BB) / 128.0));
 }
 
 

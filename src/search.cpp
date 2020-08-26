@@ -64,8 +64,13 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 510;
-  int Futility_table[9] = {0, 223, 446, 669, 892, 1115, 1338, 1561, 1784};
-  TUNE(SetRange(0,2000), Futility_table);
+  int Futility_table[9];
+  int AA = 223;
+  int BB = 128;
+  int CC = 0;
+  TUNE(SetRange(50,600), AA);
+  TUNE(SetRange(64,192), BB);
+  TUNE(SetRange(-40,40), CC);
   Value futility_margin(Depth d, bool improving) {
     return Value(Futility_table[d - improving]);
   }
@@ -195,6 +200,8 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((22.0 + std::log(Threads.size())) * std::log(i));
+  for (int i = 0; i < 9; ++i)
+      Futility_table[i] = int(CC + AA * std::pow(double(i), double(BB) / 128.0));
 }
 
 

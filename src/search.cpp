@@ -599,7 +599,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
     bool ttHit, ttPv, formerPv, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning,
-         ttCapture, singularQuietLMR;
+         ttCapture, singularQuietLMR, highEval;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -958,6 +958,7 @@ moves_loop: // When in check, search starts from here
 
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
+    highEval = eval > ss->staticEval + Value(400);
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
 
     // Mark this node as being searched
@@ -1178,6 +1179,9 @@ moves_loop: // When in check, search starts from here
               r -= 2;
 
           if (moveCountPruning && !formerPv)
+              r++;
+
+          if (highEval)
               r++;
 
           // Decrease reduction if opponent's move count is high (~5 Elo)

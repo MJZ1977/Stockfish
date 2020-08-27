@@ -958,7 +958,7 @@ moves_loop: // When in check, search starts from here
 
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
-    highEval = eval > ss->staticEval + Value(400);
+    highEval = eval > ss->staticEval + Value(300);
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
 
     // Mark this node as being searched

@@ -1393,7 +1393,7 @@ moves_loop: // When in check, search starts from here
                    << " - excluded = " << UCI::move((ss-1)->excludedMove, pos.is_chess960()) << sync_endl;*/
     if (bestValue <= alpha && !excludedMove)
         ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 3);
-    else if (depth > 3)
+    else if (depth > 3 && !excludedMove)
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))

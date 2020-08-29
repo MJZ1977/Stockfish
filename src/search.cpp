@@ -1181,6 +1181,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if position is or has been on the PV (~10 Elo)
           if (ss->ttPv)
               r -= 2;
+          else if (tte->depth() > 9
+               && (tte->bound() & BOUND_UPPER)
+               &&  ttValue < alpha)
+              r++;
 
           if (moveCountPruning && !formerPv)
               r++;
@@ -1391,9 +1395,9 @@ moves_loop: // When in check, search starts from here
     /*if ((ss-1)->excludedMove && bestValue >= beta && (ss-1)->ttPv && depth > 4)
         sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
                    << " - excluded = " << UCI::move((ss-1)->excludedMove, pos.is_chess960()) << sync_endl;*/
-    if (bestValue <= alpha && !excludedMove)
+    if (bestValue <= alpha)
         ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 3);
-    else if (depth > 3 && !excludedMove)
+    else if (depth > 3)
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))

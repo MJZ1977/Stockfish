@@ -1386,9 +1386,12 @@ moves_loop: // When in check, search starts from here
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 
-    /*if (bestValue <= alpha && (ss-1)->ttPv && !ss->ttPv)
-        sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;*/
-    if (bestValue <= alpha)
+    //if (bestValue <= alpha && (ss-1)->ttPv && !ss->ttPv)
+    //    sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960()) << sync_endl;
+    /*if ((ss-1)->excludedMove && bestValue >= beta && (ss-1)->ttPv && depth > 4)
+        sync_cout << pos.fen() << " - move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+                   << " - excluded = " << UCI::move((ss-1)->excludedMove, pos.is_chess960()) << sync_endl;*/
+    if (bestValue <= alpha && !excludedMove)
         ss->ttPv = ss->ttPv || ((ss-1)->ttPv && depth > 3);
     else if (depth > 3)
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;

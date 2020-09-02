@@ -885,6 +885,7 @@ namespace {
         && !(   ttHit
              && tte->depth() >= depth - 3
              && ttValue != VALUE_NONE
+             && (tte->bound() & BOUND_UPPER)
              && ttValue < probCutBeta))
     {
         // if ttMove is a capture and value from transposition table is good enough produce probCut

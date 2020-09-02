@@ -893,6 +893,7 @@ namespace {
             && tte->depth() >= depth - 3
             && ttValue != VALUE_NONE
             && ttValue >= probCutBeta
+            && (tte->bound() & BOUND_LOWER)
             && ttMove
             && pos.capture_or_promotion(ttMove))
             return probCutBeta;

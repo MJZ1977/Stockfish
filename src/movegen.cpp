@@ -282,6 +282,21 @@ template ExtMove* generate<CAPTURES>(const Position&, ExtMove*);
 template ExtMove* generate<QUIETS>(const Position&, ExtMove*);
 template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*);
 
+/// generate_counter generate moves that counter a threat move
+ExtMove* generate_counter(const Position& pos, Move threatMove, ExtMove* moveList)
+{
+   Square from = to_sq(threatMove);
+   PieceType Pt = type_of(pos.piece_on(from));
+   
+   Bitboard b = Pt == PAWN ? Bitboard(0) : attacks_bb(Pt, from, pos.pieces());
+   b &= ~pos.pieces();
+   while (b)
+     *moveList++ = make_move(from, pop_lsb(&b));
+
+   return moveList;
+}
+
+
 
 /// generate<QUIET_CHECKS> generates all pseudo-legal non-captures.
 /// Returns a pointer to the end of the move list.

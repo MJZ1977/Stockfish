@@ -966,6 +966,7 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers,
+                                      ss->OppThreatMove,
                                       ss->ply);
 
     value = bestValue;
@@ -974,10 +975,6 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
-    if (ss->OppThreatMove)
-       sync_cout << pos.fen() 
-                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960()) << sync_endl;
-                 // << " - bestmove = " << UCI::move(bestMove, pos.is_chess960())
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1013,6 +1010,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      /*if (ss->OppThreatMove && moveCountPruning && !captureOrPromotion)
+       sync_cout << pos.fen() 
+                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960()) 
+                  << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
 
       // Calculate new depth for this move
       newDepth = depth - 1;

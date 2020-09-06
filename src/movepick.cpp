@@ -55,9 +55,9 @@ namespace {
 
 /// MovePicker constructor for the main search
 MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHistory* mh, const LowPlyHistory* lp,
-                       const CapturePieceToHistory* cph, const PieceToHistory** ch, Move cm, const Move* killers, int pl)
+                       const CapturePieceToHistory* cph, const PieceToHistory** ch, Move cm, const Move* killers, Move oppThrtMv, int pl)
            : pos(p), mainHistory(mh), lowPlyHistory(lp), captureHistory(cph), continuationHistory(ch),
-             ttMove(ttm), refutations{{killers[0], 0}, {killers[1], 0}, {cm, 0}}, depth(d), ply(pl) {
+             ttMove(ttm), oppThreatMove(oppThrtMv), refutations{{killers[0], 0}, {killers[1], 0}, {cm, 0}}, depth(d), ply(pl) {
 
   assert(d > 0);
 
@@ -68,7 +68,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHist
 /// MovePicker constructor for quiescence search
 MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHistory* mh,
                        const CapturePieceToHistory* cph, const PieceToHistory** ch, Square rs)
-           : pos(p), mainHistory(mh), captureHistory(cph), continuationHistory(ch), ttMove(ttm), recaptureSquare(rs), depth(d) {
+           : pos(p), mainHistory(mh), captureHistory(cph), continuationHistory(ch), ttMove(ttm), oppThreatMove(MOVE_NONE), recaptureSquare(rs), depth(d) {
 
   assert(d <= 0);
 
@@ -80,7 +80,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHist
 /// MovePicker constructor for ProbCut: we generate captures with SEE greater
 /// than or equal to the given threshold.
 MovePicker::MovePicker(const Position& p, Move ttm, Value th, const CapturePieceToHistory* cph)
-           : pos(p), captureHistory(cph), ttMove(ttm), threshold(th) {
+           : pos(p), captureHistory(cph), ttMove(ttm), oppThreatMove(MOVE_NONE), threshold(th) {
 
   assert(!pos.checkers());
 
@@ -160,7 +160,6 @@ top:
   case QCAPTURE_INIT:
       cur = endBadCaptures = moves;
       endMoves = generate<CAPTURES>(pos, cur);
-
       score<CAPTURES>();
       ++stage;
       goto top;
@@ -201,12 +200,20 @@ top:
           score<QUIETS>();
           partial_insertion_sort(cur, endMoves, -3000 * depth);
       }
+      else if (oppThreatMove)
+      {
+          cur = endBadCaptures;        
+          endMoves = generate_counter(pos, oppThreatMove, cur);
+
+          score<QUIETS>();
+          partial_insertion_sort(cur, endMoves, -3000 * depth);
+      }
 
       ++stage;
       [[fallthrough]];
 
   case QUIET:
-      if (   !skipQuiets
+      if (   (!skipQuiets || oppThreatMove)
           && select<Next>([&](){return   *cur != refutations[0].move
                                       && *cur != refutations[1].move
                                       && *cur != refutations[2].move;}))

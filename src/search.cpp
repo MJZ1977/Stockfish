@@ -1400,7 +1400,7 @@ moves_loop: // When in check, search starts from here
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     if (   (ss-1)->currentMove == MOVE_NULL
-         && PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PieceValue[EG][pos.piece_on(from_sq(bestMove))] + 300)
+         && pos.capture(bestMove))
            (ss-1)->OppThreatMove = bestMove;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))

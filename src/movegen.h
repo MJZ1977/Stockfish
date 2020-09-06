@@ -22,6 +22,7 @@
 #include <algorithm>
 
 #include "types.h"
+#include "types.h"
 
 class Position;
 
@@ -52,6 +53,8 @@ inline bool operator<(const ExtMove& f, const ExtMove& s) {
 
 template<GenType>
 ExtMove* generate(const Position& pos, ExtMove* moveList);
+
+ExtMove* generate_counter(const Position& pos, Move threatMove, ExtMove* moveList);
 
 /// The MoveList struct is a simple wrapper around generate(). It sometimes comes
 /// in handy to use this class instead of the low level generate() function.

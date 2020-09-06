@@ -1016,10 +1016,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if (ss->OppThreatMove && moveCountPruning && !captureOrPromotion)
+      /*if (ss->OppThreatMove && moveCountPruning && !captureOrPromotion)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960()) 
-                  << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                  << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
 
       // Calculate new depth for this move
       newDepth = depth - 1;

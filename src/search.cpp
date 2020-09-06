@@ -896,7 +896,11 @@ namespace {
             && ttValue >= probCutBeta
             && ttMove
             && pos.capture_or_promotion(ttMove))
-            return probCutBeta;
+            {
+               if ((ss-1)->currentMove == MOVE_NULL)
+                (ss-1)->OppThreatMove = ttMove;
+               return probCutBeta;
+            }
 
         assert(probCutBeta < VALUE_INFINITE);
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory);
@@ -934,6 +938,9 @@ namespace {
                 if (value >= probCutBeta)
                 {
                     // if transposition table doesn't have equal or more deep info write probCut data into it
+                    if ((ss-1)->currentMove == MOVE_NULL)
+                       (ss-1)->OppThreatMove = move;
+
                     if ( !(ss->ttHit
                        && tte->depth() >= depth - 3
                        && ttValue != VALUE_NONE))

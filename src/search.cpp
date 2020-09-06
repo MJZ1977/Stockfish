@@ -896,7 +896,11 @@ namespace {
             && ttValue >= probCutBeta
             && ttMove
             && pos.capture_or_promotion(ttMove))
-            return probCutBeta;
+            {
+               if ((ss-1)->currentMove == MOVE_NULL)
+                (ss-1)->OppThreatMove = ttMove;
+               return probCutBeta;
+            }
 
         assert(probCutBeta < VALUE_INFINITE);
         MovePicker mp(pos, ttMove, probCutBeta - ss->staticEval, &captureHistory);
@@ -934,6 +938,8 @@ namespace {
                 if (value >= probCutBeta)
                 {
                     // if transposition table doesn't have equal or more deep info write probCut data into it
+                    if ((ss-1)->currentMove == MOVE_NULL)
+                       (ss-1)->OppThreatMove = move;
                     if ( !(ss->ttHit
                        && tte->depth() >= depth - 3
                        && ttValue != VALUE_NONE))
@@ -1010,10 +1016,10 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      /*if (ss->OppThreatMove && moveCountPruning && !captureOrPromotion)
+      if (ss->OppThreatMove && moveCountPruning && !captureOrPromotion)
        sync_cout << pos.fen() 
                   << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960()) 
-                  << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;*/
+                  << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
       // Calculate new depth for this move
       newDepth = depth - 1;

@@ -643,6 +643,7 @@ namespace {
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
+    ss->OppThreatMove = MOVE_NONE;    
     (ss+1)->ply = ss->ply + 1;
     (ss+1)->ttPv = false;
     (ss+1)->excludedMove = bestMove = MOVE_NONE;
@@ -973,6 +974,10 @@ moves_loop: // When in check, search starts from here
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
+    if (ss->OppThreatMove)
+       sync_cout << pos.fen() 
+                  << " - threatMove = " << UCI::move(ss->OppThreatMove, pos.is_chess960()) << sync_endl;
+                 // << " - bestmove = " << UCI::move(bestMove, pos.is_chess960())
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1392,6 +1397,10 @@ moves_loop: // When in check, search starts from here
     // in the search tree, remove the position from the search tree.
     else if (depth > 3)
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
+
+    if (   (ss-1)->currentMove == MOVE_NULL
+         && PieceValue[EG][pos.piece_on(to_sq(bestMove))] > PieceValue[EG][pos.piece_on(from_sq(bestMove))] + 300)
+           (ss-1)->OppThreatMove = bestMove;
 
     if (!excludedMove && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ss->ttPv,

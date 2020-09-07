@@ -22,6 +22,7 @@
 #include <algorithm>
 
 #include "types.h"
+#include "types.h"
 
 class Position;
 

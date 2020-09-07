@@ -98,6 +98,7 @@ void MovePicker::score() {
   static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
   for (auto& m : *this)
+  {
       if (Type == CAPTURES)
           m.value =  int(PieceValue[MG][pos.piece_on(to_sq(m))]) * 6
                    + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))];
@@ -120,6 +121,9 @@ void MovePicker::score() {
                        + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                        - (1 << 28);
       }
+      if (oppThreatMove && from_sq(m) == to_sq(oppThreatMove))
+         m.value += 2000 * std::min(8, depth);
+   }   
 }
 
 /// MovePicker::select() returns the next move satisfying a predicate function.

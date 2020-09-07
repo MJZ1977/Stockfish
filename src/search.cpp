@@ -714,7 +714,13 @@ namespace {
         }
 
         if (pos.rule50_count() < 90)
+        {
+            if ((ss-1)->currentMove == MOVE_NULL && pos.capture(ttMove) && ttValue >= beta)
+               /*sync_cout << pos.fen() 
+                  << " - threatMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl; */
+                (ss-1)->OppThreatMove = ttMove;
             return ttValue;
+        }
     }
 
     // Step 5. Tablebases probe

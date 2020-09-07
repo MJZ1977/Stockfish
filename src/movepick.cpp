@@ -213,16 +213,10 @@ top:
       [[fallthrough]];
 
   case QUIET:
-      if (   !skipQuiets
+      if (   (!skipQuiets || oppThreatMove)
           && select<Next>([&](){return   *cur != refutations[0].move
                                       && *cur != refutations[1].move
                                       && *cur != refutations[2].move;}))
-          return *(cur - 1);
-      else if (   oppThreatMove
-          && select<Next>([&](){return   *cur != refutations[0].move
-                                      && *cur != refutations[1].move
-                                      && *cur != refutations[2].move;})
-          && from_sq(*cur) == to_sq(oppThreatMove))
           return *(cur - 1);
 
       // Prepare the pointers to loop over the bad captures

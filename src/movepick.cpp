@@ -122,7 +122,7 @@ void MovePicker::score() {
                        - (1 << 28);
       }
       if (oppThreatMove && from_sq(m) == to_sq(oppThreatMove))
-         m.value += 2000 * std::min(8, depth);
+         m.value += 1000 * std::min(8, depth + 2);
    }   
 }
 

@@ -296,7 +296,7 @@ void Thread::search() {
   // The latter is needed for statScores and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, alpha, beta, delta, value;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -488,6 +488,21 @@ void Thread::search() {
          lastBestMoveDepth = rootDepth;
       }
 
+      // search for second best move
+      if (!(Limits.use_time_management() && Time.elapsed() > Time.optimum() / 2))
+      {
+         ss->excludedMove = lastBestMove;
+         alpha = bestValue - Value(10);
+         for (auto newDepth = rootDepth; newDepth < rootDepth + 3; newDepth++)
+         {
+            value = ::search<NonPV>(rootPos, ss, alpha - 1, alpha, newDepth, false);
+            /*if (value >= alpha)
+              sync_cout << "Second best = " << UCI::move(ss->currentMove, rootPos.is_chess960()) << sync_endl;*/
+         }
+      ss->excludedMove = MOVE_NONE;
+      }
+
+
       // Have we found a "mate in x"?
       if (   Limits.mate
           && bestValue >= VALUE_MATE_IN_MAX_PLY
@@ -611,6 +626,9 @@ namespace {
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+
+    /*if (PvNode &&!rootNode && ss->ply < 5)
+       sync_cout << UCI::move((ss-1)->currentMove, pos.is_chess960()) << " - move " << ss->ply << sync_endl;*/
 
     // Check for the available remaining time
     if (thisThread == Threads.main())

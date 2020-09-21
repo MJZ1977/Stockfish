@@ -594,7 +594,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
-    bool formerPv, givesCheck, improving, didLMR, priorCapture;
+    bool formerPv, givesCheck, improving, didLMR, priorCapture, candidateMove;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning,
          ttCapture, singularQuietLMR;
     Piece movedPiece;
@@ -996,6 +996,7 @@ moves_loop: // When in check, search starts from here
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1132,6 +1133,17 @@ moves_loop: // When in check, search starts from here
       // Add extension to new depth
       newDepth += extension;
 
+      // Candidate Moves
+      if (rootNode)
+          {
+             auto rm = std::find(thisThread->rootMoves.begin(),
+                                    thisThread->rootMoves.end(), move);
+             candidateMove = distance(thisThread->rootMoves.begin(), rm) < 4;
+             //sync_cout << " - place = " << distance(thisThread->rootMoves.begin(), rm) << sync_endl;
+          }
+       else
+          candidateMove = false;
+
       // Speculative prefetch as early as possible
       prefetch(TT.first_entry(pos.key_after(move)));
 
@@ -1149,6 +1161,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3
           &&  moveCount > 1 + 2 * rootNode
+          &&  !candidateMove
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha

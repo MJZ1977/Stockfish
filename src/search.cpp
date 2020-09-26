@@ -814,7 +814,7 @@ namespace {
     // Step 8. Futility pruning: child node (~50 Elo)
     if (   !PvNode
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin(depth, improving) >= beta + 100 * (thisThread->checkIndex <= 10)
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
@@ -1180,8 +1180,8 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction for tactical positions
-          if (thisThread->checkIndex < 15)
-              r--;
+          //if (thisThread->checkIndex < 15)
+          //    r--;
 
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)
           if (singularQuietLMR)

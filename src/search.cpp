@@ -524,9 +524,9 @@ void Thread::search() {
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
           if (checkIndex < 256)
-               totalTime = 1.4 * totalTime;
-          else if (checkIndex < 512)
                totalTime = 1.2 * totalTime;
+          else if (checkIndex < 512)
+               totalTime = 1.1 * totalTime;
           else if (checkIndex > 2000)
                totalTime = 0.95 * totalTime;
 

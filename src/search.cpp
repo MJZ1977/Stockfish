@@ -475,7 +475,7 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
-          //checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
+          //int checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
           //sync_cout << "CheckIndex = " << checkIndex << sync_endl;
       }
 
@@ -523,7 +523,7 @@ void Thread::search() {
 
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
-          if (nodes.load(std::memory_order_relaxed) < 8 * (checkCount + 1))
+          if (nodes.load(std::memory_order_relaxed) < 512 * (checkCount + 1))
                totalTime = 1.1 * totalTime;
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
@@ -775,7 +775,8 @@ namespace {
         // Skip early pruning when in check
         ss->staticEval = eval = VALUE_NONE;
         improving = false;
-        thisThread->checkCount += 1;
+        if (rootNode || (ss-1)->ttPv)
+           thisThread->checkCount += 1;
         goto moves_loop;  // Skip early pruning when in check
     }
     else if (ss->ttHit)

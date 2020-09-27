@@ -475,7 +475,7 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
-          checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
+          //checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
           //sync_cout << "CheckIndex = " << checkIndex << sync_endl;
       }
 
@@ -523,6 +523,8 @@ void Thread::search() {
 
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          if (nodes.load(std::memory_order_relaxed) < 8 * (checkCount + 1))
+               totalTime = 1.1 * totalTime;
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)
@@ -814,7 +816,7 @@ namespace {
     // Step 8. Futility pruning: child node (~50 Elo)
     if (   !PvNode
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) >= beta + 100 * (thisThread->checkIndex <= 8)
+        &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

@@ -59,7 +59,7 @@ public:
   Material::Table materialTable;
   size_t pvIdx, pvLast, checkCount;
   uint64_t ttHitAverage;
-  int selDepth, nmpMinPly, checkIndex;
+  int selDepth, nmpMinPly;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 

@@ -528,7 +528,7 @@ void Thread::search() {
           else if (checkIndex < 512)
                totalTime = 1.2 * totalTime;
           else if (checkIndex > 2000)
-               totalTime = 0.8 * totalTime;
+               totalTime = 0.95 * totalTime;
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)

@@ -302,7 +302,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
-  int iterIdx = 0;
+  int checkIndex = 1000, iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
@@ -475,7 +475,7 @@ void Thread::search() {
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
-          //int checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
+          checkIndex = nodes.load(std::memory_order_relaxed) / (checkCount + 1);
           //sync_cout << "CheckIndex = " << checkIndex << sync_endl;
       }
 
@@ -523,8 +523,12 @@ void Thread::search() {
 
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
-          if (nodes.load(std::memory_order_relaxed) < 512 * (checkCount + 1))
-               totalTime = 1.1 * totalTime;
+          if (checkIndex < 256)
+               totalTime = 1.4 * totalTime;
+          else if (checkIndex < 512)
+               totalTime = 1.2 * totalTime;
+          else if (checkIndex > 2000)
+               totalTime = 0.8 * totalTime;
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)

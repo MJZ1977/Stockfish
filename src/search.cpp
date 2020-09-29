@@ -813,7 +813,25 @@ namespace {
         &&  depth < 8
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
-        return eval;
+    {
+        if (depth < 3)
+           return eval;
+        else if (ttMove)
+        {
+           Value rBeta = beta + Value(200);
+           ss->currentMove = ttMove;
+           ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
+           pos.do_move(ttMove, st);
+           Value QValue = -qsearch<NonPV>(pos, ss+1, -rBeta, -rBeta+1);
+           pos.undo_move(ttMove);
+           if (QValue >= rBeta)
+              return eval;
+           /*else
+		      sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
+                     << " - beta = " << beta << " - Qvalue = " << QValue 
+                     << " - ttMove = " << UCI::move(ttMove, pos.is_chess960()) << sync_endl;*/
+        }
+    }
 
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode

@@ -807,10 +807,10 @@ namespace {
         tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
 
-    if (abs(eval - ss->staticEval) > Value(300)
+    /*if (abs(eval - ss->staticEval) > Value(300)
           && !ss->inCheck)
 		   sync_cout << pos.fen() << " - depth = " << tte->depth() << " - eval = " << eval 
-                     << " - static = " << ss->staticEval  << sync_endl;
+                     << " - static = " << ss->staticEval  << sync_endl;*/
 
 
     // Step 7. Razoring (~1 Elo)
@@ -1384,11 +1384,12 @@ moves_loop: // When in check, search starts from here
              && !priorCapture)
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
 
-    /*if (bestValue <= alpha
+    if (bestValue <= alpha
           && !ss->inCheck
 	      //&& eval - futility_margin(depth, improving) >= beta)
 	      && eval - Value(200) >= beta)
-		   sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval << sync_endl;*/
+		   sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
+                     << " - beta = " << beta << " - bestV = " << bestValue << sync_endl;
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);

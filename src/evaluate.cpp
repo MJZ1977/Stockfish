@@ -738,7 +738,7 @@ namespace {
         helpers =  shift<Up>(pos.pieces(Us, PAWN))
                  & ~pos.pieces(Them)
                  & (~attackedBy2[Them] | attackedBy[Us][ALL_PIECES]);
-        helpers = pos.pieces(Us, PAWN) & (~attackedBy2[Them] | attackedBy[Us][ALL_PIECES]);
+        helpers = pos.pieces(Us, PAWN);
 
         // Remove blocked candidate passers that don't have help to pass
         b &=  ~blockedPassers

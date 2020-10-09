@@ -190,8 +190,8 @@ namespace {
   constexpr Value LazyThreshold1 =  Value(1400);
   constexpr Value LazyThreshold2 =  Value(1300);
   constexpr Value SpaceThreshold = Value(12222);
-  constexpr Value NNUEThreshold1 =   Value(500);
-  constexpr Value NNUEThreshold2 =   Value(120);
+  constexpr Value NNUEThreshold1 =   Value(460);
+  constexpr Value NNUEThreshold2 =   Value(100);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };

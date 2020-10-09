@@ -776,7 +776,7 @@ namespace {
 
                 bb = forward_file_bb(Them, s) & pos.pieces();
                 if (bb)
-                   bb = square_bb(frontmost_sq(Us, bb))& pos.pieces(ROOK, QUEEN);
+                   bb = pos.pieces(ROOK, QUEEN) & frontmost_sq(Us, bb);
 
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES];

@@ -774,7 +774,9 @@ namespace {
                 squaresToQueen = forward_file_bb(Us, s);
                 unsafeSquares = passed_pawn_span(Us, s);
 
-                bb = forward_file_bb(Them, s) & pos.pieces(ROOK, QUEEN);
+                bb = forward_file_bb(Them, s) & pos.pieces();
+                if (bb)
+                   bb = square_bb(frontmost_sq(Us, bb))& pos.pieces(ROOK, QUEEN);
 
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES];

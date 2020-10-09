@@ -992,6 +992,8 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
+      //if (rootNode && moveCount == 1)
+      //    sync_cout << "NNUE gap " << thisThread->nnue_gap << sync_endl;
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())

@@ -1388,7 +1388,7 @@ moves_loop: // When in check, search starts from here
           && !ss->inCheck
 	      //&& eval - futility_margin(depth, improving) >= beta)
 	      && eval - Value(200) >= beta)
-		   sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
+		   sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval << " - static = " << ss->staticEval 
                      << " - beta = " << beta << " - bestV = " << bestValue << sync_endl;
 
     if (PvNode)

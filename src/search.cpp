@@ -1378,6 +1378,15 @@ moves_loop: // When in check, search starts from here
              && !priorCapture)
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
 
+    if (bestValue <= alpha
+          && !ss->inCheck
+	      && eval - Value(300) >= beta
+          && eval == ss->staticEval
+          && depth > 3)
+		   ss->staticEval -= Value(10);
+           //sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
+           //          << " - beta = " << beta << " - bestV = " << bestValue << sync_endl;
+
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);
 

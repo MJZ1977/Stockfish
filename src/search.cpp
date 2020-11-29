@@ -1380,10 +1380,10 @@ moves_loop: // When in check, search starts from here
 
     if (bestValue <= alpha
           && !ss->inCheck
-          && eval - Value(300) >= beta
+          && eval - Value(360) >= beta
           && eval == ss->staticEval
           && depth > 2)
-             ss->staticEval -= Value(6);
+             ss->staticEval -= Value(10);
            //sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
            //          << " - beta = " << beta << " - bestV = " << bestValue << sync_endl;
 

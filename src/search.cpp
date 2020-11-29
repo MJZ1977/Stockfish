@@ -1380,7 +1380,7 @@ moves_loop: // When in check, search starts from here
 
     if (bestValue <= alpha
           && !ss->inCheck
-          && eval - Value(300) >= beta
+          && eval - Value(240) >= beta
           && eval == ss->staticEval
           && depth > 2)
              ss->staticEval -= Value(10);

@@ -1373,12 +1373,16 @@ moves_loop: // When in check, search starts from here
 
     if (bestValue <= alpha
           && !ss->inCheck
-          && eval - Value(360) >= beta
-          && eval == ss->staticEval
+          && ss->staticEval >= beta + Value(100)
           && depth > 2)
-             ss->staticEval -= Value(10);
-           //sync_cout << pos.fen() << " - depth = " << depth << " - eval = " << eval 
-           //          << " - beta = " << beta << " - bestV = " << bestValue << sync_endl;
+    {
+             if (us == WHITE)
+                 thisThread->bias = (15 * thisThread->bias - ss->staticEval + beta) / 16;
+             else
+                 thisThread->bias = (15 * thisThread->bias + ss->staticEval - beta) / 16;
+           //sync_cout << pos.fen() << " - depth = " << depth << " WBias = " << thisThread->W_bias 
+           //          << " - BBias = " << thisThread->B_bias << " - bestV = " << bestValue << sync_endl;
+    }
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);

@@ -911,7 +911,7 @@ namespace {
             // based on the number of passed pawns of the strong side.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide)) + 2 * (pos.count<PAWN>(strongSide) > pos.count<PAWN>(~strongSide) + 1);
             // For every other opposite colored bishops endgames use scale factor
             // based on the number of all pieces of the strong side.
             else

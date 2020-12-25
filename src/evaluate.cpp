@@ -718,6 +718,18 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]) * (1 + queenImbalance);
     }
 
+    // Bonus for Knight attacks on minor pieces in next moves
+    if (pos.pieces(Us, KNIGHT))
+    {
+        b = (pos.pieces(Them, BISHOP) & ~stronglyProtected) | pos.pieces(Them, ROOK);
+        safe =   attackedBy[Us][KNIGHT]
+              & ~pos.pieces(Us)
+              & ~stronglyProtected;
+        while(b)
+           if (attacks_bb<KNIGHT>(pop_lsb(&b)) & safe)
+              score += make_score(4, 4);
+    }
+
     if (T)
         Trace::add(THREAT, Us, score);
 

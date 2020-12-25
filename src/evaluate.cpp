@@ -727,7 +727,7 @@ namespace {
               & ~stronglyProtected;
         while(b)
            if (attacks_bb<KNIGHT>(pop_lsb(&b)) & safe)
-              score += make_score(4, 4);
+              score += make_score(8, 8);
     }
 
     if (T)

@@ -806,7 +806,7 @@ namespace {
     {
         // In case of null move search use previous static eval with a different sign
         // and addition of two tempos
-        if ((ss-1)->currentMove != MOVE_NULL && (depth < 9 || pos.captured_piece()))
+        if ((ss-1)->currentMove != MOVE_NULL && (depth < 8 || pos.captured_piece()))
             ss->staticEval = eval = evaluate(pos);
         else
             ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;

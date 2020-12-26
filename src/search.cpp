@@ -1248,7 +1248,7 @@ moves_loop: // When in check, search starts from here
                   && ss->staticEval + PieceValue[EG][pos.captured_piece()] + 210 * depth <= alpha)
                   r++;
               // If captured piece has a higher value then moves piece, reduce reduction
-              if (PieceValue[EG][pos.captured_piece()] > PieceValue[EG][movedPiece])
+              if (PieceValue[EG][pos.captured_piece()] > PieceValue[EG][movedPiece] + Value(100))
                   r--;
           }
 

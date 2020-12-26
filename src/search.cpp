@@ -1032,6 +1032,9 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
+      //if (captureOrPromotion && ss->ttPv && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] > 0)
+      //  sync_cout << pos.fen() << " - good capture = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+
       // Calculate new depth for this move
       newDepth = depth - 1;
 
@@ -1202,7 +1205,7 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)
-          if (singularLMR && (!ttCapture || captureOrPromotion))
+          if (singularLMR && (!ttCapture || (captureOrPromotion && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] > 0)))
               r--;
 
           if (!captureOrPromotion)

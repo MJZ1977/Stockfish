@@ -350,6 +350,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
   ttHitAverage = TtHitAverageWindow * TtHitAverageResolution / 2;
+  ttPvAverage = 0;
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
@@ -444,7 +445,7 @@ void Thread::search() {
               if (   mainThread
                   && multiPV == 1
                   && (bestValue <= alpha || bestValue >= beta)
-                  && Time.elapsed() > 3000)
+                  && Time.elapsed() > 30)
                   sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
 
               // In case of failing low/high increase aspiration window and
@@ -475,7 +476,7 @@ void Thread::search() {
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
 
           if (    mainThread
-              && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
+              && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 30))
               sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
       }
 
@@ -687,6 +688,10 @@ namespace {
     // thisThread->ttHitAverage can be used to approximate the running average of ttHit
     thisThread->ttHitAverage =   (TtHitAverageWindow - 1) * thisThread->ttHitAverage / TtHitAverageWindow
                                 + TtHitAverageResolution * ss->ttHit;
+    if (ss->ply < 7)
+       thisThread->ttPvAverage =   (1023 * thisThread->ttPvAverage + TtHitAverageWindow * bool(ss->ttPv)) / 1024;
+    if (rootNode)
+       sync_cout << thisThread->ttPvAverage << sync_endl;
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode

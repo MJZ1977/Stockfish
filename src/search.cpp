@@ -607,6 +607,7 @@ namespace {
          ttCapture, singularQuietLMR;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
+    int tmp1 = int(Time.elapsed());
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -966,6 +967,9 @@ namespace {
         && depth >= 6
         && !ttMove)
         depth -= 2;
+
+    if (eval < alpha - Value(600) && depth > 10)
+       tmp1 = int(Time.elapsed());
 
 moves_loop: // When in check, search starts from here
 
@@ -1351,6 +1355,9 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+
+    if (eval < alpha - Value(600) && depth > 10 && (int(Time.elapsed()) - tmp1) > 2)
+       sync_cout << pos.fen() << " - eval = " << eval << " - time = " << int(Time.elapsed()) - tmp1 << sync_endl;
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

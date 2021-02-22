@@ -10,3 +10,7 @@ src/-lstdc++.res
 # Neural network for the NNUE evaluation
 **/*.nnue
 
+src/BuildScores.CSV
+makefish.sh
+compile.sh
+sync-official.sh

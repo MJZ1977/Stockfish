@@ -63,8 +63,8 @@ namespace {
   constexpr uint64_t TtHitAverageResolution = 1024;
 
   // Futility margin
-  Value futility_margin(Depth d, bool improving) {
-    return Value(234 * (d - improving));
+  Value futility_margin(Depth d, bool improving, bool EG) {
+    return Value((EG? 214 : 234) * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -832,7 +832,7 @@ namespace {
     // Step 7. Futility pruning: child node (~50 Elo)
     if (   !PvNode
         &&  depth < 9
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin(depth, improving, pos.non_pawn_material() < 2000) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

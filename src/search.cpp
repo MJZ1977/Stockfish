@@ -365,6 +365,8 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   int searchAgainCounter = 0;
+  for (RootMove& rm : rootMoves)
+      rm.totalTime = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -1002,6 +1004,7 @@ moves_loop: // When in check, search starts from here
 
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
+    int totalElapsed = 0, lastTime = 0;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1027,12 +1030,20 @@ moves_loop: // When in check, search starts from here
       if (!rootNode && !pos.legal(move))
           continue;
 
+      if (rootNode)
+      {
+         RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
+         totalElapsed = rm.totalTime;
+         lastTime = Time.elapsed();
+      }
       ss->moveCount = ++moveCount;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+//                    << " elapsed time " << totalElapsed << sync_endl;
+
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1179,6 +1190,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3
           &&  moveCount > 1 + 2 * rootNode
+          && !(rootNode && totalElapsed > Time.elapsed() / 8)
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
@@ -1325,6 +1337,7 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+          rm.totalTime += Time.elapsed() - lastTime;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

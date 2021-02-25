@@ -1187,7 +1187,7 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR, ~200 Elo). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3
-          &&  moveCount > 1 + rootNode
+          &&  moveCount > 1
           && !(rootNode && totalNodes > 20 + Threads.nodes_searched() / 16)
           && (  !captureOrPromotion
               || moveCountPruning

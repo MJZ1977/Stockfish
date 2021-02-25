@@ -365,8 +365,6 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   int searchAgainCounter = 0;
-  for (RootMove& rm : rootMoves)
-      rm.totalTime = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -1004,7 +1002,7 @@ moves_loop: // When in check, search starts from here
 
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
-    int totalElapsed = 0, lastTime = 0;
+    uint64_t totalNodes = 0, lastNodes = 0;
 
     // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1033,8 +1031,8 @@ moves_loop: // When in check, search starts from here
       if (rootNode)
       {
          RootMove& rm = *std::find(thisThread->rootMoves.begin(), thisThread->rootMoves.end(), move);
-         totalElapsed = rm.totalTime;
-         lastTime = Time.elapsed();
+         totalNodes = rm.totalNodes;
+         lastNodes = Threads.nodes_searched();
       }
       ss->moveCount = ++moveCount;
 
@@ -1042,7 +1040,7 @@ moves_loop: // When in check, search starts from here
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
-//                    << " elapsed time " << totalElapsed << sync_endl;
+                    //<< " totalNodes " << totalNodes << sync_endl;
 
       if (PvNode)
           (ss+1)->pv = nullptr;
@@ -1190,7 +1188,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3
           &&  moveCount > 1 + 2 * rootNode
-          && !(rootNode && totalElapsed > Time.elapsed() / 8)
+          && !(rootNode && totalNodes > 200 + Threads.nodes_searched() / 16)
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
@@ -1203,6 +1201,9 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if the ttHit running average is large
           if (thisThread->ttHitAverage > 537 * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
+
+          //if (rootNode && totalNodes > Threads.nodes_searched() / 16)
+          //    sync_cout << " candidate LMR " << UCI::move(move, pos.is_chess960()) << sync_endl;
 
           // Increase reduction if other threads are searching this position
           if (th.marked())
@@ -1337,7 +1338,7 @@ moves_loop: // When in check, search starts from here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
-          rm.totalTime += Time.elapsed() - lastTime;
+          rm.totalNodes += Threads.nodes_searched() - lastNodes;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
